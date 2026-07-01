@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   ArrowRight,
   CheckCircle2,
@@ -93,12 +94,14 @@ export default function DesignSystemPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-                  <Button type="button" variant="premium">
-                    Ver componentes
-                    <ArrowRight className="h-4 w-4" />
+                  <Button asChild variant="premium">
+                    <Link href="/cadastro">
+                      Comecar cadastro
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
                   </Button>
-                  <Button type="button" variant="outline">
-                    Tokens visuais
+                  <Button asChild variant="outline">
+                    <Link href="/login">Entrar</Link>
                   </Button>
                 </div>
               </div>

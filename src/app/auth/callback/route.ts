@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+
+import { normalizeAuthRedirectPath } from "@/modules/auth/domain/redirects";
+import { createSupabaseServerClient } from "@/shared/supabase";
+
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const next = normalizeAuthRedirectPath(requestUrl.searchParams.get("next"));
+
+  if (code) {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error) {
+      return NextResponse.redirect(new URL(next, requestUrl.origin));
+    }
+  }
+
+  return NextResponse.redirect(
+    new URL("/login?error=auth_callback", requestUrl.origin),
+  );
+}

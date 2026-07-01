@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { getCurrentUser } from "@/modules/auth/application/guards";
+import { AuthProvider } from "@/modules/auth/presentation/auth-provider";
 
 import "./globals.css";
 
@@ -11,11 +13,13 @@ export const metadata: Metadata = {
     "Plataforma SaaS de checkout e pagamentos para produtores digitais.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
@@ -25,8 +29,10 @@ export default function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          {children}
-          <Toaster richColors closeButton position="top-right" />
+          <AuthProvider initialUser={user}>
+            {children}
+            <Toaster richColors closeButton position="top-right" />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
