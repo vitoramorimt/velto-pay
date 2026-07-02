@@ -25,8 +25,8 @@ export function AuthCard({
   title,
 }: AuthCardProps) {
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
+    <Card className="w-full max-w-md border-white/10 bg-white/[0.045] text-slate-100 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+      <CardHeader className="p-6">
         {showBrand ? (
           <VeltoLogo
             className="mb-4"
@@ -35,13 +35,15 @@ export function AuthCard({
             size={56}
           />
         ) : null}
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="text-xl text-white">{title}</CardTitle>
+        <CardDescription className="leading-6 text-slate-400">
+          {description}
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6 pt-0">
         {children}
         {footer ? (
-          <div className="mt-6 border-t pt-5 text-center text-sm text-muted-foreground">
+          <div className="mt-6 border-t border-white/10 pt-5 text-center text-sm text-slate-400">
             {footer}
           </div>
         ) : null}
@@ -59,7 +61,7 @@ export function AuthLink({
 }) {
   return (
     <Link
-      className="font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
+      className="font-medium text-accent underline-offset-4 transition-colors hover:text-accent/80 hover:underline"
       href={href}
     >
       {children}

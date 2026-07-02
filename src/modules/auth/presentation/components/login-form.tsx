@@ -91,7 +91,11 @@ export function LoginForm({ next }: LoginFormProps) {
         ) : null}
       </div>
 
-      <Button className="w-full" disabled={isPending} type="submit">
+      <Button
+        className="w-full bg-accent text-accent-foreground shadow-[0_18px_52px_rgba(25,205,139,0.18)] hover:bg-accent/90"
+        disabled={isPending}
+        type="submit"
+      >
         {isPending ? <Loader2 className="animate-spin" /> : null}
         Entrar
       </Button>
