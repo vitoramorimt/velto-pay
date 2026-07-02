@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Bell, Command, Menu, Moon, Search, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -8,7 +9,12 @@ import { Button } from "@/components/ui/button";
 
 export function AppHeader() {
   const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [isMounted, setIsMounted] = useState(false);
+  const isDark = isMounted && resolvedTheme === "dark";
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
