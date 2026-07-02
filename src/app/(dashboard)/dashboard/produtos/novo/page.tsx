@@ -11,9 +11,9 @@ import { ProductForm } from "@/modules/products/presentation/components/product-
 const defaultProductValues: ProductFormValues = {
   deliveryUrl: "",
   description: "",
-  imageUrl: "",
   name: "",
   price: "",
+  salesPageUrl: "",
   slug: "",
   status: "draft",
 };
@@ -31,7 +31,7 @@ export default async function NewProductPage() {
           </Link>
         </Button>
         <EmptyState
-          description="Seu perfil de produtor precisa estar aprovado para criar produtos. Até lá, o catálogo permanece em modo de leitura."
+          description="Não foi possível encontrar um perfil de produtor vinculado à sua conta autenticada."
           title="Criação indisponível"
         />
       </div>
@@ -47,8 +47,9 @@ export default async function NewProductPage() {
             Criar produto
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Defina os dados comerciais básicos do produto digital. Campos de
-            imagem e entrega são opcionais e podem ser preenchidos por URL.
+            Escolha a estrutura inicial e preencha os dados essenciais do
+            produto. Pagamentos, checkout e área de membros real ficam para as
+            próximas fases.
           </p>
         </div>
         <Button asChild size="sm" variant="outline">

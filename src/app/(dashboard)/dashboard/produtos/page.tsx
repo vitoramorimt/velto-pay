@@ -23,25 +23,8 @@ function getAccessMessage(state: string) {
     };
   }
 
-  if (state === "pending_approval") {
-    return {
-      description:
-        "Seu perfil de produtor já existe e está aguardando aprovação. Assim que for aprovado, a criação e edição de produtos ficarão disponíveis.",
-      title: "Produtor aguardando aprovação",
-    };
-  }
-
-  if (state === "blocked") {
-    return {
-      description:
-        "O perfil de produtor está bloqueado e não pode gerenciar produtos.",
-      title: "Produtor bloqueado",
-    };
-  }
-
   return {
-    description:
-      "O perfil de produtor não está aprovado para gerenciar produtos.",
+    description: "Não foi possível liberar o catálogo para esta conta.",
     title: "Acesso indisponível",
   };
 }
@@ -62,8 +45,8 @@ export default async function ProductsPage() {
               Produtos
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Cadastre e mantenha seus produtos digitais. A criação fica
-              disponível para produtores autenticados e aprovados.
+              Cadastre e mantenha seus produtos digitais. Para o MVP atual, todo
+              produtor autenticado pode criar e gerenciar produtos.
             </p>
           </div>
 

@@ -14,7 +14,7 @@ export type ProductFormValues = {
   slug: string;
   description: string;
   price: string;
-  imageUrl: string;
+  salesPageUrl: string;
   deliveryUrl: string;
   status: EditableProductStatus;
 };

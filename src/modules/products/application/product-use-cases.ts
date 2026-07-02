@@ -26,12 +26,7 @@ import {
 } from "@/modules/products/infrastructure/products.repository";
 import { createSupabaseServerClient } from "@/shared/supabase";
 
-type ProducerAccessState =
-  | "missing_producer"
-  | "pending_approval"
-  | "rejected"
-  | "blocked"
-  | "ready";
+type ProducerAccessState = "missing_producer" | "ready";
 
 export type ProductsPageData =
   | {
@@ -57,26 +52,17 @@ function getProducerState(producer: Producer | null): ProducerAccessState {
     return "missing_producer";
   }
 
-  if (producer.status === "approved") {
-    return "ready";
-  }
-
-  if (producer.status === "pending") {
-    return "pending_approval";
-  }
-
-  return producer.status;
+  return "ready";
 }
 
-async function requireApprovedProducer(nextPath: string) {
+async function requireProductProducer(nextPath: string) {
   const user = await requireAuthenticatedUser(nextPath);
   const supabase = await createSupabaseServerClient();
   const producer = await findProducerByUserId(supabase, user.id);
-  const state = getProducerState(producer);
 
-  if (state !== "ready" || !producer) {
+  if (!producer) {
     throw new ProductUseCaseError(
-      "Seu perfil de produtor precisa estar aprovado para gerenciar produtos.",
+      "Não foi possível encontrar seu perfil de produtor.",
     );
   }
 
@@ -91,9 +77,9 @@ function toProductFormValues(product: Product): ProductFormValues {
     deliveryUrl: product.delivery_url ?? "",
     description: product.description ?? "",
     id: product.id,
-    imageUrl: product.image_url ?? "",
     name: product.name,
     price: formatCentsToDecimalInput(product.price_cents),
+    salesPageUrl: product.image_url ?? "",
     slug: product.slug,
     status:
       product.status === "active" || product.status === "inactive"
@@ -140,7 +126,7 @@ export async function getProductsPageData(): Promise<ProductsPageData> {
 export async function getProductForEditUseCase(
   productId: string,
 ): Promise<ProductFormValues | null> {
-  const { producer, supabase } = await requireApprovedProducer(
+  const { producer, supabase } = await requireProductProducer(
     `/dashboard/produtos/${productId}/editar`,
   );
   const product = await findProductByProducerId(
@@ -155,7 +141,7 @@ export async function getProductForEditUseCase(
 export async function createProductUseCase(
   input: CreateProductInput,
 ): Promise<Product> {
-  const { producer, supabase } = await requireApprovedProducer(
+  const { producer, supabase } = await requireProductProducer(
     "/dashboard/produtos/novo",
   );
   const slug = await resolveUniqueProductSlug(
@@ -169,7 +155,7 @@ export async function createProductUseCase(
     currency: "BRL",
     delivery_url: optionalStringToNull(input.deliveryUrl),
     description: optionalStringToNull(input.description),
-    image_url: optionalStringToNull(input.imageUrl),
+    image_url: optionalStringToNull(input.salesPageUrl),
     name: input.name,
     price_cents: getPriceCents(input.price),
     producer_id: producer.id,
@@ -182,7 +168,7 @@ export async function createProductUseCase(
 export async function updateProductUseCase(
   input: UpdateProductInput,
 ): Promise<Product> {
-  const { producer, supabase } = await requireApprovedProducer(
+  const { producer, supabase } = await requireProductProducer(
     `/dashboard/produtos/${input.id}/editar`,
   );
   const currentProduct = await findProductByProducerId(
@@ -206,7 +192,7 @@ export async function updateProductUseCase(
   return updateProductByProducerId(supabase, input.id, producer.id, {
     delivery_url: optionalStringToNull(input.deliveryUrl),
     description: optionalStringToNull(input.description),
-    image_url: optionalStringToNull(input.imageUrl),
+    image_url: optionalStringToNull(input.salesPageUrl),
     name: input.name,
     price_cents: getPriceCents(input.price),
     slug,
@@ -217,7 +203,7 @@ export async function updateProductUseCase(
 export async function toggleProductStatusUseCase(
   input: ToggleProductStatusInput,
 ): Promise<Product> {
-  const { producer, supabase } = await requireApprovedProducer(
+  const { producer, supabase } = await requireProductProducer(
     "/dashboard/produtos",
   );
   const product = await findProductByProducerId(

@@ -57,7 +57,9 @@ const productBaseSchema = z.object({
     .trim()
     .max(2000, "A descrição deve ter no máximo 2000 caracteres."),
   price: priceSchema,
-  imageUrl: optionalUrlSchema("Informe uma URL de imagem válida."),
+  salesPageUrl: optionalUrlSchema(
+    "Informe uma URL de página de vendas válida.",
+  ),
   deliveryUrl: optionalUrlSchema("Informe uma URL de entrega válida."),
   status: editableProductStatusSchema,
 });
