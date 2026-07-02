@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Boxes, Plus, ShieldAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getProductsPageData } from "@/modules/products/application/product-use-cases";
+import { ProductCreateDialog } from "@/modules/products/presentation/components/product-create-dialog";
 import { ProductsTable } from "@/modules/products/presentation/components/products-table";
 
 function getAccessMessage(state: string) {
@@ -51,12 +51,12 @@ export default async function ProductsPage() {
           </div>
 
           {data.state === "ready" ? (
-            <Button asChild>
-              <Link href="/dashboard/produtos/novo">
+            <ProductCreateDialog>
+              <Button>
                 <Plus />
                 Novo produto
-              </Link>
-            </Button>
+              </Button>
+            </ProductCreateDialog>
           ) : null}
         </div>
       </section>
@@ -107,12 +107,12 @@ export default async function ProductsPage() {
                   title="Nenhum produto cadastrado"
                 />
                 <div className="mt-5 flex justify-center">
-                  <Button asChild>
-                    <Link href="/dashboard/produtos/novo">
+                  <ProductCreateDialog>
+                    <Button>
                       <Plus />
                       Criar produto
-                    </Link>
-                  </Button>
+                    </Button>
+                  </ProductCreateDialog>
                 </div>
               </CardContent>
             </Card>

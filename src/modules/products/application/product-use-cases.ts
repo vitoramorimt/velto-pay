@@ -142,7 +142,7 @@ export async function createProductUseCase(
   input: CreateProductInput,
 ): Promise<Product> {
   const { producer, supabase } = await requireProductProducer(
-    "/dashboard/produtos/novo",
+    "/dashboard/produtos",
   );
   const slug = await resolveUniqueProductSlug(
     supabase,
