@@ -11,11 +11,23 @@ export type DashboardOrder = Pick<
   | "currency"
   | "customer_id"
   | "id"
+  | "metadata"
+  | "payment_method"
   | "product_id"
   | "status"
   | "total_cents"
 >;
-type ProductSummary = Pick<Tables<"products">, "id" | "name">;
+export type DashboardProductSummary = Pick<
+  Tables<"products">,
+  "id" | "name" | "status"
+>;
+
+type DashboardOrderFilters = {
+  createdAfter?: string;
+  method?: Tables<"orders">["payment_method"];
+  productId?: string;
+  status?: Tables<"orders">["status"];
+};
 
 const DASHBOARD_ORDER_PAGE_SIZE = 1000;
 
@@ -26,20 +38,38 @@ function repositoryError(message: string): Error {
 export async function listDashboardOrdersByProducerId(
   supabase: DatabaseClient,
   producerId: string,
+  filters: DashboardOrderFilters = {},
 ): Promise<DashboardOrder[]> {
   const orders: DashboardOrder[] = [];
   let from = 0;
 
   while (true) {
     const to = from + DASHBOARD_ORDER_PAGE_SIZE - 1;
-    const { data, error } = await supabase
+    let query = supabase
       .from("orders")
       .select(
-        "id, customer_id, product_id, status, total_cents, currency, created_at",
+        "id, customer_id, product_id, status, payment_method, total_cents, currency, metadata, created_at",
       )
       .eq("producer_id", producerId)
-      .order("created_at", { ascending: false })
-      .range(from, to);
+      .order("created_at", { ascending: false });
+
+    if (filters.createdAfter) {
+      query = query.gte("created_at", filters.createdAfter);
+    }
+
+    if (filters.productId) {
+      query = query.eq("product_id", filters.productId);
+    }
+
+    if (filters.method) {
+      query = query.eq("payment_method", filters.method);
+    }
+
+    if (filters.status) {
+      query = query.eq("status", filters.status);
+    }
+
+    const { data, error } = await query.range(from, to);
 
     if (error) {
       throw repositoryError("Nao foi possivel carregar os dados do dashboard.");
@@ -60,12 +90,19 @@ export async function listDashboardOrdersByProducerId(
 export async function countActiveProductsByProducerId(
   supabase: DatabaseClient,
   producerId: string,
+  productId?: string,
 ): Promise<number> {
-  const { count, error } = await supabase
+  let query = supabase
     .from("products")
     .select("id", { count: "exact", head: true })
     .eq("producer_id", producerId)
     .eq("status", "active");
+
+  if (productId) {
+    query = query.eq("id", productId);
+  }
+
+  const { count, error } = await query;
 
   if (error) {
     throw repositoryError("Nao foi possivel carregar os produtos ativos.");
@@ -78,19 +115,36 @@ export async function listProductSummariesByIds(
   supabase: DatabaseClient,
   producerId: string,
   productIds: string[],
-): Promise<ProductSummary[]> {
+): Promise<DashboardProductSummary[]> {
   if (productIds.length === 0) {
     return [];
   }
 
   const { data, error } = await supabase
     .from("products")
-    .select("id, name")
+    .select("id, name, status")
     .eq("producer_id", producerId)
     .in("id", productIds);
 
   if (error) {
     throw repositoryError("Nao foi possivel carregar os produtos das vendas.");
+  }
+
+  return data ?? [];
+}
+
+export async function listDashboardProductOptionsByProducerId(
+  supabase: DatabaseClient,
+  producerId: string,
+): Promise<DashboardProductSummary[]> {
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, name, status")
+    .eq("producer_id", producerId)
+    .order("name", { ascending: true });
+
+  if (error) {
+    throw repositoryError("Nao foi possivel carregar os filtros de produtos.");
   }
 
   return data ?? [];

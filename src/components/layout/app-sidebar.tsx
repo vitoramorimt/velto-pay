@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   BarChart3,
   Boxes,
+  BrainCircuit,
   CreditCard,
   Home,
   LifeBuoy,
@@ -20,6 +21,11 @@ import { cn } from "@/shared/utils/cn";
 const navigationItems = [
   { label: "Overview", href: "/dashboard", icon: Home },
   { label: "Produtos", href: "/dashboard/produtos", icon: Boxes },
+  {
+    label: "IA de Vendas",
+    href: "/dashboard/ia-de-vendas",
+    icon: BrainCircuit,
+  },
   { label: "Checkout", href: "#", icon: CreditCard },
   { label: "Financas", href: "#", icon: WalletCards },
   { label: "Analytics", href: "#", icon: BarChart3 },
@@ -45,7 +51,9 @@ export function AppSidebar() {
           const Icon = item.icon;
           const isActive =
             item.href !== "#" &&
-            (pathname === item.href || pathname.startsWith(`${item.href}/`));
+            (item.href === "/dashboard"
+              ? pathname === item.href
+              : pathname === item.href || pathname.startsWith(`${item.href}/`));
 
           return (
             <Link
