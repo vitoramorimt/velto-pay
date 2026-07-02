@@ -18,7 +18,7 @@ function getAccessMessage(state: string) {
   if (state === "missing_producer") {
     return {
       description:
-        "Sua conta está autenticada, mas ainda não possui um perfil de produtor vinculado.",
+        "Sua conta está autenticada, mas ainda não possui um perfil de produtor vinculado. Faça login novamente ou aguarde a sincronização do onboarding.",
       title: "Perfil de produtor necessário",
     };
   }
@@ -26,7 +26,7 @@ function getAccessMessage(state: string) {
   if (state === "pending_approval") {
     return {
       description:
-        "Seu perfil de produtor está aguardando aprovação do admin mínimo definido para o MVP.",
+        "Seu perfil de produtor já existe e está aguardando aprovação. Assim que for aprovado, a criação e edição de produtos ficarão disponíveis.",
       title: "Produtor aguardando aprovação",
     };
   }
@@ -57,13 +57,13 @@ export default async function ProductsPage() {
       <section className="velto-surface rounded-lg p-6 sm:p-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Badge variant="secondary">Sprint 5</Badge>
+            <Badge variant="secondary">Catálogo</Badge>
             <h1 className="mt-4 text-2xl font-semibold tracking-normal sm:text-3xl">
               Produtos
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Cadastre e mantenha produtos digitais de venda única. Checkout,
-              pagamentos e afiliados permanecem fora desta sprint.
+              Cadastre e mantenha seus produtos digitais. A criação fica
+              disponível para produtores autenticados e aprovados.
             </p>
           </div>
 

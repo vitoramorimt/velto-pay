@@ -24,14 +24,14 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   return (
     <GuestGuard nextPath={next}>
       <AuthCard
-        description="Crie sua conta de produtor com Supabase Auth."
+        description="Crie seu acesso para começar a estruturar seus produtos digitais na Velto Pay."
         footer={
           <>
             Já tem uma conta? <AuthLink href="/login">Entrar</AuthLink>
           </>
         }
         showBrand
-        title="Criar conta"
+        title="Criar sua conta"
       >
         <SignUpForm next={next} />
       </AuthCard>

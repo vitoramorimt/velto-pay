@@ -2,35 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BarChart3,
-  Boxes,
-  BrainCircuit,
-  CreditCard,
-  Home,
-  LifeBuoy,
-  Settings,
-  ShieldCheck,
-  WalletCards,
-} from "lucide-react";
+import { LifeBuoy } from "lucide-react";
 
+import { appNavigationItems } from "@/components/layout/app-navigation";
 import { VeltoLogo } from "@/components/brand/velto-logo";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/shared/utils/cn";
-
-const navigationItems = [
-  { label: "Visão geral", href: "/dashboard", icon: Home },
-  { label: "Produtos", href: "/dashboard/produtos", icon: Boxes },
-  {
-    label: "IA de Vendas",
-    href: "/dashboard/ia-de-vendas",
-    icon: BrainCircuit,
-  },
-  { label: "Checkout", href: "#", icon: CreditCard },
-  { label: "Finanças", href: "#", icon: WalletCards },
-  { label: "Análises", href: "#", icon: BarChart3 },
-  { label: "Compliance", href: "#", icon: ShieldCheck },
-];
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -47,36 +24,54 @@ export function AppSidebar() {
       />
 
       <nav className="mt-8 space-y-1">
-        {navigationItems.map((item) => {
+        {appNavigationItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            item.href !== "#" &&
+            item.href &&
             (item.href === "/dashboard"
               ? pathname === item.href
               : pathname === item.href || pathname.startsWith(`${item.href}/`));
+          const itemClassName = cn(
+            "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+            item.href
+              ? "text-sidebar-foreground/72 hover:bg-white/5 hover:text-sidebar-foreground"
+              : "cursor-default text-sidebar-foreground/38",
+            isActive &&
+              "bg-sidebar-active text-sidebar-active-foreground shadow-inner-line",
+          );
+          const content = (
+            <>
+              <Icon className="h-4 w-4" />
+              <span className="min-w-0 flex-1 truncate">{item.label}</span>
+              {item.status === "soon" ? (
+                <Badge
+                  className="ml-auto border-white/10 bg-white/[0.06] text-[10px] text-sidebar-foreground/60"
+                  variant="outline"
+                >
+                  Em breve
+                </Badge>
+              ) : null}
+            </>
+          );
 
-          return (
+          return item.href ? (
             <Link
               aria-current={isActive ? "page" : undefined}
-              className={cn(
-                "text-sidebar-foreground/72 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-white/5 hover:text-sidebar-foreground",
-                isActive &&
-                  "bg-sidebar-active text-sidebar-active-foreground shadow-inner-line",
-              )}
+              className={itemClassName}
               href={item.href}
               key={item.label}
             >
-              <Icon className="h-4 w-4" />
-              {item.label}
-              {item.label === "Checkout" ? (
-                <Badge
-                  className="ml-auto bg-white/10 text-[10px] text-white"
-                  variant="outline"
-                >
-                  UI
-                </Badge>
-              ) : null}
+              {content}
             </Link>
+          ) : (
+            <div
+              aria-disabled="true"
+              className={itemClassName}
+              key={item.label}
+              title={item.description}
+            >
+              {content}
+            </div>
           );
         })}
       </nav>
@@ -87,18 +82,10 @@ export function AppSidebar() {
           Suporte visual
         </div>
         <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
-          Componentes consistentes para fluxos de checkout, operação e
-          analytics.
+          Checkout, financeiro e compliance ficam visíveis como próximos
+          módulos, sem rotas quebradas.
         </p>
       </div>
-
-      <a
-        className="text-sidebar-foreground/72 mt-3 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-white/5 hover:text-sidebar-foreground"
-        href="#"
-      >
-        <Settings className="h-4 w-4" />
-        Preferências
-      </a>
     </aside>
   );
 }

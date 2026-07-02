@@ -25,22 +25,24 @@ export function AuthCard({
   title,
 }: AuthCardProps) {
   return (
-    <Card className="w-full max-w-md border-white/10 bg-white/[0.045] text-slate-100 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl">
-      <CardHeader className="p-6">
+    <Card className="w-full max-w-[27rem] border-white/10 bg-white/[0.055] text-slate-100 shadow-[0_28px_92px_rgba(0,0,0,0.34)] backdrop-blur-xl">
+      <CardHeader className="items-center p-6 text-center sm:p-7">
         {showBrand ? (
           <VeltoLogo
-            className="mb-4"
-            imageClassName="h-14 w-14"
+            className="mb-2 justify-center"
+            imageClassName="h-14 w-14 rounded-md"
+            labelClassName="text-base text-white"
             priority
+            showLabel
             size={56}
           />
         ) : null}
-        <CardTitle className="text-xl text-white">{title}</CardTitle>
-        <CardDescription className="leading-6 text-slate-400">
+        <CardTitle className="text-2xl text-white">{title}</CardTitle>
+        <CardDescription className="max-w-sm leading-6 text-slate-400">
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-6 pt-0">
+      <CardContent className="p-6 pt-0 sm:p-7 sm:pt-0">
         {children}
         {footer ? (
           <div className="mt-6 border-t border-white/10 pt-5 text-center text-sm text-slate-400">

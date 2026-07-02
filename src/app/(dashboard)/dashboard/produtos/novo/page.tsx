@@ -31,7 +31,7 @@ export default async function NewProductPage() {
           </Link>
         </Button>
         <EmptyState
-          description="Seu perfil de produtor precisa estar aprovado para criar produtos."
+          description="Seu perfil de produtor precisa estar aprovado para criar produtos. Até lá, o catálogo permanece em modo de leitura."
           title="Criação indisponível"
         />
       </div>
@@ -47,9 +47,8 @@ export default async function NewProductPage() {
             Criar produto
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Defina os dados comerciais básicos do produto digital. A entrega e a
-            imagem ficam como URLs enquanto Storage e checkout aguardam fases
-            futuras.
+            Defina os dados comerciais básicos do produto digital. Campos de
+            imagem e entrega são opcionais e podem ser preenchidos por URL.
           </p>
         </div>
         <Button asChild size="sm" variant="outline">

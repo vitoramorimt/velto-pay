@@ -88,7 +88,7 @@ export default function LandingPage() {
           >
             <VeltoLogo
               imageClassName="rounded-md"
-              labelClassName="text-sm text-white sm:text-base"
+              labelClassName="hidden text-sm text-white sm:inline sm:text-base"
               showLabel
               size={38}
             />
@@ -101,7 +101,10 @@ export default function LandingPage() {
               size="sm"
               variant="ghost"
             >
-              <Link href="/login">Acessar minha conta</Link>
+              <Link href="/login">
+                <span className="hidden sm:inline">Acessar minha conta</span>
+                <span className="sm:hidden">Entrar</span>
+              </Link>
             </Button>
             <Button
               asChild
@@ -138,7 +141,7 @@ export default function LandingPage() {
             >
               Plataforma brasileira para produtos digitais
             </Badge>
-            <h1 className="text-balance text-5xl font-semibold tracking-normal text-white sm:text-6xl lg:text-7xl">
+            <h1 className="text-balance text-4xl font-semibold tracking-normal text-white sm:text-6xl lg:text-7xl">
               Venda produtos digitais com checkout próprio, IA de vendas e
               operação financeira em um único lugar.
             </h1>

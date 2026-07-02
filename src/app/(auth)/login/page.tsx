@@ -24,7 +24,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <GuestGuard nextPath={next}>
       <AuthCard
-        description="Entre com e-mail e senha para acessar a área privada."
+        description="Acesse sua conta para gerenciar produtos, acompanhar a operação e preparar suas vendas."
         footer={
           <>
             Ainda não tem conta?{" "}
@@ -32,7 +32,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </>
         }
         showBrand
-        title="Entrar na Velto Pay"
+        title="Entrar na conta"
       >
         <LoginForm next={next} />
       </AuthCard>

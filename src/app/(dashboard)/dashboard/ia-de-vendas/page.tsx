@@ -206,11 +206,12 @@ export default async function SalesAiPage() {
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <Input
                     className="border-white/10 bg-background/70"
+                    disabled
                     placeholder="Pergunte algo sobre suas vendas..."
                   />
-                  <Button type="button">
+                  <Button disabled type="button">
                     <Send />
-                    Enviar
+                    Em breve
                   </Button>
                 </div>
               </div>

@@ -43,7 +43,7 @@ export function LoginForm({ next }: LoginFormProps) {
 
   return (
     <form
-      className="space-y-4"
+      className="space-y-5"
       noValidate
       onSubmit={form.handleSubmit(onSubmit)}
     >
@@ -55,6 +55,7 @@ export function LoginForm({ next }: LoginFormProps) {
         <Label htmlFor="email">E-mail</Label>
         <Input
           autoComplete="email"
+          className="border-white/10 bg-black/20 text-white placeholder:text-slate-500"
           id="email"
           placeholder="nome@empresa.com"
           type="email"
@@ -71,7 +72,7 @@ export function LoginForm({ next }: LoginFormProps) {
         <div className="flex items-center justify-between gap-3">
           <Label htmlFor="password">Senha</Label>
           <Link
-            className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+            className="text-xs font-medium text-accent underline-offset-4 hover:underline"
             href="/recuperar-senha"
           >
             Esqueci minha senha
@@ -79,6 +80,7 @@ export function LoginForm({ next }: LoginFormProps) {
         </div>
         <Input
           autoComplete="current-password"
+          className="border-white/10 bg-black/20 text-white placeholder:text-slate-500"
           id="password"
           placeholder="Sua senha"
           type="password"
@@ -92,12 +94,12 @@ export function LoginForm({ next }: LoginFormProps) {
       </div>
 
       <Button
-        className="w-full bg-accent text-accent-foreground shadow-[0_18px_52px_rgba(25,205,139,0.18)] hover:bg-accent/90"
+        className="h-10 w-full bg-accent text-accent-foreground shadow-[0_18px_52px_rgba(25,205,139,0.18)] hover:bg-accent/90"
         disabled={isPending}
         type="submit"
       >
         {isPending ? <Loader2 className="animate-spin" /> : null}
-        Entrar
+        Entrar na conta
       </Button>
     </form>
   );

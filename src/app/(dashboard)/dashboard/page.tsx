@@ -508,53 +508,57 @@ function LatestSalesTable({ sales }: { sales: DashboardSale[] }) {
       </CardHeader>
       <CardContent>
         {sales.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="border-white/10 hover:bg-transparent">
-                <TableHead className="text-slate-500">Cliente</TableHead>
-                <TableHead className="text-slate-500">Método</TableHead>
-                <TableHead className="text-slate-500">Status</TableHead>
-                <TableHead className="text-right text-slate-500">
-                  Valor
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sales.map((sale) => (
-                <TableRow
-                  className="border-white/10 hover:bg-white/[0.035]"
-                  key={sale.id}
-                >
-                  <TableCell>
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.06] text-accent">
-                        <ReceiptText className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-white">
-                          {sale.customer}
-                        </p>
-                        <p className="truncate text-xs text-slate-500">
-                          {sale.product} - {getSaleTime(sale)}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-slate-300">
-                    {getPaymentMethodLabel(sale.method)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusVariant(sale.status)}>
-                      {getStatusLabel(sale.status)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-medium text-white">
-                    {formatCents(sale.amountCents)}
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-white/10 hover:bg-transparent">
+                  <TableHead className="min-w-52 text-slate-500">
+                    Cliente
+                  </TableHead>
+                  <TableHead className="text-slate-500">Método</TableHead>
+                  <TableHead className="text-slate-500">Status</TableHead>
+                  <TableHead className="text-right text-slate-500">
+                    Valor
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {sales.map((sale) => (
+                  <TableRow
+                    className="border-white/10 hover:bg-white/[0.035]"
+                    key={sale.id}
+                  >
+                    <TableCell>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.06] text-accent">
+                          <ReceiptText className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-white">
+                            {sale.customer}
+                          </p>
+                          <p className="truncate text-xs text-slate-500">
+                            {sale.product} - {getSaleTime(sale)}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-300">
+                      {getPaymentMethodLabel(sale.method)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusVariant(sale.status)}>
+                        {getStatusLabel(sale.status)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right font-medium text-white">
+                      {formatCents(sale.amountCents)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         ) : (
           <EmptyState
             className="border-white/10 bg-white/[0.03] text-slate-100"

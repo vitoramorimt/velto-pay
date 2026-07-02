@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2, Power } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,6 +18,7 @@ export function ProductStatusToggle({
   productId,
   status,
 }: ProductStatusToggleProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const isArchived = status === "archived";
   const nextStatus = status === "active" ? "inactive" : "active";
@@ -29,6 +31,7 @@ export function ProductStatusToggle({
       }).then((result) => {
         if (result.status === "success") {
           toast.success(result.message);
+          router.refresh();
           return;
         }
 
@@ -39,6 +42,7 @@ export function ProductStatusToggle({
 
   return (
     <Button
+      className="w-full sm:w-auto"
       disabled={isPending || isArchived}
       onClick={handleToggle}
       size="sm"
@@ -46,7 +50,7 @@ export function ProductStatusToggle({
       variant="outline"
     >
       {isPending ? <Loader2 className="animate-spin" /> : <Power />}
-      {status === "active" ? "Inativar" : "Ativar"}
+      {isArchived ? "Arquivado" : status === "active" ? "Inativar" : "Ativar"}
     </Button>
   );
 }

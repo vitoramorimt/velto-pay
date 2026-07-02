@@ -38,7 +38,7 @@ function formatProductDate(value: string): string {
 export function ProductsTable({ products }: ProductsTableProps) {
   return (
     <>
-      <div className="hidden rounded-lg border bg-card shadow-soft md:block">
+      <div className="hidden overflow-x-auto rounded-lg border bg-card shadow-soft md:block">
         <Table>
           <TableHeader>
             <TableRow>

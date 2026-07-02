@@ -1,8 +1,14 @@
 import Link from "next/link";
-import { ArrowLeft, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Sparkles } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { VeltoLogo } from "@/components/brand/velto-logo";
 import { Button } from "@/components/ui/button";
+
+const authHighlights = [
+  "Checkout próprio para produtos digitais",
+  "IA de Vendas para orientar decisões",
+  "Operação financeira em uma única plataforma",
+];
 
 export default function AuthLayout({
   children,
@@ -11,70 +17,95 @@ export default function AuthLayout({
 }) {
   return (
     <main className="min-h-dvh overflow-hidden bg-[#030806] text-slate-100">
-      <div className="grid min-h-dvh lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="relative hidden overflow-hidden border-r border-white/10 bg-[#030806] text-sidebar-foreground lg:block">
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(25,205,139,0.14),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.045),transparent)]" />
-          <div className="velto-grid absolute inset-0 opacity-[0.12]" />
-          <div className="relative flex min-h-dvh flex-col justify-between p-10">
-            <div>
-              <Button
-                asChild
-                className="text-slate-300 hover:bg-white/10 hover:text-white"
-                variant="ghost"
-              >
-                <Link href="/">
-                  <ArrowLeft className="h-4 w-4" />
-                  Voltar
-                </Link>
-              </Button>
-            </div>
+      <div className="velto-grid pointer-events-none fixed inset-0 opacity-[0.08]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(25,205,139,0.18),transparent_30rem),radial-gradient(circle_at_84%_0%,rgba(59,130,246,0.10),transparent_28rem),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_36%)]" />
 
-            <div className="max-w-xl">
-              <Badge
-                className="border-accent/30 bg-accent/10 text-accent"
-                variant="outline"
-              >
-                Supabase Auth
-              </Badge>
-              <h1 className="mt-6 text-4xl font-semibold tracking-normal">
-                Acesso seguro para produtores digitais.
-              </h1>
-              <p className="mt-5 text-sm leading-7 text-slate-400">
-                Sessão persistente, cookies seguros e fluxos essenciais de
-                cadastro, login e recuperação de senha para a base do MVP.
-              </p>
-            </div>
+      <div className="relative grid min-h-dvh lg:grid-cols-[1.02fr_0.98fr]">
+        <section className="hidden min-h-dvh flex-col justify-between border-r border-white/10 px-10 py-8 lg:flex">
+          <div className="flex items-center justify-between gap-4">
+            <Link
+              aria-label="Velto Pay"
+              className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              href="/"
+            >
+              <VeltoLogo
+                imageClassName="h-10 w-10 rounded-md"
+                labelClassName="text-sm text-white"
+                priority
+                showLabel
+                size={40}
+              />
+            </Link>
 
-            <div className="grid gap-3 text-sm text-slate-400">
-              {[
-                ["Server-first", "Actions e guards no servidor."],
-                ["Sessão", "Refresh automático via middleware."],
-                ["Segurança", "Sem service role no frontend."],
-              ].map(([title, description]) => (
+            <Button
+              asChild
+              className="border-white/10 bg-white/[0.035] text-slate-300 hover:bg-white/[0.07] hover:text-white"
+              size="sm"
+              variant="outline"
+            >
+              <Link href="/">
+                <ArrowLeft className="h-4 w-4" />
+                Voltar
+              </Link>
+            </Button>
+          </div>
+
+          <div className="max-w-xl">
+            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-md border border-accent/25 bg-accent/10 text-accent shadow-[0_0_54px_rgba(25,205,139,0.16)]">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <h1 className="text-balance text-5xl font-semibold tracking-normal text-white">
+              Acesse sua operação digital com clareza.
+            </h1>
+            <p className="mt-5 text-sm leading-7 text-slate-400">
+              Entre ou crie sua conta para organizar produtos, acompanhar a
+              operação e preparar a próxima etapa de vendas da Velto Pay.
+            </p>
+
+            <div className="mt-8 grid gap-3">
+              {authHighlights.map((item) => (
                 <div
-                  className="rounded-lg border border-white/10 bg-white/[0.04] p-4 shadow-[0_18px_52px_rgba(0,0,0,0.18)]"
-                  key={title}
+                  className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-300"
+                  key={item}
                 >
-                  <div className="flex items-center gap-2 font-medium text-white">
-                    {title === "Segurança" ? (
-                      <ShieldCheck className="h-4 w-4 text-accent" />
-                    ) : title === "Sessão" ? (
-                      <LockKeyhole className="h-4 w-4 text-accent" />
-                    ) : (
-                      <Sparkles className="h-4 w-4 text-accent" />
-                    )}
-                    {title}
-                  </div>
-                  <p className="mt-1 text-xs">{description}</p>
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-accent" />
+                  {item}
                 </div>
               ))}
             </div>
           </div>
+
+          <p className="text-xs leading-5 text-slate-500">
+            Ambiente em dark mode premium. O tema claro está temporariamente
+            desabilitado para manter a experiência estável.
+          </p>
         </section>
 
-        <section className="relative flex min-h-dvh items-center justify-center px-4 py-10 sm:px-6">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_34%),linear-gradient(120deg,transparent,rgba(25,205,139,0.08))]" />
-          <div className="relative w-full max-w-md">{children}</div>
+        <section className="relative flex min-h-dvh items-center justify-center px-4 py-8 sm:px-6 lg:px-10">
+          <div className="absolute inset-x-4 top-4 flex items-center justify-between lg:hidden">
+            <Link
+              aria-label="Velto Pay"
+              className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              href="/"
+            >
+              <VeltoLogo
+                imageClassName="h-9 w-9 rounded-md"
+                labelClassName="text-sm text-white"
+                showLabel
+                size={36}
+              />
+            </Link>
+            <Button
+              asChild
+              className="border-white/10 bg-white/[0.035] text-slate-300 hover:bg-white/[0.07] hover:text-white"
+              size="sm"
+              variant="outline"
+            >
+              <Link href="/">Voltar</Link>
+            </Button>
+          </div>
+
+          <div className="w-full max-w-[27rem] pt-20 lg:pt-0">{children}</div>
         </section>
       </div>
     </main>

@@ -99,8 +99,8 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card className="border-white/10 bg-card/95">
+      <CardContent className="p-4 sm:p-6">
         <form
           className="grid gap-6"
           noValidate
@@ -117,6 +117,10 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
                   placeholder="Curso completo de marketing digital"
                   {...form.register("name")}
                 />
+                <p className="text-xs leading-5 text-muted-foreground">
+                  Use um nome claro. Ele será a principal referência do produto
+                  no catálogo.
+                </p>
                 {form.formState.errors.name ? (
                   <p className="text-sm text-destructive">
                     {form.formState.errors.name.message}
@@ -148,6 +152,9 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
                     placeholder="197,00"
                     {...form.register("price")}
                   />
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    Informe em reais, entre R$ 5,00 e R$ 50.000,00.
+                  </p>
                   {form.formState.errors.price ? (
                     <p className="text-sm text-destructive">
                       {form.formState.errors.price.message}
@@ -162,6 +169,9 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
                     placeholder="curso-marketing-digital"
                     {...form.register("slug")}
                   />
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    Opcional. Se ficar vazio, a Velto Pay cria um slug seguro.
+                  </p>
                   {form.formState.errors.slug ? (
                     <p className="text-sm text-destructive">
                       {form.formState.errors.slug.message}
@@ -179,6 +189,9 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
                     type="url"
                     {...form.register("imageUrl")}
                   />
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    Opcional enquanto upload de arquivos não está disponível.
+                  </p>
                   {form.formState.errors.imageUrl ? (
                     <p className="text-sm text-destructive">
                       {form.formState.errors.imageUrl.message}
@@ -194,6 +207,9 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
                     type="url"
                     {...form.register("deliveryUrl")}
                   />
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    Opcional. Use uma URL segura para a entrega digital.
+                  </p>
                   {form.formState.errors.deliveryUrl ? (
                     <p className="text-sm text-destructive">
                       {form.formState.errors.deliveryUrl.message}
@@ -203,7 +219,7 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
               </div>
             </div>
 
-            <aside className="rounded-lg border bg-muted/30 p-4">
+            <aside className="rounded-lg border border-border/80 bg-muted/30 p-4">
               <div className="space-y-2">
                 <Label>Status</Label>
                 <Select
@@ -237,7 +253,11 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
             <Button asChild variant="outline">
               <Link href="/dashboard/produtos">Cancelar</Link>
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
+              disabled={isPending}
+              type="submit"
+            >
               {isPending ? <Loader2 className="animate-spin" /> : <Save />}
               {mode === "create" ? "Criar produto" : "Salvar alterações"}
             </Button>
