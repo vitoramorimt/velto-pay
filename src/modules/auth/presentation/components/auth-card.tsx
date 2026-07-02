@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { VeltoLogo } from "@/components/brand/velto-logo";
 import {
   Card,
   CardContent,
@@ -12,6 +13,7 @@ type AuthCardProps = {
   children: React.ReactNode;
   description: string;
   footer?: React.ReactNode;
+  showBrand?: boolean;
   title: string;
 };
 
@@ -19,11 +21,20 @@ export function AuthCard({
   children,
   description,
   footer,
+  showBrand = false,
   title,
 }: AuthCardProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
+        {showBrand ? (
+          <VeltoLogo
+            className="mb-4"
+            imageClassName="h-14 w-14"
+            priority
+            size={56}
+          />
+        ) : null}
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>

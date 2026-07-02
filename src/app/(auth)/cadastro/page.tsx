@@ -30,6 +30,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
             Ja tem uma conta? <AuthLink href="/login">Entrar</AuthLink>
           </>
         }
+        showBrand
         title="Criar conta"
       >
         <SignUpForm next={next} />

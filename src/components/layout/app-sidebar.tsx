@@ -10,10 +10,10 @@ import {
   LifeBuoy,
   Settings,
   ShieldCheck,
-  Sparkles,
   WalletCards,
 } from "lucide-react";
 
+import { VeltoLogo } from "@/components/brand/velto-logo";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/shared/utils/cn";
 
@@ -31,17 +31,14 @@ export function AppSidebar() {
 
   return (
     <aside className="hidden min-h-dvh w-72 shrink-0 border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground lg:flex lg:flex-col">
-      <div className="flex items-center gap-3 px-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-soft">
-          <Sparkles className="h-5 w-5" />
-        </div>
-        <div>
-          <p className="text-sm font-semibold leading-none">Velto Pay</p>
-          <p className="mt-1 text-xs text-sidebar-foreground/55">
-            Design System
-          </p>
-        </div>
-      </div>
+      <VeltoLogo
+        className="px-2"
+        imageClassName="h-10 w-10"
+        labelClassName="text-sm text-sidebar-foreground"
+        priority
+        showLabel
+        size={40}
+      />
 
       <nav className="mt-8 space-y-1">
         {navigationItems.map((item) => {

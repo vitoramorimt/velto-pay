@@ -8,6 +8,9 @@ import { AuthProvider } from "@/modules/auth/presentation/auth-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/brand/velto-pay-logo.jpeg",
+  },
   title: "Velto Pay",
   description:
     "Plataforma SaaS de checkout e pagamentos para produtores digitais.",

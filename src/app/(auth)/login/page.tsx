@@ -31,6 +31,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <AuthLink href="/cadastro">Criar conta</AuthLink>
           </>
         }
+        showBrand
         title="Entrar na Velto Pay"
       >
         <LoginForm next={next} />
