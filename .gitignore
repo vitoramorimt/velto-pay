@@ -70,6 +70,11 @@ web_modules/
 .env.*
 !.env.example
 
+# Supabase local runtime state
+supabase/.branches/
+supabase/.temp/
+supabase/snippets/
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
