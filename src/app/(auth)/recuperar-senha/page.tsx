@@ -9,7 +9,7 @@ export default function RecoverPasswordPage() {
   return (
     <GuestGuard>
       <AuthCard
-        description="Informe seu e-mail para receber o link de redefinicao."
+        description="Informe seu e-mail para receber o link de redefinição."
         footer={
           <>
             Lembrou a senha? <AuthLink href="/login">Entrar</AuthLink>

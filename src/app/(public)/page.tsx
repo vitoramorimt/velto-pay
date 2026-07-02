@@ -24,7 +24,7 @@ import {
 const platformHighlights = [
   {
     description:
-      "Estrutura preparada para checkout, pedidos, pagamentos e conciliacao financeira.",
+      "Estrutura preparada para checkout, pedidos, pagamentos e conciliação financeira.",
     icon: CreditCard,
     title: "Venda digital",
   },
@@ -32,11 +32,11 @@ const platformHighlights = [
     description:
       "Base Supabase versionada com RLS, onboarding de produtores e auditoria evolutiva.",
     icon: ShieldCheck,
-    title: "Operacao segura",
+    title: "Operação segura",
   },
   {
     description:
-      "Interface premium para produtores acompanharem a operacao sem ruido.",
+      "Interface premium para produtores acompanharem a operação sem ruído.",
     icon: BarChart3,
     title: "Crescimento claro",
   },
@@ -44,8 +44,8 @@ const platformHighlights = [
 
 const trustItems = [
   "Onboarding com produtor vinculado automaticamente",
-  "Rotas privadas protegidas por sessao Supabase",
-  "Arquitetura pronta para evoluir o MVP com seguranca",
+  "Rotas privadas protegidas por sessão Supabase",
+  "Arquitetura pronta para evoluir o MVP com segurança",
 ];
 
 export default function LandingPage() {
@@ -80,13 +80,13 @@ export default function LandingPage() {
         <Image
           alt=""
           aria-hidden
-          className="absolute inset-0 -z-20 h-full w-full object-cover opacity-20 dark:opacity-24"
+          className="dark:opacity-24 absolute inset-0 -z-20 h-full w-full object-cover opacity-20"
           fill
           priority
           sizes="100vw"
           src="/brand/velto-pay-logo.jpeg"
         />
-        <div className="absolute inset-0 -z-10 bg-background/90 dark:bg-background/88" />
+        <div className="dark:bg-background/88 absolute inset-0 -z-10 bg-background/90" />
 
         <div className="mx-auto flex min-h-[82dvh] w-full max-w-7xl flex-col justify-center px-4 py-16 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
@@ -98,12 +98,12 @@ export default function LandingPage() {
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
               A base premium para produtores digitais venderem com checkout,
-              pagamentos e operacao financeira em um unico ambiente.
+              pagamentos e operação financeira em um único ambiente.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
                 <Link href="/cadastro">
-                  Comecar agora
+                  Começar agora
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -146,11 +146,11 @@ export default function LandingPage() {
           <div>
             <Badge variant="outline">Base premium</Badge>
             <h2 className="mt-4 text-3xl font-semibold tracking-normal">
-              Entrada publica, area privada e onboarding consistente.
+              Entrada pública, área privada e onboarding consistente.
             </h2>
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
               Visitantes conhecem a Velto Pay sem barreiras. Produtores entram
-              em uma area protegida, com perfil financeiro preparado desde o
+              em uma área protegida, com perfil financeiro preparado desde o
               primeiro acesso.
             </p>
           </div>
@@ -159,9 +159,9 @@ export default function LandingPage() {
             <CardContent className="grid gap-4 p-5 sm:grid-cols-2">
               <div className="rounded-md border bg-background/70 p-4">
                 <LockKeyhole className="h-5 w-5 text-primary" />
-                <p className="mt-3 text-sm font-medium">Area protegida</p>
+                <p className="mt-3 text-sm font-medium">Área protegida</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Acesso privado com sessao validada antes de abrir dados
+                  Acesso privado com sessão validada antes de abrir dados
                   operacionais.
                 </p>
               </div>
@@ -169,7 +169,7 @@ export default function LandingPage() {
                 <Sparkles className="h-5 w-5 text-accent" />
                 <p className="mt-3 text-sm font-medium">Perfil de produtor</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Contas novas e antigas mantem o vinculo necessario para
+                  Contas novas e antigas mantêm o vínculo necessário para
                   acessar produtos.
                 </p>
               </div>

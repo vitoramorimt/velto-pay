@@ -27,7 +27,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
         description="Crie sua conta de produtor com Supabase Auth."
         footer={
           <>
-            Ja tem uma conta? <AuthLink href="/login">Entrar</AuthLink>
+            Já tem uma conta? <AuthLink href="/login">Entrar</AuthLink>
           </>
         }
         showBrand

@@ -44,9 +44,9 @@ export function ProductsTable({ products }: ProductsTableProps) {
             <TableRow>
               <TableHead>Produto</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Preco</TableHead>
+              <TableHead>Preço</TableHead>
               <TableHead>Atualizado</TableHead>
-              <TableHead className="text-right">Acoes</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,7 +103,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-muted-foreground">Preco</span>
+                <span className="text-muted-foreground">Preço</span>
                 <span className="font-medium">
                   {formatCentsToCurrency(product.price_cents)}
                 </span>

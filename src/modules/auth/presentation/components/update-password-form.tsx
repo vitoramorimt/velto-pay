@@ -51,7 +51,7 @@ export function UpdatePasswordForm() {
         <Input
           autoComplete="new-password"
           id="password"
-          placeholder="Minimo de 8 caracteres"
+          placeholder="Mínimo de 8 caracteres"
           type="password"
           {...form.register("password")}
         />

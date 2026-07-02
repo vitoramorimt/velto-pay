@@ -36,7 +36,7 @@ export const PRODUCT_STATUS_DESCRIPTIONS: Record<
   EditableProductStatus,
   string
 > = {
-  active: "Produto disponivel para os proximos fluxos comerciais.",
-  draft: "Produto em preparacao, ainda sem disponibilidade publica.",
-  inactive: "Produto pausado e indisponivel para novas vendas.",
+  active: "Produto disponível para os próximos fluxos comerciais.",
+  draft: "Produto em preparação, ainda sem disponibilidade pública.",
+  inactive: "Produto pausado e indisponível para novas vendas.",
 };

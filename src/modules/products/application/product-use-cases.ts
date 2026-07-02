@@ -106,7 +106,7 @@ function getPriceCents(price: string): number {
   const priceCents = parseProductPriceToCents(price);
 
   if (priceCents === null) {
-    throw new ProductUseCaseError("Informe um preco valido.");
+    throw new ProductUseCaseError("Informe um preço válido.");
   }
 
   return priceCents;
@@ -127,7 +127,7 @@ export async function getProductsPageData(): Promise<ProductsPageData> {
   }
 
   if (!producer) {
-    throw new ProductUseCaseError("Produtor nao encontrado.");
+    throw new ProductUseCaseError("Produtor não encontrado.");
   }
 
   return {
@@ -192,7 +192,7 @@ export async function updateProductUseCase(
   );
 
   if (!currentProduct) {
-    throw new ProductUseCaseError("Produto nao encontrado.");
+    throw new ProductUseCaseError("Produto não encontrado.");
   }
 
   const slug = await resolveUniqueProductSlug(
@@ -227,7 +227,7 @@ export async function toggleProductStatusUseCase(
   );
 
   if (!product) {
-    throw new ProductUseCaseError("Produto nao encontrado.");
+    throw new ProductUseCaseError("Produto não encontrado.");
   }
 
   return updateProductByProducerId(supabase, input.id, producer.id, {

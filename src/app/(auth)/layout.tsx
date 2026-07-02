@@ -32,25 +32,25 @@ export default function AuthLayout({
                 Acesso seguro para produtores digitais.
               </h1>
               <p className="text-sidebar-foreground/68 mt-5 text-sm leading-7">
-                Sessao persistente, cookies seguros e fluxos essenciais de
-                cadastro, login e recuperacao de senha para a base do MVP.
+                Sessão persistente, cookies seguros e fluxos essenciais de
+                cadastro, login e recuperação de senha para a base do MVP.
               </p>
             </div>
 
             <div className="grid gap-3 text-sm text-sidebar-foreground/70">
               {[
                 ["Server-first", "Actions e guards no servidor."],
-                ["Sessao", "Refresh automatico via middleware."],
-                ["Seguranca", "Sem service role no frontend."],
+                ["Sessão", "Refresh automático via middleware."],
+                ["Segurança", "Sem service role no frontend."],
               ].map(([title, description]) => (
                 <div
                   className="rounded-lg border border-white/10 bg-white/[0.03] p-4"
                   key={title}
                 >
                   <div className="flex items-center gap-2 font-medium text-sidebar-foreground">
-                    {title === "Seguranca" ? (
+                    {title === "Segurança" ? (
                       <ShieldCheck className="h-4 w-4 text-accent" />
-                    ) : title === "Sessao" ? (
+                    ) : title === "Sessão" ? (
                       <LockKeyhole className="h-4 w-4 text-accent" />
                     ) : (
                       <Sparkles className="h-4 w-4 text-accent" />

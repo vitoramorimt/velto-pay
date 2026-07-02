@@ -28,7 +28,7 @@ export async function findProducerByUserId(
     .maybeSingle();
 
   if (error) {
-    throw repositoryError("Nao foi possivel carregar o produtor.");
+    throw repositoryError("Não foi possível carregar o produtor.");
   }
 
   return data;
@@ -45,7 +45,7 @@ export async function listProductsByProducerId(
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw repositoryError("Nao foi possivel listar os produtos.");
+    throw repositoryError("Não foi possível listar os produtos.");
   }
 
   return data ?? [];
@@ -64,7 +64,7 @@ export async function findProductByProducerId(
     .maybeSingle();
 
   if (error) {
-    throw repositoryError("Nao foi possivel carregar o produto.");
+    throw repositoryError("Não foi possível carregar o produto.");
   }
 
   return data;
@@ -90,7 +90,7 @@ async function productSlugExists(
   const { data, error } = await query.maybeSingle();
 
   if (error) {
-    throw repositoryError("Nao foi possivel validar o slug do produto.");
+    throw repositoryError("Não foi possível validar o slug do produto.");
   }
 
   return Boolean(data);
@@ -121,7 +121,7 @@ export async function resolveUniqueProductSlug(
     candidate = appendSlugSuffix(baseSlug, suffix);
   }
 
-  throw repositoryError("Nao foi possivel gerar um slug unico para o produto.");
+  throw repositoryError("Não foi possível gerar um slug único para o produto.");
 }
 
 export async function insertProduct(
@@ -135,7 +135,7 @@ export async function insertProduct(
     .single();
 
   if (error) {
-    throw repositoryError("Nao foi possivel criar o produto.");
+    throw repositoryError("Não foi possível criar o produto.");
   }
 
   return data;
@@ -156,7 +156,7 @@ export async function updateProductByProducerId(
     .single();
 
   if (error) {
-    throw repositoryError("Nao foi possivel atualizar o produto.");
+    throw repositoryError("Não foi possível atualizar o produto.");
   }
 
   return data;

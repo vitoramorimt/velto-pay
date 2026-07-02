@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/shared/utils/cn";
 
 const navigationItems = [
-  { label: "Overview", href: "/dashboard", icon: Home },
+  { label: "Visão geral", href: "/dashboard", icon: Home },
   { label: "Produtos", href: "/dashboard/produtos", icon: Boxes },
   {
     label: "IA de Vendas",
@@ -27,8 +27,8 @@ const navigationItems = [
     icon: BrainCircuit,
   },
   { label: "Checkout", href: "#", icon: CreditCard },
-  { label: "Financas", href: "#", icon: WalletCards },
-  { label: "Analytics", href: "#", icon: BarChart3 },
+  { label: "Finanças", href: "#", icon: WalletCards },
+  { label: "Análises", href: "#", icon: BarChart3 },
   { label: "Compliance", href: "#", icon: ShieldCheck },
 ];
 
@@ -87,7 +87,7 @@ export function AppSidebar() {
           Suporte visual
         </div>
         <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
-          Componentes consistentes para fluxos de checkout, operacao e
+          Componentes consistentes para fluxos de checkout, operação e
           analytics.
         </p>
       </div>
@@ -97,7 +97,7 @@ export function AppSidebar() {
         href="#"
       >
         <Settings className="h-4 w-4" />
-        Preferencias
+        Preferências
       </a>
     </aside>
   );

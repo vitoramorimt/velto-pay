@@ -169,7 +169,7 @@ export async function listDashboardOrdersByProducerId(
         }
 
         throw repositoryError(
-          "Nao foi possivel carregar os dados do dashboard.",
+          "Não foi possível carregar os dados do dashboard.",
         );
       }
 
@@ -190,7 +190,7 @@ export async function listDashboardOrdersByProducerId(
         return [];
       }
 
-      throw repositoryError("Nao foi possivel carregar os dados do dashboard.");
+      throw repositoryError("Não foi possível carregar os dados do dashboard.");
     }
 
     orders.push(...(data ?? []));
@@ -223,7 +223,7 @@ export async function countActiveProductsByProducerId(
   const { count, error } = await query;
 
   if (error) {
-    throw repositoryError("Nao foi possivel carregar os produtos ativos.");
+    throw repositoryError("Não foi possível carregar os produtos ativos.");
   }
 
   return count ?? 0;
@@ -245,7 +245,7 @@ export async function listProductSummariesByIds(
     .in("id", productIds);
 
   if (error) {
-    throw repositoryError("Nao foi possivel carregar os produtos das vendas.");
+    throw repositoryError("Não foi possível carregar os produtos das vendas.");
   }
 
   return data ?? [];
@@ -262,7 +262,7 @@ export async function listDashboardProductOptionsByProducerId(
     .order("name", { ascending: true });
 
   if (error) {
-    throw repositoryError("Nao foi possivel carregar os filtros de produtos.");
+    throw repositoryError("Não foi possível carregar os filtros de produtos.");
   }
 
   return data ?? [];

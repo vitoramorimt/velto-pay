@@ -85,7 +85,7 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
 
       if (!defaultValues.id) {
         setResult({
-          message: "Produto invalido.",
+          message: "Produto inválido.",
           status: "error",
         });
         return;
@@ -125,11 +125,11 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Descricao</Label>
+                <Label htmlFor="description">Descrição</Label>
                 <textarea
                   className="min-h-32 w-full rounded-md border border-input bg-background/80 px-3 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   id="description"
-                  placeholder="Resumo objetivo do que o comprador recebera."
+                  placeholder="Resumo objetivo do que o comprador receberá."
                   {...form.register("description")}
                 />
                 {form.formState.errors.description ? (
@@ -141,7 +141,7 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Preco</Label>
+                  <Label htmlFor="price">Preço</Label>
                   <Input
                     id="price"
                     inputMode="decimal"
@@ -239,7 +239,7 @@ export function ProductForm({ defaultValues, mode }: ProductFormProps) {
             </Button>
             <Button disabled={isPending} type="submit">
               {isPending ? <Loader2 className="animate-spin" /> : <Save />}
-              {mode === "create" ? "Criar produto" : "Salvar alteracoes"}
+              {mode === "create" ? "Criar produto" : "Salvar alterações"}
             </Button>
           </div>
         </form>

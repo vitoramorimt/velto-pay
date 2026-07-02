@@ -21,7 +21,7 @@ export function AppHeader() {
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
         <Button className="lg:hidden" size="icon" variant="ghost">
           <Menu className="h-4 w-4" />
-          <span className="sr-only">Abrir navegacao</span>
+          <span className="sr-only">Abrir navegação</span>
         </Button>
 
         <div className="hidden min-w-0 flex-1 items-center gap-2 rounded-md border border-border/80 bg-card/70 px-3 py-2 text-sm text-muted-foreground shadow-sm md:flex">
@@ -48,7 +48,7 @@ export function AppHeader() {
 
         <Button size="icon" type="button" variant="outline">
           <Bell className="h-4 w-4" />
-          <span className="sr-only">Notificacoes</span>
+          <span className="sr-only">Notificações</span>
         </Button>
       </div>
     </header>

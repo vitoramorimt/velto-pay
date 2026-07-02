@@ -66,7 +66,7 @@ export async function signInAction(
   if (error) {
     return {
       status: "error",
-      message: "E-mail ou senha invalidos.",
+      message: "E-mail ou senha inválidos.",
     };
   }
 
@@ -102,7 +102,7 @@ export async function signUpAction(
   if (error) {
     return {
       status: "error",
-      message: "Nao foi possivel criar sua conta agora.",
+      message: "Não foi possível criar sua conta agora.",
     };
   }
 
@@ -135,7 +135,7 @@ export async function requestPasswordResetAction(
   return {
     status: "success",
     message:
-      "Se o e-mail estiver cadastrado, enviaremos um link de recuperacao.",
+      "Se o e-mail estiver cadastrado, enviaremos um link de recuperação.",
   };
 }
 
@@ -156,7 +156,7 @@ export async function updatePasswordAction(
   if (!user) {
     return {
       status: "error",
-      message: "Sua sessao expirou. Solicite um novo link de recuperacao.",
+      message: "Sua sessão expirou. Solicite um novo link de recuperação.",
     };
   }
 
@@ -167,7 +167,7 @@ export async function updatePasswordAction(
   if (error) {
     return {
       status: "error",
-      message: "Nao foi possivel atualizar sua senha agora.",
+      message: "Não foi possível atualizar sua senha agora.",
     };
   }
 

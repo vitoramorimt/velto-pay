@@ -29,14 +29,14 @@ export const editableProductStatusSchema = z.enum([
 const priceSchema = z
   .string()
   .trim()
-  .min(1, "Informe o preco do produto.")
+  .min(1, "Informe o preço do produto.")
   .refine(
     (value) => parseProductPriceToCents(value) !== null,
-    "Informe um preco valido.",
+    "Informe um preço válido.",
   )
   .refine(
     isProductPriceInRange,
-    "O preco precisa estar entre R$ 5,00 e R$ 50.000,00.",
+    "O preço precisa estar entre R$ 5,00 e R$ 50.000,00.",
   );
 
 const productBaseSchema = z.object({
@@ -50,30 +50,30 @@ const productBaseSchema = z.object({
     .trim()
     .max(160, "Informe um slug menor.")
     .refine((value) => !value || slugRegex.test(value), {
-      message: "Use apenas letras minusculas, numeros e hifens.",
+      message: "Use apenas letras minúsculas, números e hifens.",
     }),
   description: z
     .string()
     .trim()
-    .max(2000, "A descricao deve ter no maximo 2000 caracteres."),
+    .max(2000, "A descrição deve ter no máximo 2000 caracteres."),
   price: priceSchema,
-  imageUrl: optionalUrlSchema("Informe uma URL de imagem valida."),
-  deliveryUrl: optionalUrlSchema("Informe uma URL de entrega valida."),
+  imageUrl: optionalUrlSchema("Informe uma URL de imagem válida."),
+  deliveryUrl: optionalUrlSchema("Informe uma URL de entrega válida."),
   status: editableProductStatusSchema,
 });
 
 export const createProductSchema = productBaseSchema;
 
 export const productFormSchema = productBaseSchema.extend({
-  id: z.uuid("Produto invalido.").optional(),
+  id: z.uuid("Produto inválido.").optional(),
 });
 
 export const updateProductSchema = productBaseSchema.extend({
-  id: z.uuid("Produto invalido."),
+  id: z.uuid("Produto inválido."),
 });
 
 export const toggleProductStatusSchema = z.object({
-  id: z.uuid("Produto invalido."),
+  id: z.uuid("Produto inválido."),
   status: z.enum(["active", "inactive"]),
 });
 

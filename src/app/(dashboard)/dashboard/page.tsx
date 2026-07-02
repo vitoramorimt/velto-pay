@@ -91,13 +91,13 @@ function formatRelativeTime(date: Date, now = new Date()): string {
   const diffInMinutes = Math.floor(diffInSeconds / 60);
 
   if (diffInMinutes < 60) {
-    return `ha ${diffInMinutes} min`;
+    return `há ${diffInMinutes} min`;
   }
 
   const diffInHours = Math.floor(diffInMinutes / 60);
 
   if (diffInHours < 24) {
-    return `ha ${diffInHours}h`;
+    return `há ${diffInHours}h`;
   }
 
   return shortDateFormatter.format(date);
@@ -109,21 +109,21 @@ function getMetricCards(metrics: DashboardMetrics) {
       accent: "text-accent",
       description: "Pedidos aprovados menos reembolsos e chargebacks.",
       icon: CircleDollarSign,
-      label: "Faturamento Liquido",
+      label: "Faturamento líquido",
       value: formatCents(metrics.netRevenueCents),
     },
     {
       accent: "text-success",
-      description: "Pedidos pagos confirmados no periodo filtrado.",
+      description: "Pedidos pagos confirmados no período filtrado.",
       icon: BadgeCheck,
-      label: "Vendas Aprovadas",
+      label: "Vendas aprovadas",
       value: formatNumber(metrics.approvedSales),
     },
     {
       accent: "text-warning",
-      description: "Pedidos aguardando confirmacao de pagamento.",
+      description: "Pedidos aguardando confirmação de pagamento.",
       icon: Clock3,
-      label: "Vendas Pendentes",
+      label: "Vendas pendentes",
       value: formatNumber(metrics.pendingSales),
     },
     {
@@ -135,7 +135,7 @@ function getMetricCards(metrics: DashboardMetrics) {
     },
     {
       accent: "text-destructive",
-      description: `${formatNumber(metrics.chargebacks)} contestacoes.`,
+      description: `${formatNumber(metrics.chargebacks)} contestações.`,
       icon: Ban,
       label: "Chargebacks",
       value: formatCents(metrics.chargebackAmountCents),
@@ -144,33 +144,33 @@ function getMetricCards(metrics: DashboardMetrics) {
       accent: "text-accent",
       description: "Vendas aprovadas sobre pedidos registrados.",
       icon: ShieldCheck,
-      label: "Taxa de Aprovacao",
+      label: "Taxa de aprovação",
       value: formatPercentage(metrics.approvalRate),
     },
     {
       accent: "text-primary",
       description: "Sem eventos de visita conectados nesta etapa.",
       icon: Target,
-      label: "Conversao",
+      label: "Conversão",
       value: formatPercentage(metrics.conversionRate),
     },
     {
       accent: "text-emerald-300",
-      description: "Media dos pedidos aprovados.",
+      description: "Média dos pedidos aprovados.",
       icon: CreditCard,
-      label: "Ticket Medio",
+      label: "Ticket médio",
       value: formatCents(metrics.averageTicketCents),
     },
     {
       accent: "text-success",
       description: "Produtos ativos do produtor autenticado.",
       icon: PackageCheck,
-      label: "Produtos Ativos",
+      label: "Produtos ativos",
       value: formatNumber(metrics.activeProducts),
     },
     {
       accent: "text-primary",
-      description: "Clientes unicos com pedidos registrados.",
+      description: "Clientes únicos com pedidos registrados.",
       icon: Users,
       label: "Clientes",
       value: formatNumber(metrics.customers),
@@ -218,11 +218,11 @@ function getStatusVariant(
 function getPaymentMethodLabel(method: DashboardPaymentMethod | null): string {
   const labels: Record<DashboardPaymentMethod, string> = {
     boleto: "Boleto",
-    credit_card: "Cartao",
+    credit_card: "Cartão",
     pix: "Pix",
   };
 
-  return method ? labels[method] : "Nao informado";
+  return method ? labels[method] : "Não informado";
 }
 
 function getSaleTime(sale: DashboardSale): string {
@@ -250,25 +250,25 @@ export default async function DashboardPage({
                 Dashboard
               </Badge>
               <h1 className="mt-4 text-2xl font-semibold tracking-normal text-white sm:text-3xl">
-                Visao principal da operacao
+                Visão principal da operação
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-                Metricas reais do produtor autenticado para acompanhar receita,
+                Métricas reais do produtor autenticado para acompanhar receita,
                 vendas, produtos e clientes sem valores compartilhados entre
                 contas.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[520px]">
               <HeroSignal
-                label="Faturamento liquido"
+                label="Faturamento líquido"
                 value={formatCents(dashboard.metrics.netRevenueCents)}
               />
               <HeroSignal
-                label="Aprovacao"
+                label="Aprovação"
                 value={formatPercentage(dashboard.metrics.approvalRate)}
               />
               <HeroSignal
-                label="Ticket medio"
+                label="Ticket médio"
                 value={formatCents(dashboard.metrics.averageTicketCents)}
               />
             </div>
@@ -295,24 +295,24 @@ export default async function DashboardPage({
         <section className="grid gap-6 xl:grid-cols-3">
           <BreakdownCard
             data={dashboard.byMethod}
-            emptyDescription="As vendas aprovadas serao agrupadas por Pix, cartao ou boleto quando existirem pedidos."
-            emptyTitle="Sem vendas por metodo"
+            emptyDescription="As vendas aprovadas serão agrupadas por Pix, cartão ou boleto quando existirem pedidos."
+            emptyTitle="Sem vendas por método"
             icon={CreditCard}
-            title="Vendas por Metodo de Pagamento"
+            title="Vendas por método de pagamento"
           />
           <BreakdownCard
             data={dashboard.byProduct}
-            emptyDescription="Os produtos com vendas aprovadas aparecerao aqui, respeitando o produtor autenticado."
+            emptyDescription="Os produtos com vendas aprovadas aparecerão aqui, respeitando o produtor autenticado."
             emptyTitle="Sem vendas por produto"
             icon={PackageCheck}
-            title="Vendas por Produto"
+            title="Vendas por produto"
           />
           <BreakdownCard
             data={dashboard.bySource}
             emptyDescription="Nenhuma fonte foi encontrada nos metadados dos pedidos filtrados."
             emptyTitle="Sem vendas por fonte"
             icon={TrendingUp}
-            title="Vendas por Fonte"
+            title="Vendas por fonte"
           />
         </section>
 
@@ -322,7 +322,7 @@ export default async function DashboardPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <Sparkles className="h-4 w-4 text-accent" />
-                Saude dos dados
+                Saúde dos dados
               </CardTitle>
               <CardDescription className="text-slate-400">
                 Leitura do estado atual sem preencher lacunas com dados
@@ -333,7 +333,7 @@ export default async function DashboardPage({
               {!dashboard.hasAnyData ? (
                 <EmptyState
                   className="border-white/10 bg-white/[0.03] text-slate-100"
-                  description="Os indicadores permanecem zerados ate que este produtor tenha produtos ativos ou pedidos registrados."
+                  description="Os indicadores permanecem zerados até que este produtor tenha produtos ativos ou pedidos registrados."
                   icon={Sparkles}
                   title="Nenhum dado para exibir"
                 />
@@ -353,7 +353,7 @@ export default async function DashboardPage({
                     value={formatNumber(dashboard.metrics.activeProducts)}
                   />
                   <SignalTile
-                    label="Clientes unicos"
+                    label="Clientes únicos"
                     value={formatNumber(dashboard.metrics.customers)}
                   />
                 </div>
@@ -430,10 +430,10 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
         <div>
           <CardTitle className="flex items-center gap-2 text-white">
             <BarChart3 className="h-4 w-4 text-accent" />
-            Faturamento por Dia
+            Faturamento por dia
           </CardTitle>
           <CardDescription className="text-slate-400">
-            Serie real de pedidos aprovados nos ultimos dias.
+            Série real de pedidos aprovados nos últimos dias.
           </CardDescription>
         </div>
         <Badge
@@ -467,7 +467,7 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
             </div>
             <div className="grid gap-3 text-sm text-slate-400 sm:grid-cols-3">
               <SignalTile
-                label="Receita no grafico"
+                label="Receita no gráfico"
                 value={formatCents(chartTotalCents)}
               />
               <SignalTile
@@ -484,9 +484,9 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
         ) : (
           <EmptyState
             className="border-white/10 bg-white/[0.03] text-slate-100"
-            description="O grafico sera exibido quando houver pedidos aprovados suficientes no periodo."
+            description="O gráfico será exibido quando houver pedidos aprovados suficientes no período."
             icon={BarChart3}
-            title="Sem dados de grafico"
+            title="Sem dados de gráfico"
           />
         )}
       </CardContent>
@@ -500,7 +500,7 @@ function LatestSalesTable({ sales }: { sales: DashboardSale[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <ReceiptText className="h-4 w-4 text-accent" />
-          Ultimas Vendas
+          Últimas vendas
         </CardTitle>
         <CardDescription className="text-slate-400">
           Pedidos mais recentes do produtor autenticado.
@@ -512,7 +512,7 @@ function LatestSalesTable({ sales }: { sales: DashboardSale[] }) {
             <TableHeader>
               <TableRow className="border-white/10 hover:bg-transparent">
                 <TableHead className="text-slate-500">Cliente</TableHead>
-                <TableHead className="text-slate-500">Metodo</TableHead>
+                <TableHead className="text-slate-500">Método</TableHead>
                 <TableHead className="text-slate-500">Status</TableHead>
                 <TableHead className="text-right text-slate-500">
                   Valor
@@ -558,7 +558,7 @@ function LatestSalesTable({ sales }: { sales: DashboardSale[] }) {
         ) : (
           <EmptyState
             className="border-white/10 bg-white/[0.03] text-slate-100"
-            description="As vendas mais recentes vao aparecer aqui assim que houver pedidos para este produtor."
+            description="As vendas mais recentes vão aparecer aqui assim que houver pedidos para este produtor."
             icon={ReceiptText}
             title="Nenhuma venda recente"
           />
@@ -646,7 +646,7 @@ function ApprovalByMethod({ data }: { data: DashboardApprovalMethod[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <ShieldCheck className="h-4 w-4 text-accent" />
-          Taxa de Aprovacao por Metodo
+          Taxa de aprovação por método
         </CardTitle>
         <CardDescription className="text-slate-400">
           Aprovadas sobre pedidos registrados por forma de pagamento.
@@ -687,9 +687,9 @@ function ApprovalByMethod({ data }: { data: DashboardApprovalMethod[] }) {
         ) : (
           <EmptyState
             className="border-white/10 bg-white/[0.03] text-slate-100"
-            description="A taxa por metodo aparecera quando houver pedidos com forma de pagamento registrada."
+            description="A taxa por método aparecerá quando houver pedidos com forma de pagamento registrada."
             icon={ShieldCheck}
-            title="Sem aprovacao por metodo"
+            title="Sem aprovação por método"
           />
         )}
       </CardContent>

@@ -30,16 +30,16 @@ const defaultFilters: DashboardFilters = {
 };
 
 const periodOptions = [
-  { label: "Ultimos 7 dias", value: "7d" },
-  { label: "Ultimos 30 dias", value: "30d" },
-  { label: "Ultimos 90 dias", value: "90d" },
-  { label: "Todo periodo", value: "all" },
+  { label: "Últimos 7 dias", value: "7d" },
+  { label: "Últimos 30 dias", value: "30d" },
+  { label: "Últimos 90 dias", value: "90d" },
+  { label: "Todo período", value: "all" },
 ];
 
 const methodOptions = [
-  { label: "Todos os metodos", value: "all" },
+  { label: "Todos os métodos", value: "all" },
   { label: "Pix", value: "pix" },
-  { label: "Cartao", value: "credit_card" },
+  { label: "Cartão", value: "credit_card" },
   { label: "Boleto", value: "boleto" },
 ];
 
@@ -122,7 +122,7 @@ export function DashboardFilters({
     <div className="rounded-lg border border-white/10 bg-white/[0.035] p-4 shadow-soft backdrop-blur-xl">
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1.2fr_1fr_1fr_auto]">
         <FilterSelect
-          label="Periodo"
+          label="Período"
           onValueChange={(value) =>
             setPeriod(value as DashboardFilters["period"])
           }
@@ -142,7 +142,7 @@ export function DashboardFilters({
           value={productId}
         />
         <FilterSelect
-          label="Metodo"
+          label="Método"
           onValueChange={(value) =>
             setMethod(value as DashboardFilters["method"])
           }

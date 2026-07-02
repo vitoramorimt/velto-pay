@@ -156,11 +156,11 @@ function getEmptyDashboardData(
 function getPaymentMethodLabel(method: DashboardPaymentMethod | null): string {
   const labels: Record<DashboardPaymentMethod, string> = {
     boleto: "Boleto",
-    credit_card: "Cartao",
+    credit_card: "Cartão",
     pix: "Pix",
   };
 
-  return method ? labels[method] : "Nao informado";
+  return method ? labels[method] : "Não informado";
 }
 
 function isRecord(value: Json): value is Record<string, Json> {

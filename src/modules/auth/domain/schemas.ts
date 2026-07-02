@@ -3,13 +3,13 @@ import { z } from "zod";
 const emailSchema = z
   .string()
   .trim()
-  .email("Informe um e-mail valido.")
+  .email("Informe um e-mail válido.")
   .max(254, "Informe um e-mail menor.");
 
 const passwordSchema = z
   .string()
   .min(8, "A senha deve ter pelo menos 8 caracteres.")
-  .max(128, "A senha deve ter no maximo 128 caracteres.");
+  .max(128, "A senha deve ter no máximo 128 caracteres.");
 
 const redirectSchema = z.string().optional();
 

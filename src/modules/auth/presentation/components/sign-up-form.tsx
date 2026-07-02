@@ -72,7 +72,7 @@ export function SignUpForm({ next }: SignUpFormProps) {
         <Input
           autoComplete="email"
           id="email"
-          placeholder="voce@empresa.com"
+          placeholder="nome@empresa.com"
           type="email"
           {...form.register("email")}
         />
@@ -88,7 +88,7 @@ export function SignUpForm({ next }: SignUpFormProps) {
         <Input
           autoComplete="new-password"
           id="password"
-          placeholder="Minimo de 8 caracteres"
+          placeholder="Mínimo de 8 caracteres"
           type="password"
           {...form.register("password")}
         />

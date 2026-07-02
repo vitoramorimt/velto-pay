@@ -50,7 +50,7 @@ export function PasswordResetForm() {
         <Input
           autoComplete="email"
           id="email"
-          placeholder="voce@empresa.com"
+          placeholder="nome@empresa.com"
           type="email"
           {...form.register("email")}
         />

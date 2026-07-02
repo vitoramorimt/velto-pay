@@ -39,7 +39,7 @@ function actionError(error: unknown): ProductActionResult {
   }
 
   return {
-    message: "Nao foi possivel concluir a operacao agora.",
+    message: "Não foi possível concluir a operação agora.",
     status: "error",
   };
 }

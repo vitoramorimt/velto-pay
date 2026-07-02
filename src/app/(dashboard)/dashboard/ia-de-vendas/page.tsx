@@ -26,43 +26,43 @@ import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 const insightGroups = [
   {
     icon: Target,
-    title: "Sugestoes para aumentar conversao",
+    title: "Sugestões para aumentar conversão",
     items: [
       "Priorize ofertas com promessa clara acima da dobra do checkout.",
       "Reduza campos opcionais quando o produto tiver ticket baixo.",
-      "Use prova social proxima ao botao principal de compra.",
+      "Use prova social próxima ao botão principal de compra.",
     ],
   },
   {
     icon: ShieldCheck,
-    title: "Sugestoes para melhorar checkout",
+    title: "Sugestões para melhorar checkout",
     items: [
-      "Mantenha Pix e cartao visiveis sem troca de contexto.",
+      "Mantenha Pix e cartão visíveis sem troca de contexto.",
       "Exiba garantias e suporte antes da etapa de pagamento.",
       "Revise mensagens de erro para diminuir abandono.",
     ],
   },
   {
     icon: ArrowUpRight,
-    title: "Sugestoes para aumentar ticket medio",
+    title: "Sugestões para aumentar ticket médio",
     items: [
       "Teste order bump complementar ao produto principal.",
-      "Crie bundles para produtos com o mesmo publico.",
-      "Ofereca upgrade com beneficio mensuravel antes da compra.",
+      "Crie bundles para produtos com o mesmo público.",
+      "Ofereça upgrade com benefício mensurável antes da compra.",
     ],
   },
 ];
 
 const alerts = [
-  "Queda de vendas sera destacada quando houver historico real suficiente.",
-  "Produtos sem vendas recentes podem receber recomendacoes de otimizacao.",
-  "Metodos de pagamento com baixa aprovacao entrarao em monitoramento.",
+  "Queda de vendas será destacada quando houver histórico real suficiente.",
+  "Produtos sem vendas recentes podem receber recomendações de otimização.",
+  "Métodos de pagamento com baixa aprovação entrarão em monitoramento.",
 ];
 
 const questionHistory = [
-  "Quais produtos merecem mais trafego esta semana?",
-  "Como melhorar a aprovacao no checkout?",
-  "Qual oferta tem maior potencial de ticket medio?",
+  "Quais produtos merecem mais tráfego esta semana?",
+  "Como melhorar a aprovação no checkout?",
+  "Qual oferta tem maior potencial de ticket médio?",
 ];
 
 export default async function SalesAiPage() {
@@ -77,7 +77,7 @@ export default async function SalesAiPage() {
             className="border-accent/30 bg-accent/10 text-accent"
             variant="outline"
           >
-            MVP Visual
+            MVP visual
           </Badge>
           <div className="mt-5 grid gap-6 xl:grid-cols-[1fr_0.85fr] xl:items-end">
             <div>
@@ -85,8 +85,8 @@ export default async function SalesAiPage() {
                 IA de Vendas
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-                Camada visual para resumir metricas, levantar hipoteses e
-                organizar proximas acoes comerciais. A integracao com IA real
+                Camada visual para resumir métricas, levantar hipóteses e
+                organizar próximas ações comerciais. A integração com IA real
                 permanece fora desta sprint.
               </p>
             </div>
@@ -97,11 +97,11 @@ export default async function SalesAiPage() {
                 </div>
                 <div>
                   <p className="font-medium text-white">
-                    Resumo inteligente das metricas
+                    Resumo inteligente das métricas
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-400">
-                    Ainda nao ha motor de IA conectado. Esta area esta pronta
-                    para receber analises reais quando o modulo de inteligencia
+                    Ainda não há motor de IA conectado. Esta área está pronta
+                    para receber análises reais quando o módulo de inteligência
                     for priorizado.
                   </p>
                 </div>
@@ -115,16 +115,16 @@ export default async function SalesAiPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <Sparkles className="h-4 w-4 text-accent" />
-                Insights Automaticos
+                Insights automáticos
               </CardTitle>
               <CardDescription className="text-slate-400">
-                Exemplos de leitura para a experiencia do MVP visual.
+                Exemplos de leitura para a experiência do MVP visual.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {[
-                "Concentre a analise em receita liquida, aprovacao e ticket medio.",
-                "Compare metodos de pagamento antes de alterar campanhas.",
+                "Concentre a análise em receita líquida, aprovação e ticket médio.",
+                "Compare métodos de pagamento antes de alterar campanhas.",
                 "Use produtos ativos como base para priorizar experimentos.",
               ].map((insight) => (
                 <InsightLine icon={Lightbulb} key={insight} text={insight} />
@@ -136,7 +136,7 @@ export default async function SalesAiPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <AlertTriangle className="h-4 w-4 text-warning" />
-                Alertas de Queda de Vendas
+                Alertas de queda de vendas
               </CardTitle>
               <CardDescription className="text-slate-400">
                 Alertas visuais para orientar acompanhamento operacional.
@@ -198,9 +198,9 @@ export default async function SalesAiPage() {
                     <Bot className="h-4 w-4" />
                   </div>
                   <p className="text-sm leading-6 text-slate-300">
-                    Quando a IA real for habilitada, voce podera perguntar sobre
+                    Quando a IA real for habilitada, você poderá perguntar sobre
                     quedas de venda, gargalos de checkout, produtos com maior
-                    potencial e proximas acoes.
+                    potencial e próximas ações.
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
@@ -220,10 +220,10 @@ export default async function SalesAiPage() {
           <Card className="border-white/10 bg-white/[0.045] text-slate-100 shadow-[0_24px_80px_rgba(0,0,0,0.22)]">
             <CardHeader>
               <CardTitle className="text-white">
-                Historico de Perguntas
+                Histórico de perguntas
               </CardTitle>
               <CardDescription className="text-slate-400">
-                Exemplos mockados para validar o fluxo visual.
+                Exemplos simulados para validar o fluxo visual.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">

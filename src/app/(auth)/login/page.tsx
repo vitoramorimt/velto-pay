@@ -24,10 +24,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <GuestGuard nextPath={next}>
       <AuthCard
-        description="Entre com e-mail e senha para acessar a area privada."
+        description="Entre com e-mail e senha para acessar a área privada."
         footer={
           <>
-            Ainda nao tem conta?{" "}
+            Ainda não tem conta?{" "}
             <AuthLink href="/cadastro">Criar conta</AuthLink>
           </>
         }

@@ -40,8 +40,8 @@ export default async function EditProductPage({
             {product.name}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Atualize os dados do produto. Alteracoes de checkout, pagamentos e
-            afiliacao nao fazem parte desta sprint.
+            Atualize os dados do produto. Alterações de checkout, pagamentos e
+            afiliação não fazem parte desta sprint.
           </p>
         </div>
         <Button asChild size="sm" variant="outline">

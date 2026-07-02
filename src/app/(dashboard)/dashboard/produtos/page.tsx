@@ -18,31 +18,31 @@ function getAccessMessage(state: string) {
   if (state === "missing_producer") {
     return {
       description:
-        "Sua conta esta autenticada, mas ainda nao possui um perfil de produtor vinculado.",
-      title: "Perfil de produtor necessario",
+        "Sua conta está autenticada, mas ainda não possui um perfil de produtor vinculado.",
+      title: "Perfil de produtor necessário",
     };
   }
 
   if (state === "pending_approval") {
     return {
       description:
-        "Seu perfil de produtor esta aguardando aprovacao do admin minimo definido para o MVP.",
-      title: "Produtor aguardando aprovacao",
+        "Seu perfil de produtor está aguardando aprovação do admin mínimo definido para o MVP.",
+      title: "Produtor aguardando aprovação",
     };
   }
 
   if (state === "blocked") {
     return {
       description:
-        "O perfil de produtor esta bloqueado e nao pode gerenciar produtos.",
+        "O perfil de produtor está bloqueado e não pode gerenciar produtos.",
       title: "Produtor bloqueado",
     };
   }
 
   return {
     description:
-      "O perfil de produtor nao esta aprovado para gerenciar produtos.",
-    title: "Acesso indisponivel",
+      "O perfil de produtor não está aprovado para gerenciar produtos.",
+    title: "Acesso indisponível",
   };
 }
 
@@ -62,7 +62,7 @@ export default async function ProductsPage() {
               Produtos
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Cadastre e mantenha produtos digitais de venda unica. Checkout,
+              Cadastre e mantenha produtos digitais de venda única. Checkout,
               pagamentos e afiliados permanecem fora desta sprint.
             </p>
           </div>
@@ -119,7 +119,7 @@ export default async function ProductsPage() {
             <Card>
               <CardContent className="pt-6">
                 <EmptyState
-                  description="Comece cadastrando um produto digital com nome, preco, descricao e status inicial."
+                  description="Comece cadastrando um produto digital com nome, preço, descrição e status inicial."
                   icon={Boxes}
                   title="Nenhum produto cadastrado"
                 />
