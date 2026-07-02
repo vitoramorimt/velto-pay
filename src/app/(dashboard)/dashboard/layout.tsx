@@ -1,14 +1,11 @@
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await requireAuthenticatedUser("/dashboard");
-
   return (
     <main className="min-h-dvh bg-background">
       <div className="flex min-h-dvh">

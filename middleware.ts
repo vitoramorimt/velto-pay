@@ -2,7 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 import {
-  DEFAULT_AUTHENTICATED_PATH,
   LOGIN_PATH,
   PASSWORD_RESET_PATH,
   PASSWORD_UPDATE_PATH,
@@ -110,14 +109,6 @@ export async function middleware(request: NextRequest) {
     );
 
     return redirectWithAuthCookies(request, response, next);
-  }
-
-  if (user && pathname === "/") {
-    return redirectWithAuthCookies(
-      request,
-      response,
-      DEFAULT_AUTHENTICATED_PATH,
-    );
   }
 
   return response;
