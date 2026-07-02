@@ -26,14 +26,14 @@ export function AppHeader() {
 
         <div className="hidden min-w-0 flex-1 items-center gap-2 rounded-md border border-border/80 bg-card/70 px-3 py-2 text-sm text-muted-foreground shadow-sm md:flex">
           <Search className="h-4 w-4" />
-          <span className="truncate">Buscar componentes, tokens e padroes</span>
+          <span className="truncate">Buscar produtos, vendas e clientes</span>
           <kbd className="ml-auto inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
             <Command className="h-3 w-3" />K
           </kbd>
         </div>
 
         <Badge className="hidden sm:inline-flex" variant="success">
-          Sprint 2
+          MVP
         </Badge>
 
         <Button
