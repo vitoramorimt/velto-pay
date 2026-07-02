@@ -1,20 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Bell, Command, Menu, Moon, Search, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Bell, Command, LogOut, Menu, Search, UserCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { signOutAction } from "@/modules/auth/application/auth-actions";
+import { useAuth } from "@/modules/auth/presentation/auth-provider";
 
 export function AppHeader() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [isMounted, setIsMounted] = useState(false);
-  const isDark = isMounted && resolvedTheme === "dark";
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const { user } = useAuth();
+  const userName = user?.fullName?.trim() || user?.email || "Conta Velto";
+  const userEmail = user?.email ?? "Usuário autenticado";
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
@@ -36,20 +32,48 @@ export function AppHeader() {
           MVP
         </Badge>
 
-        <Button
-          onClick={() => setTheme(isDark ? "light" : "dark")}
-          size="icon"
-          type="button"
+        <Badge
+          className="hidden border-accent/30 bg-accent/10 text-accent sm:inline-flex"
           variant="outline"
         >
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          <span className="sr-only">Alternar tema</span>
-        </Button>
+          Dark
+        </Badge>
 
         <Button size="icon" type="button" variant="outline">
           <Bell className="h-4 w-4" />
           <span className="sr-only">Notificações</span>
         </Button>
+
+        <details className="group relative">
+          <summary className="flex h-10 cursor-pointer list-none items-center gap-3 rounded-md border border-border/80 bg-card/70 px-3 text-sm shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent/10 text-accent group-hover:bg-accent-foreground/15 group-hover:text-accent-foreground">
+              <UserCircle className="h-4 w-4" />
+            </span>
+            <span className="hidden max-w-40 truncate text-left font-medium md:block">
+              {userName}
+            </span>
+          </summary>
+
+          <div className="absolute right-0 mt-2 w-72 rounded-lg border border-border/80 bg-popover p-2 text-popover-foreground shadow-soft-lg">
+            <div className="rounded-md bg-muted/50 px-3 py-2">
+              <p className="truncate text-sm font-medium">{userName}</p>
+              <p className="mt-1 truncate text-xs text-muted-foreground">
+                {userEmail}
+              </p>
+            </div>
+
+            <form action={signOutAction} className="mt-2">
+              <Button
+                className="w-full justify-start"
+                type="submit"
+                variant="ghost"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair
+              </Button>
+            </form>
+          </div>
+        </details>
       </div>
     </header>
   );
