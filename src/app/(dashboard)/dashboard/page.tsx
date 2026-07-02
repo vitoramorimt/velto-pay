@@ -1,5 +1,4 @@
 import {
-  Activity,
   ArrowUpRight,
   BarChart3,
   CircleDollarSign,
@@ -12,7 +11,6 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -29,126 +27,147 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
+import { getDashboardOverviewData } from "@/modules/dashboard/application/dashboard-use-cases";
+import type {
+  DashboardMetrics,
+  DashboardOrderStatus,
+  DashboardSale,
+} from "@/modules/dashboard/domain/types";
 import { LogoutButton } from "@/modules/auth/presentation/components/logout-button";
 
-const metricCards = [
-  {
-    description: "+18,4% vs. periodo anterior",
-    icon: CircleDollarSign,
-    label: "Receita total",
-    tone: "text-success",
-    value: "R$ 48.920,40",
-  },
-  {
-    description: "Pedidos confirmados no periodo",
-    icon: ShoppingCart,
-    label: "Vendas aprovadas",
-    tone: "text-primary",
-    value: "328",
-  },
-  {
-    description: "Aguardando confirmacao operacional",
-    icon: Clock3,
-    label: "Vendas pendentes",
-    tone: "text-warning",
-    value: "24",
-  },
-  {
-    description: "Visitantes que chegaram ao pedido",
-    icon: Activity,
-    label: "Conversao",
-    tone: "text-accent",
-    value: "7,8%",
-  },
-  {
-    description: "Produtos publicados para venda",
-    icon: PackageCheck,
-    label: "Produtos ativos",
-    tone: "text-success",
-    value: "12",
-  },
-  {
-    description: "Clientes unicos no periodo",
-    icon: Users,
-    label: "Clientes",
-    tone: "text-primary",
-    value: "1.248",
-  },
-];
+const dashboardCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
+  currency: "BRL",
+  style: "currency",
+});
 
-const chartData = [
-  { day: "Seg", value: 42 },
-  { day: "Ter", value: 58 },
-  { day: "Qua", value: 46 },
-  { day: "Qui", value: 71 },
-  { day: "Sex", value: 88 },
-  { day: "Sab", value: 64 },
-  { day: "Dom", value: 79 },
-];
+const dashboardNumberFormatter = new Intl.NumberFormat("pt-BR");
 
-const latestSales = [
-  {
-    amount: "R$ 497,00",
-    customer: "Mariana Costa",
-    product: "Mentoria Velto Start",
-    status: "Aprovada",
-    time: "ha 12 min",
-  },
-  {
-    amount: "R$ 197,00",
-    customer: "Bruno Martins",
-    product: "Curso Checkout Pro",
-    status: "Pendente",
-    time: "ha 28 min",
-  },
-  {
-    amount: "R$ 897,00",
-    customer: "Ana Ribeiro",
-    product: "Programa Growth Digital",
-    status: "Aprovada",
-    time: "ha 54 min",
-  },
-  {
-    amount: "R$ 97,00",
-    customer: "Felipe Rocha",
-    product: "Template de Lancamento",
-    status: "Aprovada",
-    time: "ha 1h",
-  },
-];
+const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "2-digit",
+});
 
-function getStatusVariant(status: string) {
-  return status === "Aprovada" ? "success" : "warning";
+function getMetricCards(metrics: DashboardMetrics) {
+  return [
+    {
+      description: "Soma dos pedidos aprovados",
+      icon: CircleDollarSign,
+      label: "Receita total",
+      tone: "text-success",
+      value: formatCents(metrics.totalRevenueCents),
+    },
+    {
+      description: "Pedidos pagos confirmados",
+      icon: ShoppingCart,
+      label: "Vendas aprovadas",
+      tone: "text-primary",
+      value: dashboardNumberFormatter.format(metrics.approvedSales),
+    },
+    {
+      description: "Pedidos aguardando pagamento",
+      icon: Clock3,
+      label: "Vendas pendentes",
+      tone: "text-warning",
+      value: dashboardNumberFormatter.format(metrics.pendingSales),
+    },
+    {
+      description: "Produtos publicados para venda",
+      icon: PackageCheck,
+      label: "Produtos ativos",
+      tone: "text-success",
+      value: dashboardNumberFormatter.format(metrics.activeProducts),
+    },
+    {
+      description: "Clientes unicos com pedidos",
+      icon: Users,
+      label: "Clientes",
+      tone: "text-primary",
+      value: dashboardNumberFormatter.format(metrics.customers),
+    },
+  ];
+}
+
+function formatCents(amountCents: number): string {
+  return dashboardCurrencyFormatter.format(amountCents / 100);
+}
+
+function formatRelativeTime(date: Date, now = new Date()): string {
+  const diffInSeconds = Math.max(
+    0,
+    Math.floor((now.getTime() - date.getTime()) / 1000),
+  );
+
+  if (diffInSeconds < 60) {
+    return "agora";
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+
+  if (diffInMinutes < 60) {
+    return `ha ${diffInMinutes} min`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+
+  if (diffInHours < 24) {
+    return `ha ${diffInHours}h`;
+  }
+
+  return shortDateFormatter.format(date);
+}
+
+function getStatusLabel(status: DashboardOrderStatus): string {
+  const labels: Record<DashboardOrderStatus, string> = {
+    canceled: "Cancelada",
+    chargeback: "Chargeback",
+    expired: "Expirada",
+    failed: "Falhou",
+    paid: "Aprovada",
+    pending: "Pendente",
+    refunded: "Reembolsada",
+  };
+
+  return labels[status];
+}
+
+function getStatusVariant(
+  status: DashboardOrderStatus,
+): "destructive" | "muted" | "success" | "warning" {
+  if (status === "paid") {
+    return "success";
+  }
+
+  if (status === "pending") {
+    return "warning";
+  }
+
+  if (
+    status === "failed" ||
+    status === "canceled" ||
+    status === "expired" ||
+    status === "chargeback"
+  ) {
+    return "destructive";
+  }
+
+  return "muted";
+}
+
+function getSaleTime(sale: DashboardSale): string {
+  return formatRelativeTime(new Date(sale.createdAt));
 }
 
 export default async function DashboardPage() {
-  const user = await requireAuthenticatedUser("/dashboard");
-  const hasDashboardData =
-    metricCards.length > 0 || chartData.length > 0 || latestSales.length > 0;
-
-  if (!hasDashboardData) {
-    return (
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        <section className="velto-surface rounded-lg p-6 sm:p-8">
-          <Badge variant="outline">Dashboard</Badge>
-          <h1 className="mt-4 text-2xl font-semibold tracking-normal sm:text-3xl">
-            Bem-vindo a Velto Pay
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Assim que houver movimentacao, suas metricas principais vao aparecer
-            aqui.
-          </p>
-        </section>
-
-        <EmptyState
-          description="Cadastre produtos e publique seus checkouts nas proximas fases para acompanhar vendas, clientes e conversao."
-          icon={Sparkles}
-          title="Nenhum dado para exibir"
-        />
-      </div>
-    );
-  }
+  const dashboard = await getDashboardOverviewData();
+  const metricCards = getMetricCards(dashboard.metrics);
+  const chartTotalCents = dashboard.chart.reduce(
+    (total, item) => total + item.amountCents,
+    0,
+  );
+  const peakChartPoint = dashboard.chart.reduce(
+    (peak, item) => (item.amountCents > peak.amountCents ? item : peak),
+    dashboard.chart[0],
+  );
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -160,18 +179,12 @@ export default async function DashboardPage() {
               Dashboard principal
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Visao executiva mockada para acompanhar receita, vendas,
-              conversao e atividade recente da operacao Velto Pay.
+              Visao executiva com dados reais do produtor autenticado para
+              acompanhar receita, vendas, produtos e atividade recente.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row lg:items-center">
-            <div className="rounded-md border bg-background/70 px-3 py-2 text-sm">
-              <p className="text-xs text-muted-foreground">Conta</p>
-              <p className="mt-1 max-w-56 truncate font-medium">
-                {user.email ?? "Usuario Velto"}
-              </p>
-            </div>
             <LogoutButton />
           </div>
         </div>
@@ -210,25 +223,27 @@ export default async function DashboardPage() {
             <div>
               <CardTitle>Receita por dia</CardTitle>
               <CardDescription>
-                Grafico simples com dados mockados da semana.
+                Pedidos aprovados dos ultimos 7 dias.
               </CardDescription>
             </div>
             <Badge variant="outline">Ultimos 7 dias</Badge>
           </CardHeader>
           <CardContent>
-            {chartData.length > 0 ? (
+            {dashboard.chart.length > 0 ? (
               <div className="flex min-h-72 flex-col justify-end gap-5">
                 <div className="flex h-56 items-end gap-3 rounded-lg border bg-background/70 px-4 py-5 sm:gap-4">
-                  {chartData.map((item) => (
+                  {dashboard.chart.map((item) => (
                     <div
                       className="flex h-full min-w-0 flex-1 flex-col justify-end gap-3"
                       key={item.day}
                     >
                       <div className="flex flex-1 items-end">
                         <div
-                          aria-label={`${item.day}: ${item.value}%`}
+                          aria-label={`${item.day}: ${formatCents(
+                            item.amountCents,
+                          )}`}
                           className="w-full rounded-t-md bg-primary/85 shadow-sm shadow-primary/20 transition-colors hover:bg-primary"
-                          style={{ height: `${item.value}%` }}
+                          style={{ height: `${item.percentage}%` }}
                         />
                       </div>
                       <span className="text-center text-xs text-muted-foreground">
@@ -241,20 +256,20 @@ export default async function DashboardPage() {
                   <div className="rounded-md border bg-background/70 p-3">
                     <p className="text-xs uppercase">Pico</p>
                     <p className="mt-1 font-medium text-foreground">
-                      Sexta-feira
+                      {peakChartPoint?.day ?? "-"}
                     </p>
                   </div>
                   <div className="rounded-md border bg-background/70 p-3">
-                    <p className="text-xs uppercase">Ticket medio</p>
+                    <p className="text-xs uppercase">Receita 7 dias</p>
                     <p className="mt-1 font-medium text-foreground">
-                      R$ 314,20
+                      {formatCents(chartTotalCents)}
                     </p>
                   </div>
                   <div className="rounded-md border bg-background/70 p-3">
-                    <p className="text-xs uppercase">Tendencia</p>
+                    <p className="text-xs uppercase">Maior dia</p>
                     <p className="mt-1 flex items-center gap-1 font-medium text-success">
                       <ArrowUpRight className="h-4 w-4" />
-                      Alta estavel
+                      {formatCents(peakChartPoint?.amountCents ?? 0)}
                     </p>
                   </div>
                 </div>
@@ -274,16 +289,12 @@ export default async function DashboardPage() {
             <div>
               <CardTitle>Ultimas vendas</CardTitle>
               <CardDescription>
-                Lista mockada para validar hierarquia e densidade visual.
+                Pedidos mais recentes do produtor autenticado.
               </CardDescription>
             </div>
-            <Button size="sm" type="button" variant="outline">
-              Ver todas
-              <ArrowUpRight className="h-4 w-4" />
-            </Button>
           </CardHeader>
           <CardContent>
-            {latestSales.length > 0 ? (
+            {dashboard.latestSales.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -293,8 +304,8 @@ export default async function DashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {latestSales.map((sale) => (
-                    <TableRow key={`${sale.customer}-${sale.time}`}>
+                  {dashboard.latestSales.map((sale) => (
+                    <TableRow key={sale.id}>
                       <TableCell>
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
@@ -305,18 +316,18 @@ export default async function DashboardPage() {
                               {sale.customer}
                             </p>
                             <p className="truncate text-xs text-muted-foreground">
-                              {sale.product} - {sale.time}
+                              {sale.product} - {getSaleTime(sale)}
                             </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <Badge variant={getStatusVariant(sale.status)}>
-                          {sale.status}
+                          {getStatusLabel(sale.status)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {sale.amount}
+                        {formatCents(sale.amountCents)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -324,7 +335,7 @@ export default async function DashboardPage() {
               </Table>
             ) : (
               <EmptyState
-                description="As vendas mais recentes vao aparecer aqui assim que houver pedidos aprovados ou pendentes."
+                description="As vendas mais recentes vao aparecer aqui assim que houver pedidos para este produtor."
                 icon={ReceiptText}
                 title="Nenhuma venda recente"
               />
@@ -332,6 +343,14 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </section>
+
+      {!dashboard.hasAnyData ? (
+        <EmptyState
+          description="Os indicadores permanecem zerados ate que este produtor tenha produtos ativos ou pedidos registrados."
+          icon={Sparkles}
+          title="Nenhum dado para exibir"
+        />
+      ) : null}
     </div>
   );
 }
