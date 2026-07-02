@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BarChart3,
   Boxes,
@@ -14,15 +18,17 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/shared/utils/cn";
 
 const navigationItems = [
-  { label: "Overview", icon: Home, active: true },
-  { label: "Produtos", icon: Boxes },
-  { label: "Checkout", icon: CreditCard },
-  { label: "Financas", icon: WalletCards },
-  { label: "Analytics", icon: BarChart3 },
-  { label: "Compliance", icon: ShieldCheck },
+  { label: "Overview", href: "/dashboard", icon: Home },
+  { label: "Produtos", href: "/dashboard/produtos", icon: Boxes },
+  { label: "Checkout", href: "#", icon: CreditCard },
+  { label: "Financas", href: "#", icon: WalletCards },
+  { label: "Analytics", href: "#", icon: BarChart3 },
+  { label: "Compliance", href: "#", icon: ShieldCheck },
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="hidden min-h-dvh w-72 shrink-0 border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground lg:flex lg:flex-col">
       <div className="flex items-center gap-3 px-2">
@@ -40,15 +46,19 @@ export function AppSidebar() {
       <nav className="mt-8 space-y-1">
         {navigationItems.map((item) => {
           const Icon = item.icon;
+          const isActive =
+            item.href !== "#" &&
+            (pathname === item.href || pathname.startsWith(`${item.href}/`));
 
           return (
-            <a
+            <Link
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "text-sidebar-foreground/72 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-white/5 hover:text-sidebar-foreground",
-                item.active &&
+                isActive &&
                   "bg-sidebar-active text-sidebar-active-foreground shadow-inner-line",
               )}
-              href="#"
+              href={item.href}
               key={item.label}
             >
               <Icon className="h-4 w-4" />
@@ -61,7 +71,7 @@ export function AppSidebar() {
                   UI
                 </Badge>
               ) : null}
-            </a>
+            </Link>
           );
         })}
       </nav>
