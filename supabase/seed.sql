@@ -1,0 +1,2 @@
+-- Seed intentionally empty for now.
+-- Sprint 3.5 only prepares Supabase CLI structure and versioning.
