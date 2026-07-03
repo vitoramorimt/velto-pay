@@ -1,0 +1,169 @@
+import { ExternalLink, Link2, ShieldAlert } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getCheckoutLinksPageData } from "@/modules/checkout/application/checkout-use-cases";
+import { CheckoutLinkActions } from "@/modules/checkout/presentation/components/checkout-link-actions";
+import { formatCentsToCurrency } from "@/modules/products/domain/money";
+import { ProductStatusBadge } from "@/modules/products/presentation/components/product-status-badge";
+
+function getCheckoutStatusLabel(status: "disabled" | "draft" | "published") {
+  const labels = {
+    disabled: "Desabilitado",
+    draft: "Rascunho",
+    published: "Publicado",
+  };
+
+  return labels[status];
+}
+
+export default async function CheckoutPage() {
+  const data = await getCheckoutLinksPageData();
+
+  return (
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+      <section className="velto-surface rounded-lg p-6 sm:p-8">
+        <Badge variant="secondary">Checkout</Badge>
+        <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-normal sm:text-3xl">
+              Links de checkout
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+              Cada produto ativo recebe um link público para a prévia do
+              checkout. Pagamento real, Pix, cartão e webhooks permanecem fora
+              desta sprint.
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-muted/35 px-4 py-3 text-sm text-muted-foreground">
+            Base local: <span className="font-medium">/pay/slug</span>
+          </div>
+        </div>
+      </section>
+
+      {data.state !== "ready" ? (
+        <EmptyState
+          description="Não foi possível encontrar um perfil de produtor vinculado à sua conta."
+          icon={ShieldAlert}
+          title="Checkout indisponível"
+        />
+      ) : data.links.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6">
+            <EmptyState
+              description="Crie um produto para gerar automaticamente um link público de checkout."
+              icon={Link2}
+              title="Nenhum checkout gerado"
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Checkouts gerados</CardTitle>
+            <CardDescription>
+              Links derivados dos produtos do produtor autenticado.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="hidden overflow-x-auto rounded-lg border md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Produto</TableHead>
+                    <TableHead>Preço</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Link de checkout</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.links.map((checkout) => (
+                    <TableRow key={checkout.product.id}>
+                      <TableCell>
+                        <div className="max-w-sm">
+                          <p className="font-medium">{checkout.product.name}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {getCheckoutStatusLabel(checkout.checkoutStatus)}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {formatCentsToCurrency(checkout.product.price_cents)}
+                      </TableCell>
+                      <TableCell>
+                        <ProductStatusBadge status={checkout.product.status} />
+                      </TableCell>
+                      <TableCell>
+                        <span className="block max-w-72 truncate text-sm text-muted-foreground">
+                          {checkout.link}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <CheckoutLinkActions
+                          href={checkout.link}
+                          previewHref={`/pay/${checkout.product.slug}`}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="grid gap-3 md:hidden">
+              {data.links.map((checkout) => (
+                <Card key={checkout.product.id}>
+                  <CardHeader className="gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <CardTitle className="truncate">
+                          {checkout.product.name}
+                        </CardTitle>
+                        <CardDescription className="mt-1 truncate">
+                          {checkout.link}
+                        </CardDescription>
+                      </div>
+                      <ProductStatusBadge status={checkout.product.status} />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">Preço</span>
+                      <span className="font-medium">
+                        {formatCentsToCurrency(checkout.product.price_cents)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <ExternalLink className="h-4 w-4" />
+                      {getCheckoutStatusLabel(checkout.checkoutStatus)}
+                    </div>
+                    <CheckoutLinkActions
+                      href={checkout.link}
+                      previewHref={`/pay/${checkout.product.slug}`}
+                    />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
