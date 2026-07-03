@@ -235,6 +235,9 @@ function createChart(orders: DashboardOrder[]): DashboardChartPoint[] {
   const totalsByDay = new Map<string, number>(
     days.map((date) => [date.toISOString().slice(0, 10), 0]),
   );
+  const salesByDay = new Map<string, number>(
+    days.map((date) => [date.toISOString().slice(0, 10), 0]),
+  );
 
   orders
     .filter((order) => order.status === "paid")
@@ -246,6 +249,7 @@ function createChart(orders: DashboardOrder[]): DashboardChartPoint[] {
 
       if (totalsByDay.has(key)) {
         totalsByDay.set(key, (totalsByDay.get(key) ?? 0) + order.total_cents);
+        salesByDay.set(key, (salesByDay.get(key) ?? 0) + 1);
       }
     });
 
@@ -261,6 +265,7 @@ function createChart(orders: DashboardOrder[]): DashboardChartPoint[] {
 
     return {
       amountCents,
+      approvedSales: salesByDay.get(key) ?? 0,
       day: shortDateFormatter.format(date),
       percentage: Math.max(6, Math.round((amountCents / maxAmount) * 100)),
     };

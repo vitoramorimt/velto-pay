@@ -21,6 +21,7 @@ import {
   findProductByProducerId,
   insertProduct,
   listProductsByProducerId,
+  resolveUniqueRandomProductSlug,
   resolveUniqueProductSlug,
   updateProductByProducerId,
 } from "@/modules/products/infrastructure/products.repository";
@@ -142,14 +143,9 @@ export async function createProductUseCase(
   input: CreateProductInput,
 ): Promise<Product> {
   const { producer, supabase } = await requireProductProducer(
-    "/dashboard/produtos/novo",
+    "/dashboard/produtos",
   );
-  const slug = await resolveUniqueProductSlug(
-    supabase,
-    producer.id,
-    input.name,
-    input.slug,
-  );
+  const slug = await resolveUniqueRandomProductSlug(supabase);
 
   return insertProduct(supabase, {
     currency: "BRL",
@@ -183,7 +179,6 @@ export async function updateProductUseCase(
 
   const slug = await resolveUniqueProductSlug(
     supabase,
-    producer.id,
     input.name,
     input.slug,
     input.id,

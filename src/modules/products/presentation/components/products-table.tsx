@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import {
   Table,
   TableBody,
@@ -45,6 +46,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
               <TableHead>Produto</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Preço</TableHead>
+              <TableHead>Checkout</TableHead>
               <TableHead>Atualizado</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -65,6 +67,11 @@ export function ProductsTable({ products }: ProductsTableProps) {
                 </TableCell>
                 <TableCell>
                   {formatCentsToCurrency(product.price_cents)}
+                </TableCell>
+                <TableCell>
+                  <span className="block max-w-56 truncate text-sm text-muted-foreground">
+                    {createCheckoutUrl(product.slug)}
+                  </span>
                 </TableCell>
                 <TableCell>{formatProductDate(product.updated_at)}</TableCell>
                 <TableCell>
@@ -106,6 +113,12 @@ export function ProductsTable({ products }: ProductsTableProps) {
                 <span className="text-muted-foreground">Preço</span>
                 <span className="font-medium">
                   {formatCentsToCurrency(product.price_cents)}
+                </span>
+              </div>
+              <div className="grid gap-1 text-sm">
+                <span className="text-muted-foreground">Checkout</span>
+                <span className="truncate font-medium">
+                  {createCheckoutUrl(product.slug)}
                 </span>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">

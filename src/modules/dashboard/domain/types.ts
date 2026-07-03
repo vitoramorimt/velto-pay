@@ -30,6 +30,7 @@ export type DashboardMetrics = {
 
 export type DashboardChartPoint = {
   amountCents: number;
+  approvedSales: number;
   day: string;
   percentage: number;
 };

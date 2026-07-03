@@ -60,7 +60,13 @@ export async function createProductAction(
   }
 
   revalidatePath("/dashboard/produtos");
-  redirect("/dashboard/produtos");
+  revalidatePath("/dashboard/checkout");
+  revalidatePath("/dashboard");
+
+  return {
+    message: "Produto criado com sucesso.",
+    status: "success",
+  };
 }
 
 export async function updateProductAction(

@@ -13,3 +13,14 @@ export function createProductSlug(value: string): string {
 export function appendSlugSuffix(slug: string, suffix: number): string {
   return `${slug}-${suffix}`;
 }
+
+const randomSlugAlphabet = "abcdefghijkmnopqrstuvwxyz23456789";
+
+export function createRandomProductSlug(length = 8): string {
+  const values = crypto.getRandomValues(new Uint8Array(length));
+  const token = Array.from(values, (value) => {
+    return randomSlugAlphabet[value % randomSlugAlphabet.length];
+  }).join("");
+
+  return `vp-${token}`;
+}

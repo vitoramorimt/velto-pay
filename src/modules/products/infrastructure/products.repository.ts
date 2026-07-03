@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   appendSlugSuffix,
   createProductSlug,
+  createRandomProductSlug,
 } from "@/modules/products/domain/slug";
 import type { Product, Producer } from "@/modules/products/domain/types";
 import type { Database } from "@/shared/database.types";
@@ -72,14 +73,12 @@ export async function findProductByProducerId(
 
 async function productSlugExists(
   supabase: DatabaseClient,
-  producerId: string,
   slug: string,
   productIdToIgnore?: string,
 ): Promise<boolean> {
   let query = supabase
     .from("products")
     .select("id")
-    .eq("producer_id", producerId)
     .eq("slug", slug)
     .limit(1);
 
@@ -98,7 +97,6 @@ async function productSlugExists(
 
 export async function resolveUniqueProductSlug(
   supabase: DatabaseClient,
-  producerId: string,
   name: string,
   preferredSlug?: string,
   productIdToIgnore?: string,
@@ -109,7 +107,6 @@ export async function resolveUniqueProductSlug(
   for (let suffix = 2; suffix <= 50; suffix += 1) {
     const exists = await productSlugExists(
       supabase,
-      producerId,
       candidate,
       productIdToIgnore,
     );
@@ -122,6 +119,21 @@ export async function resolveUniqueProductSlug(
   }
 
   throw repositoryError("Não foi possível gerar um slug único para o produto.");
+}
+
+export async function resolveUniqueRandomProductSlug(
+  supabase: DatabaseClient,
+): Promise<string> {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const candidate = createRandomProductSlug();
+    const exists = await productSlugExists(supabase, candidate);
+
+    if (!exists) {
+      return candidate;
+    }
+  }
+
+  throw repositoryError("Não foi possível gerar um link único para o produto.");
 }
 
 export async function insertProduct(
