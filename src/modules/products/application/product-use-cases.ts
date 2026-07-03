@@ -1,6 +1,11 @@
 import "server-only";
 
+import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
+import {
+  ensureCheckoutForProduct,
+  listCheckoutsByProducerId,
+} from "@/modules/checkout/infrastructure/checkout.repository";
 import {
   optionalStringToNull,
   type CreateProductInput,
@@ -32,10 +37,12 @@ type ProducerAccessState = "missing_producer" | "ready";
 export type ProductsPageData =
   | {
       state: Exclude<ProducerAccessState, "ready">;
+      checkoutLinksByProductId: Record<string, string>;
       producer: Producer | null;
       products: [];
     }
   | {
+      checkoutLinksByProductId: Record<string, string>;
       state: "ready";
       producer: Producer;
       products: Product[];
@@ -107,6 +114,7 @@ export async function getProductsPageData(): Promise<ProductsPageData> {
 
   if (state !== "ready") {
     return {
+      checkoutLinksByProductId: {},
       producer,
       products: [],
       state,
@@ -117,9 +125,20 @@ export async function getProductsPageData(): Promise<ProductsPageData> {
     throw new ProductUseCaseError("Produtor não encontrado.");
   }
 
+  const [products, checkouts] = await Promise.all([
+    listProductsByProducerId(supabase, producer.id),
+    listCheckoutsByProducerId(supabase, producer.id),
+  ]);
+
   return {
+    checkoutLinksByProductId: Object.fromEntries(
+      checkouts.map((checkout) => [
+        checkout.product.id,
+        createCheckoutUrl(checkout.checkoutSlug),
+      ]),
+    ),
     producer,
-    products: await listProductsByProducerId(supabase, producer.id),
+    products,
     state,
   };
 }
@@ -147,7 +166,7 @@ export async function createProductUseCase(
   );
   const slug = await resolveUniqueRandomProductSlug(supabase);
 
-  return insertProduct(supabase, {
+  const product = await insertProduct(supabase, {
     currency: "BRL",
     delivery_url: optionalStringToNull(input.deliveryUrl),
     description: optionalStringToNull(input.description),
@@ -159,6 +178,10 @@ export async function createProductUseCase(
     slug,
     status: input.status,
   });
+
+  await ensureCheckoutForProduct(supabase, product);
+
+  return product;
 }
 
 export async function updateProductUseCase(
@@ -184,7 +207,7 @@ export async function updateProductUseCase(
     input.id,
   );
 
-  return updateProductByProducerId(supabase, input.id, producer.id, {
+  const product = await updateProductByProducerId(supabase, input.id, producer.id, {
     delivery_url: optionalStringToNull(input.deliveryUrl),
     description: optionalStringToNull(input.description),
     image_url: optionalStringToNull(input.salesPageUrl),
@@ -193,6 +216,10 @@ export async function updateProductUseCase(
     slug,
     status: input.status,
   });
+
+  await ensureCheckoutForProduct(supabase, product);
+
+  return product;
 }
 
 export async function toggleProductStatusUseCase(
@@ -211,7 +238,11 @@ export async function toggleProductStatusUseCase(
     throw new ProductUseCaseError("Produto não encontrado.");
   }
 
-  return updateProductByProducerId(supabase, input.id, producer.id, {
+  const updatedProduct = await updateProductByProducerId(supabase, input.id, producer.id, {
     status: input.status,
   });
+
+  await ensureCheckoutForProduct(supabase, updatedProduct);
+
+  return updatedProduct;
 }

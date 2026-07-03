@@ -1,5 +1,5 @@
 const PRODUCTION_CHECKOUT_ORIGIN = "https://pay.veltopay.com.br";
-const LOCAL_CHECKOUT_ORIGIN = "http://localhost:3000";
+const LOCAL_CHECKOUT_ORIGIN = "https://localhost:3000";
 
 export function getCheckoutOrigin(): string {
   return process.env.NODE_ENV === "production"

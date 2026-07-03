@@ -2,8 +2,10 @@ import {
   BadgeCheck,
   CircleDollarSign,
   History,
+  LockKeyhole,
   RefreshCcw,
   ShieldAlert,
+  TrendingDown,
   WalletCards,
   type LucideIcon,
 } from "lucide-react";
@@ -59,16 +61,16 @@ export default async function FinancePage() {
   const data = await getFinancePageData();
   const metrics = [
     {
-      description: "Créditos disponíveis no ledger.",
-      icon: WalletCards,
-      label: "Saldo disponível",
-      value: formatCentsToCurrency(data.metrics.availableBalanceCents),
+      description: "Total bruto de pedidos pagos.",
+      icon: CircleDollarSign,
+      label: "Receita Bruta",
+      value: formatCentsToCurrency(data.metrics.grossRevenueCents),
     },
     {
-      description: "Pedidos pagos confirmados.",
-      icon: CircleDollarSign,
-      label: "Faturamento total",
-      value: formatCentsToCurrency(data.metrics.totalRevenueCents),
+      description: "Receita após reembolsos e chargebacks.",
+      icon: BadgeCheck,
+      label: "Receita Líquida",
+      value: formatCentsToCurrency(data.metrics.netRevenueCents),
     },
     {
       description: "Total reembolsado.",
@@ -77,10 +79,22 @@ export default async function FinancePage() {
       value: formatCentsToCurrency(data.metrics.refundsCents),
     },
     {
-      description: "Quantidade de vendas aprovadas.",
-      icon: BadgeCheck,
-      label: "Vendas aprovadas",
-      value: new Intl.NumberFormat("pt-BR").format(data.metrics.approvedSales),
+      description: "Perdas registradas por disputa.",
+      icon: TrendingDown,
+      label: "Chargebacks",
+      value: formatCentsToCurrency(data.metrics.chargebacksCents),
+    },
+    {
+      description: "Créditos liberados no ledger.",
+      icon: WalletCards,
+      label: "Saldo disponível",
+      value: formatCentsToCurrency(data.metrics.availableBalanceCents),
+    },
+    {
+      description: "Créditos retidos por data futura.",
+      icon: LockKeyhole,
+      label: "Saldo bloqueado",
+      value: formatCentsToCurrency(data.metrics.blockedBalanceCents),
     },
   ];
 
@@ -92,9 +106,8 @@ export default async function FinancePage() {
           Visão financeira
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-          Acompanhe saldo, faturamento, reembolsos e vendas aprovadas com dados
-          reais quando existirem. Saques e split real ficam para uma próxima
-          etapa.
+          Acompanhe receita, reembolsos, chargebacks e saldos com dados reais
+          do Supabase quando existirem.
         </p>
       </section>
 
@@ -106,7 +119,7 @@ export default async function FinancePage() {
         />
       ) : (
         <>
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {metrics.map((metric) => (
               <FinanceMetricCard key={metric.label} {...metric} />
             ))}
@@ -119,7 +132,7 @@ export default async function FinancePage() {
                 Histórico financeiro
               </CardTitle>
               <CardDescription>
-                Lançamentos append-only vinculados ao produtor autenticado.
+                Últimas transações vinculadas ao produtor autenticado.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -166,9 +179,9 @@ export default async function FinancePage() {
                 </div>
               ) : (
                 <EmptyState
-                  description="Quando houver vendas, reembolsos ou lançamentos financeiros, o histórico aparecerá aqui."
+                  description="Quando houver vendas, reembolsos, chargebacks ou lançamentos financeiros, as transações aparecerão aqui."
                   icon={History}
-                  title="Nenhuma movimentação financeira"
+                  title="Nenhuma transação financeira"
                 />
               )}
             </CardContent>

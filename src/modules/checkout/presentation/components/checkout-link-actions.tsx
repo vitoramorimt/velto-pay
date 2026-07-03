@@ -1,26 +1,54 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Check, Copy, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { deleteCheckoutAction } from "@/modules/checkout/presentation/actions";
 
 type CheckoutLinkActionsProps = {
+  checkoutId: string;
   href: string;
   previewHref: string;
 };
 
 export function CheckoutLinkActions({
+  checkoutId,
   href,
   previewHref,
 }: CheckoutLinkActionsProps) {
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function copyLink() {
     await navigator.clipboard.writeText(href);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  async function deleteCheckout() {
+    const confirmed = window.confirm(
+      "Excluir este checkout? O produto continuará cadastrado.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeleting(true);
+    const result = await deleteCheckoutAction(checkoutId);
+
+    setIsDeleting(false);
+
+    if (result.status === "success") {
+      router.refresh();
+      return;
+    }
+
+    window.alert(result.message);
   }
 
   return (
@@ -34,6 +62,16 @@ export function CheckoutLinkActions({
           <ExternalLink />
           Visualizar
         </Link>
+      </Button>
+      <Button
+        disabled={isDeleting}
+        onClick={deleteCheckout}
+        size="sm"
+        type="button"
+        variant="destructive"
+      >
+        {isDeleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
+        Excluir
       </Button>
     </div>
   );

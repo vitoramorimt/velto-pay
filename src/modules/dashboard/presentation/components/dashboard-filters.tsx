@@ -51,6 +51,7 @@ const statusOptions = [
   { label: "Reembolsada", value: "refunded" },
   { label: "Chargeback", value: "chargeback" },
   { label: "Cancelada", value: "canceled" },
+  { label: "Cancelada", value: "cancelled" },
   { label: "Expirada", value: "expired" },
 ];
 

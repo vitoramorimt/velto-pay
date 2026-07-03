@@ -97,7 +97,10 @@ export default async function ProductsPage() {
           </div>
 
           {data.products.length > 0 ? (
-            <ProductsTable products={data.products} />
+            <ProductsTable
+              checkoutLinksByProductId={data.checkoutLinksByProductId}
+              products={data.products}
+            />
           ) : (
             <Card>
               <CardContent className="pt-6">
