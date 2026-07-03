@@ -10,15 +10,26 @@ import type { PaymentMethod } from "@/domain/entities/payment";
 import { maskCardNumber, maskCvv, maskExpiry } from "@/lib/masks";
 import { cardFormSchema, type CardFormValues } from "@/lib/validators";
 
+import { OrderSummaryInline } from "./order-summary-inline";
+import type { CheckoutSessionItemView } from "./types";
+
 interface CardFormProps {
   method: Extract<PaymentMethod, "credit_card" | "debit_card">;
   submitting: boolean;
+  items: CheckoutSessionItemView[];
+  totalAmountCents: number;
   onSubmit: (values: CardFormValues) => void;
 }
 
 const INSTALLMENT_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-export function CardForm({ method, submitting, onSubmit }: CardFormProps) {
+export function CardForm({
+  method,
+  submitting,
+  items,
+  totalAmountCents,
+  onSubmit,
+}: CardFormProps) {
   const {
     register,
     handleSubmit,
@@ -119,6 +130,8 @@ export function CardForm({ method, submitting, onSubmit }: CardFormProps) {
           </select>
         </div>
       ) : null}
+
+      <OrderSummaryInline items={items} totalAmountCents={totalAmountCents} />
 
       <Button type="submit" className="w-full" disabled={submitting}>
         {submitting ? "Processando..." : "Pagar agora"}

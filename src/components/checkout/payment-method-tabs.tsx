@@ -14,6 +14,7 @@ import type { BoletoFormValues, CardFormValues } from "@/lib/validators";
 import { BoletoPanel } from "./boleto-panel";
 import { CardForm } from "./card-form";
 import { PixPanel } from "./pix-panel";
+import type { CheckoutSessionItemView } from "./types";
 
 const METHOD_CONFIG: Record<PaymentMethod, { label: string; icon: typeof CreditCard }> = {
   credit_card: { label: "Crédito", icon: CreditCard },
@@ -27,6 +28,8 @@ interface PaymentMethodTabsProps {
   submitting: boolean;
   pixDetails: PixPaymentDetails | null;
   boletoDetails: BoletoPaymentDetails | null;
+  items: CheckoutSessionItemView[];
+  totalAmountCents: number;
   onSubmitCard: (method: "credit_card" | "debit_card", values: CardFormValues) => void;
   onGeneratePix: () => void;
   onSubmitBoleto: (values: BoletoFormValues) => void;
@@ -37,6 +40,8 @@ export function PaymentMethodTabs({
   submitting,
   pixDetails,
   boletoDetails,
+  items,
+  totalAmountCents,
   onSubmitCard,
   onGeneratePix,
   onSubmitBoleto,
@@ -81,6 +86,8 @@ export function PaymentMethodTabs({
           <CardForm
             method="credit_card"
             submitting={submitting}
+            items={items}
+            totalAmountCents={totalAmountCents}
             onSubmit={(values) => onSubmitCard("credit_card", values)}
           />
         </TabsContent>
@@ -91,6 +98,8 @@ export function PaymentMethodTabs({
           <CardForm
             method="debit_card"
             submitting={submitting}
+            items={items}
+            totalAmountCents={totalAmountCents}
             onSubmit={(values) => onSubmitCard("debit_card", values)}
           />
         </TabsContent>
@@ -108,7 +117,13 @@ export function PaymentMethodTabs({
               100% seguro
             </span>
           </div>
-          <PixPanel submitting={submitting} pixDetails={pixDetails} onGenerate={onGeneratePix} />
+          <PixPanel
+            submitting={submitting}
+            pixDetails={pixDetails}
+            items={items}
+            totalAmountCents={totalAmountCents}
+            onGenerate={onGeneratePix}
+          />
         </TabsContent>
       ) : null}
 

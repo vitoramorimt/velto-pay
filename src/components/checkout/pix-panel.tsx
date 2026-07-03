@@ -6,13 +6,24 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { PixPaymentDetails } from "@/domain/entities/payment";
 
+import { OrderSummaryInline } from "./order-summary-inline";
+import type { CheckoutSessionItemView } from "./types";
+
 interface PixPanelProps {
   submitting: boolean;
   pixDetails: PixPaymentDetails | null;
+  items: CheckoutSessionItemView[];
+  totalAmountCents: number;
   onGenerate: () => void;
 }
 
-export function PixPanel({ submitting, pixDetails, onGenerate }: PixPanelProps) {
+export function PixPanel({
+  submitting,
+  pixDetails,
+  items,
+  totalAmountCents,
+  onGenerate,
+}: PixPanelProps) {
   const [copied, setCopied] = useState(false);
 
   if (!pixDetails) {
@@ -21,6 +32,7 @@ export function PixPanel({ submitting, pixDetails, onGenerate }: PixPanelProps) 
         <p className="text-sm text-muted-foreground">
           Gere um QR Code PIX e pague instantaneamente pelo app do seu banco.
         </p>
+        <OrderSummaryInline items={items} totalAmountCents={totalAmountCents} />
         <Button className="w-full" disabled={submitting} onClick={onGenerate}>
           {submitting ? "Gerando..." : "Gerar QR Code"}
         </Button>

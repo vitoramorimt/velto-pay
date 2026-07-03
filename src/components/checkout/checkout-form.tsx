@@ -202,6 +202,8 @@ export function CheckoutForm({ session }: CheckoutFormProps) {
           submitting={submitting}
           pixDetails={pixDetails}
           boletoDetails={boletoDetails}
+          items={session.items}
+          totalAmountCents={session.totalAmountCents}
           onSubmitCard={handleCardSubmit}
           onGeneratePix={handleGeneratePix}
           onSubmitBoleto={handleBoletoSubmit}

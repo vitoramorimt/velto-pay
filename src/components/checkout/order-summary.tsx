@@ -11,13 +11,9 @@ interface OrderSummaryProps {
   totalAmountCents: number;
 }
 
-export function OrderSummary({ merchantName, items, totalAmountCents }: OrderSummaryProps) {
+export function OrderSummary({ items, totalAmountCents }: OrderSummaryProps) {
   return (
     <div className="space-y-4 pt-3">
-      <p className="text-xs text-muted-foreground">
-        Você está pagando para <span className="font-medium text-foreground">{merchantName}</span>
-      </p>
-
       <ul className="space-y-4">
         {items.map((item, index) => (
           <li key={index} className="flex items-start gap-3">

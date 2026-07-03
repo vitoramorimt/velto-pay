@@ -1,12 +1,18 @@
+import Image from "next/image";
+
 import { cn } from "@/lib/utils";
 
 export function VeltoPayLogo({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <span className="flex size-7 items-center justify-center rounded-lg bg-brand-green text-sm font-bold text-primary-foreground">
-        V
-      </span>
-      <span className="text-base font-semibold tracking-tight text-foreground">
+      <Image
+        src="/logo.jpeg"
+        alt="VeltoPay"
+        width={56}
+        height={56}
+        className="size-14 shrink-0 rounded-xl object-cover"
+      />
+      <span className="text-3xl font-bold tracking-tight text-foreground">
         VeltoPay
       </span>
     </div>
