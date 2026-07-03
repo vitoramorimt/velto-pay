@@ -7,6 +7,7 @@ export type CheckoutProduct = Pick<
   | "currency"
   | "description"
   | "id"
+  | "image_url"
   | "name"
   | "price_cents"
   | "producer_id"
@@ -16,11 +17,19 @@ export type CheckoutProduct = Pick<
 >;
 
 export type CheckoutLink = {
-  checkoutId: string | null;
+  checkoutCreatedAt: string;
+  checkoutId: string;
+  checkoutName: string;
+  checkoutSlug: string;
   checkoutStatus: CheckoutStatus;
   checkoutUpdatedAt: string;
   link: string;
   product: CheckoutProduct;
 };
 
-export type PublicCheckoutProduct = CheckoutProduct;
+export type PublicCheckout = {
+  checkoutId: string;
+  checkoutSlug: string;
+  description: string | null;
+  product: CheckoutProduct;
+};

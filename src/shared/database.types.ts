@@ -828,6 +828,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_pending_checkout_order: {
+        Args: {
+          p_checkout_slug: string
+          p_customer_email: string
+          p_customer_name: string
+        }
+        Returns: string
+      }
       current_user_role: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
     }
@@ -856,6 +864,7 @@ export type Database = {
         | "refunded"
         | "chargeback"
         | "canceled"
+        | "cancelled"
         | "expired"
       outbox_event_status:
         | "pending"
@@ -1040,6 +1049,7 @@ export const Constants = {
         "refunded",
         "chargeback",
         "canceled",
+        "cancelled",
         "expired",
       ],
       outbox_event_status: [

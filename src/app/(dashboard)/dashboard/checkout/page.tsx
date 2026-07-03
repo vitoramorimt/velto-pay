@@ -20,7 +20,6 @@ import {
 import { getCheckoutLinksPageData } from "@/modules/checkout/application/checkout-use-cases";
 import { CheckoutLinkActions } from "@/modules/checkout/presentation/components/checkout-link-actions";
 import { formatCentsToCurrency } from "@/modules/products/domain/money";
-import { ProductStatusBadge } from "@/modules/products/presentation/components/product-status-badge";
 
 function getCheckoutStatusLabel(status: "disabled" | "draft" | "published") {
   const labels = {
@@ -30,6 +29,14 @@ function getCheckoutStatusLabel(status: "disabled" | "draft" | "published") {
   };
 
   return labels[status];
+}
+
+function formatDate(value: string): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
 }
 
 export default async function CheckoutPage() {
@@ -45,9 +52,8 @@ export default async function CheckoutPage() {
               Links de checkout
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Cada produto ativo recebe um link público para a prévia do
-              checkout. Pagamento real, Pix, cartão e webhooks permanecem fora
-              desta sprint.
+              Gerencie os links públicos de checkout salvos no Supabase e
+              vinculados aos produtos do produtor autenticado.
             </p>
           </div>
           <div className="rounded-lg border border-border bg-muted/35 px-4 py-3 text-sm text-muted-foreground">
@@ -77,7 +83,7 @@ export default async function CheckoutPage() {
           <CardHeader>
             <CardTitle>Checkouts gerados</CardTitle>
             <CardDescription>
-              Links derivados dos produtos do produtor autenticado.
+              Checkouts persistidos e prontos para compartilhamento.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -85,29 +91,43 @@ export default async function CheckoutPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Nome</TableHead>
                     <TableHead>Produto</TableHead>
                     <TableHead>Preço</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Link de checkout</TableHead>
+                    <TableHead>Slug</TableHead>
+                    <TableHead>Criado em</TableHead>
+                    <TableHead>Link</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.links.map((checkout) => (
-                    <TableRow key={checkout.product.id}>
+                    <TableRow key={checkout.checkoutId}>
                       <TableCell>
                         <div className="max-w-sm">
-                          <p className="font-medium">{checkout.product.name}</p>
+                          <p className="font-medium">
+                            {checkout.checkoutName}
+                          </p>
                           <p className="mt-1 text-sm text-muted-foreground">
                             {getCheckoutStatusLabel(checkout.checkoutStatus)}
                           </p>
                         </div>
                       </TableCell>
+                      <TableCell>{checkout.product.name}</TableCell>
                       <TableCell>
                         {formatCentsToCurrency(checkout.product.price_cents)}
                       </TableCell>
                       <TableCell>
-                        <ProductStatusBadge status={checkout.product.status} />
+                        <Badge variant="outline">
+                          {getCheckoutStatusLabel(checkout.checkoutStatus)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {checkout.checkoutSlug}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(checkout.checkoutCreatedAt)}
                       </TableCell>
                       <TableCell>
                         <span className="block max-w-72 truncate text-sm text-muted-foreground">
@@ -116,8 +136,9 @@ export default async function CheckoutPage() {
                       </TableCell>
                       <TableCell>
                         <CheckoutLinkActions
+                          checkoutId={checkout.checkoutId}
                           href={checkout.link}
-                          previewHref={`/pay/${checkout.product.slug}`}
+                          previewHref={`/pay/${checkout.checkoutSlug}`}
                         />
                       </TableCell>
                     </TableRow>
@@ -128,21 +149,29 @@ export default async function CheckoutPage() {
 
             <div className="grid gap-3 md:hidden">
               {data.links.map((checkout) => (
-                <Card key={checkout.product.id}>
+                <Card key={checkout.checkoutId}>
                   <CardHeader className="gap-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <CardTitle className="truncate">
-                          {checkout.product.name}
+                          {checkout.checkoutName}
                         </CardTitle>
                         <CardDescription className="mt-1 truncate">
                           {checkout.link}
                         </CardDescription>
                       </div>
-                      <ProductStatusBadge status={checkout.product.status} />
+                      <Badge variant="outline">
+                        {getCheckoutStatusLabel(checkout.checkoutStatus)}
+                      </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">Produto</span>
+                      <span className="max-w-44 truncate font-medium">
+                        {checkout.product.name}
+                      </span>
+                    </div>
                     <div className="flex items-center justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">Preço</span>
                       <span className="font-medium">
@@ -153,9 +182,16 @@ export default async function CheckoutPage() {
                       <ExternalLink className="h-4 w-4" />
                       {getCheckoutStatusLabel(checkout.checkoutStatus)}
                     </div>
+                    <div className="grid gap-1 text-sm">
+                      <span className="text-muted-foreground">Slug</span>
+                      <span className="truncate font-mono text-xs">
+                        {checkout.checkoutSlug}
+                      </span>
+                    </div>
                     <CheckoutLinkActions
+                      checkoutId={checkout.checkoutId}
                       href={checkout.link}
-                      previewHref={`/pay/${checkout.product.slug}`}
+                      previewHref={`/pay/${checkout.checkoutSlug}`}
                     />
                   </CardContent>
                 </Card>

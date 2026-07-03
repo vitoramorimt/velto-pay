@@ -147,7 +147,7 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
             Faturamento por período
           </CardTitle>
           <CardDescription>
-            Faturamento e vendas aprovadas nos últimos 7 dias.
+            Faturamento e vendas aprovadas nos últimos 30 dias.
           </CardDescription>
         </div>
         <Badge
@@ -160,10 +160,10 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
       <CardContent>
         {data.length > 0 ? (
           <div className="grid gap-5">
-            <div className="flex h-72 items-end gap-3 rounded-lg border bg-muted/25 px-4 py-5 sm:gap-4">
-              {data.map((item) => (
+            <div className="grid h-72 grid-cols-[repeat(30,minmax(0,1fr))] items-end gap-1 rounded-lg border bg-muted/25 px-3 py-5 sm:gap-2 sm:px-4">
+              {data.map((item, index) => (
                 <div
-                  className="flex h-full min-w-0 flex-1 flex-col justify-end gap-3"
+                  className="flex h-full min-w-0 flex-col justify-end gap-3"
                   key={item.day}
                 >
                   <div className="flex flex-1 items-end">
@@ -175,7 +175,9 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
                   </div>
                   <div className="text-center">
                     <span className="block text-xs text-muted-foreground">
-                      {item.day}
+                      {index % 5 === 0 || index === data.length - 1
+                        ? item.day
+                        : ""}
                     </span>
                     <span className="mt-1 block text-[11px] text-muted-foreground">
                       {formatNumber(item.approvedSales)}

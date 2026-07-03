@@ -8,24 +8,38 @@ import type {
 } from "@/modules/finance/domain/types";
 import {
   type FinanceLedgerRow,
-  listFinanceOrdersByProducerId,
   listLedgerEntriesByProducerId,
 } from "@/modules/finance/infrastructure/finance.repository";
+import { listOrdersByProducerId } from "@/modules/orders/infrastructure/orders.repository";
 import { findProducerByUserId } from "@/modules/products/infrastructure/products.repository";
 import { createSupabaseServerClient } from "@/shared/supabase";
 
 const emptyMetrics: FinanceMetrics = {
   approvedSales: 0,
   availableBalanceCents: 0,
+  blockedBalanceCents: 0,
+  chargebacksCents: 0,
+  grossRevenueCents: 0,
+  netRevenueCents: 0,
   refundsCents: 0,
-  totalRevenueCents: 0,
 };
 
-function getAvailableBalance(rows: FinanceLedgerRow[]): number {
+function getLedgerBalance(
+  rows: FinanceLedgerRow[],
+  availability: "available" | "blocked",
+): number {
   const now = new Date();
 
   return rows.reduce((total, entry) => {
-    if (entry.available_at && new Date(entry.available_at) > now) {
+    const isBlocked = Boolean(
+      entry.available_at && new Date(entry.available_at) > now,
+    );
+
+    if (availability === "available" && isBlocked) {
+      return total;
+    }
+
+    if (availability === "blocked" && !isBlocked) {
       return total;
     }
 
@@ -51,11 +65,14 @@ export async function getFinancePageData(): Promise<FinancePageData> {
   }
 
   const [orders, ledgerRows] = await Promise.all([
-    listFinanceOrdersByProducerId(supabase, producer.id),
+    listOrdersByProducerId(supabase, producer.id),
     listLedgerEntriesByProducerId(supabase, producer.id),
   ]);
   const paidOrders = orders.filter((order) => order.status === "paid");
   const refundedOrders = orders.filter((order) => order.status === "refunded");
+  const chargebackOrders = orders.filter(
+    (order) => order.status === "chargeback",
+  );
   const entries: FinanceLedgerEntry[] = ledgerRows.map((entry) => ({
     amountCents: entry.amount_cents,
     createdAt: entry.created_at,
@@ -69,12 +86,24 @@ export async function getFinancePageData(): Promise<FinancePageData> {
     entries,
     metrics: {
       approvedSales: paidOrders.length,
-      availableBalanceCents: getAvailableBalance(ledgerRows),
-      refundsCents: refundedOrders.reduce(
+      availableBalanceCents: getLedgerBalance(ledgerRows, "available"),
+      blockedBalanceCents: getLedgerBalance(ledgerRows, "blocked"),
+      chargebacksCents: chargebackOrders.reduce(
         (total, order) => total + order.total_cents,
         0,
       ),
-      totalRevenueCents: paidOrders.reduce(
+      grossRevenueCents: paidOrders.reduce(
+        (total, order) => total + order.total_cents,
+        0,
+      ),
+      netRevenueCents:
+        paidOrders.reduce((total, order) => total + order.total_cents, 0) -
+        refundedOrders.reduce((total, order) => total + order.total_cents, 0) -
+        chargebackOrders.reduce(
+          (total, order) => total + order.total_cents,
+          0,
+        ),
+      refundsCents: refundedOrders.reduce(
         (total, order) => total + order.total_cents,
         0,
       ),

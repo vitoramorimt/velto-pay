@@ -4,13 +4,18 @@ import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import type {
   CheckoutLink,
-  PublicCheckoutProduct,
+  PublicCheckout,
 } from "@/modules/checkout/domain/types";
 import {
-  findPublicCheckoutProductBySlug,
-  listCheckoutProductsByProducerId,
+  deleteCheckoutByProducerId,
+  ensureCheckoutForProduct,
+  findPublicCheckoutBySlug,
+  listCheckoutsByProducerId,
 } from "@/modules/checkout/infrastructure/checkout.repository";
-import { findProducerByUserId } from "@/modules/products/infrastructure/products.repository";
+import {
+  findProducerByUserId,
+  findProductByProducerId,
+} from "@/modules/products/infrastructure/products.repository";
 import { createSupabaseServerClient } from "@/shared/supabase";
 
 export type CheckoutLinksPageData =
@@ -23,16 +28,11 @@ export type CheckoutLinksPageData =
       links: CheckoutLink[];
     };
 
-function toCheckoutStatus(status: CheckoutLink["product"]["status"]) {
-  if (status === "active") {
-    return "published" as const;
+export class CheckoutUseCaseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CheckoutUseCaseError";
   }
-
-  if (status === "inactive" || status === "archived") {
-    return "disabled" as const;
-  }
-
-  return "draft" as const;
 }
 
 export async function getCheckoutLinksPageData(): Promise<CheckoutLinksPageData> {
@@ -47,18 +47,12 @@ export async function getCheckoutLinksPageData(): Promise<CheckoutLinksPageData>
     };
   }
 
-  const products = await listCheckoutProductsByProducerId(
-    supabase,
-    producer.id,
-  );
+  const checkouts = await listCheckoutsByProducerId(supabase, producer.id);
 
   return {
-    links: products.map((product) => ({
-      checkoutId: null,
-      checkoutStatus: toCheckoutStatus(product.status),
-      checkoutUpdatedAt: product.updated_at,
-      link: createCheckoutUrl(product.slug),
-      product,
+    links: checkouts.map((checkout) => ({
+      ...checkout,
+      link: createCheckoutUrl(checkout.checkoutSlug),
     })),
     state: "ready",
   };
@@ -66,8 +60,55 @@ export async function getCheckoutLinksPageData(): Promise<CheckoutLinksPageData>
 
 export async function getPublicCheckoutBySlug(
   slug: string,
-): Promise<PublicCheckoutProduct | null> {
+): Promise<PublicCheckout | null> {
   const supabase = await createSupabaseServerClient();
 
-  return findPublicCheckoutProductBySlug(supabase, slug);
+  return findPublicCheckoutBySlug(supabase, slug);
+}
+
+export async function createCheckoutForProductUseCase(
+  productId: string,
+): Promise<CheckoutLink> {
+  const user = await requireAuthenticatedUser("/dashboard/checkout");
+  const supabase = await createSupabaseServerClient();
+  const producer = await findProducerByUserId(supabase, user.id);
+
+  if (!producer) {
+    throw new CheckoutUseCaseError(
+      "Não foi possível encontrar seu perfil de produtor.",
+    );
+  }
+
+  const product = await findProductByProducerId(supabase, productId, producer.id);
+
+  if (!product) {
+    throw new CheckoutUseCaseError("Produto não encontrado.");
+  }
+
+  const checkout = await ensureCheckoutForProduct(supabase, product);
+
+  return {
+    checkoutCreatedAt: checkout.created_at,
+    checkoutId: checkout.id,
+    checkoutName: checkout.headline ?? product.name,
+    checkoutSlug: checkout.slug,
+    checkoutStatus: checkout.status,
+    checkoutUpdatedAt: checkout.updated_at,
+    link: createCheckoutUrl(checkout.slug),
+    product,
+  };
+}
+
+export async function deleteCheckoutUseCase(checkoutId: string): Promise<void> {
+  const user = await requireAuthenticatedUser("/dashboard/checkout");
+  const supabase = await createSupabaseServerClient();
+  const producer = await findProducerByUserId(supabase, user.id);
+
+  if (!producer) {
+    throw new CheckoutUseCaseError(
+      "Não foi possível encontrar seu perfil de produtor.",
+    );
+  }
+
+  await deleteCheckoutByProducerId(supabase, checkoutId, producer.id);
 }

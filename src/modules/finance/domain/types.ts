@@ -3,8 +3,11 @@ import type { Enums } from "@/shared/database.types";
 export type FinanceMetrics = {
   approvedSales: number;
   availableBalanceCents: number;
+  blockedBalanceCents: number;
+  chargebacksCents: number;
+  grossRevenueCents: number;
+  netRevenueCents: number;
   refundsCents: number;
-  totalRevenueCents: number;
 };
 
 export type FinanceLedgerEntry = {

@@ -14,11 +14,11 @@ import type {
 } from "@/modules/dashboard/domain/types";
 import {
   countActiveProductsByProducerId,
-  type DashboardOrder,
-  listDashboardOrdersByProducerId,
   listDashboardProductOptionsByProducerId,
   listProductSummariesByIds,
 } from "@/modules/dashboard/infrastructure/dashboard.repository";
+import type { ProducerOrder as DashboardOrder } from "@/modules/orders/domain/types";
+import { listOrdersByProducerId } from "@/modules/orders/infrastructure/orders.repository";
 import { findProducerByUserId } from "@/modules/products/infrastructure/products.repository";
 import type { Json } from "@/shared/database.types";
 import { createSupabaseServerClient } from "@/shared/supabase";
@@ -37,6 +37,7 @@ const orderStatuses = [
   "refunded",
   "chargeback",
   "canceled",
+  "cancelled",
   "expired",
 ] as const satisfies DashboardOrderStatus[];
 
@@ -224,11 +225,11 @@ function createBreakdown(
 
 function createChart(orders: DashboardOrder[]): DashboardChartPoint[] {
   const now = new Date();
-  const days = Array.from({ length: 7 }, (_, index) => {
+  const days = Array.from({ length: 30 }, (_, index) => {
     const date = new Date(now);
 
     date.setHours(0, 0, 0, 0);
-    date.setDate(date.getDate() - (6 - index));
+    date.setDate(date.getDate() - (29 - index));
 
     return date;
   });
@@ -344,7 +345,7 @@ export async function getDashboardOverviewData(
       ? filters.productId
       : undefined;
   const [orders, activeProducts] = await Promise.all([
-    listDashboardOrdersByProducerId(supabase, producer.id, {
+    listOrdersByProducerId(supabase, producer.id, {
       createdAfter: getCreatedAfter(filters.period),
       method: filters.method === "all" ? undefined : filters.method,
       productId: selectedProductId,
