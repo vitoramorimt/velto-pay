@@ -76,11 +76,7 @@ async function productSlugExists(
   slug: string,
   productIdToIgnore?: string,
 ): Promise<boolean> {
-  let query = supabase
-    .from("products")
-    .select("id")
-    .eq("slug", slug)
-    .limit(1);
+  let query = supabase.from("products").select("id").eq("slug", slug).limit(1);
 
   if (productIdToIgnore) {
     query = query.neq("id", productIdToIgnore);

@@ -34,16 +34,14 @@ export const appNavigationItems: AppNavigationItem[] = [
     label: "IA de Vendas",
   },
   {
-    description: "Será habilitado na sprint de checkout.",
+    href: "/dashboard/checkout",
     icon: CreditCard,
     label: "Checkout",
-    status: "soon",
   },
   {
-    description: "Financeiro completo entra após checkout e pagamentos.",
+    href: "/dashboard/financeiro",
     icon: WalletCards,
     label: "Financeiro",
-    status: "soon",
   },
   {
     description: "Relatórios avançados entram depois dos primeiros eventos.",

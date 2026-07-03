@@ -54,7 +54,9 @@ export async function createProductAction(
   }
 
   try {
-    await createProductUseCase(parsedInput.data);
+    const product = await createProductUseCase(parsedInput.data);
+
+    revalidatePath(`/pay/${product.slug}`);
   } catch (error) {
     return actionError(error);
   }
@@ -79,12 +81,16 @@ export async function updateProductAction(
   }
 
   try {
-    await updateProductUseCase(parsedInput.data);
+    const product = await updateProductUseCase(parsedInput.data);
+
+    revalidatePath(`/pay/${product.slug}`);
   } catch (error) {
     return actionError(error);
   }
 
   revalidatePath("/dashboard/produtos");
+  revalidatePath("/dashboard/checkout");
+  revalidatePath("/dashboard");
   redirect("/dashboard/produtos");
 }
 
@@ -98,12 +104,16 @@ export async function toggleProductStatusAction(
   }
 
   try {
-    await toggleProductStatusUseCase(parsedInput.data);
+    const product = await toggleProductStatusUseCase(parsedInput.data);
+
+    revalidatePath(`/pay/${product.slug}`);
   } catch (error) {
     return actionError(error);
   }
 
   revalidatePath("/dashboard/produtos");
+  revalidatePath("/dashboard/checkout");
+  revalidatePath("/dashboard");
 
   return {
     message: "Status do produto atualizado.",

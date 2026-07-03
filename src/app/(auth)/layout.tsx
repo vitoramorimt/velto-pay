@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Sparkles } from "lucide-react";
 
 import { VeltoLogo } from "@/components/brand/velto-logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 const authHighlights = [
@@ -48,6 +49,7 @@ export default function AuthLayout({
                 Voltar
               </Link>
             </Button>
+            <ThemeToggle className="border-white/10 bg-white/[0.04]" />
           </div>
 
           <div className="max-w-xl">
@@ -76,8 +78,8 @@ export default function AuthLayout({
           </div>
 
           <p className="text-xs leading-5 text-slate-500">
-            Ambiente em dark mode premium. O tema claro está temporariamente
-            desabilitado para manter a experiência estável.
+            Escolha dark ou light no navegador. A área segura mantém a
+            identidade premium da Velto Pay.
           </p>
         </section>
 

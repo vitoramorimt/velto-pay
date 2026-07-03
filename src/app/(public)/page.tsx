@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { VeltoLogo } from "@/components/brand/velto-logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,6 +96,7 @@ export default function LandingPage() {
           </Link>
 
           <nav aria-label="Acesso" className="flex items-center gap-2">
+            <ThemeToggle className="hidden border-white/10 bg-white/[0.04] md:grid" />
             <Button
               asChild
               className="text-slate-300 hover:bg-white/10 hover:text-white"

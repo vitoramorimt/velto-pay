@@ -18,11 +18,12 @@ import { Label } from "@/components/ui/label";
 import { FormStatus } from "./form-status";
 
 type LoginFormProps = {
+  initialResult?: AuthActionResult | null;
   next: string;
 };
 
-export function LoginForm({ next }: LoginFormProps) {
-  const [result, setResult] = useState<AuthActionResult | null>(null);
+export function LoginForm({ initialResult = null, next }: LoginFormProps) {
+  const [result, setResult] = useState<AuthActionResult | null>(initialResult);
   const [isPending, startTransition] = useTransition();
   const form = useForm<SignInInput>({
     defaultValues: {

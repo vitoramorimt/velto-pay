@@ -125,9 +125,7 @@ function MetricCard({
             <Icon className="h-5 w-5" />
           </div>
         </div>
-        <p className="text-xs leading-5 text-muted-foreground">
-          {description}
-        </p>
+        <p className="text-xs leading-5 text-muted-foreground">{description}</p>
       </CardHeader>
     </Card>
   );
@@ -188,7 +186,10 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <SignalTile label="Faturamento no gráfico" value={formatCents(totalCents)} />
+              <SignalTile
+                label="Faturamento no gráfico"
+                value={formatCents(totalCents)}
+              />
               <SignalTile
                 label="Vendas aprovadas no gráfico"
                 value={formatNumber(totalSales)}

@@ -109,9 +109,7 @@ export default async function PublicCheckoutPage({
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-lg border border-accent/20 bg-accent/10 p-4">
                   <CreditCard className="h-5 w-5 text-accent" />
-                  <p className="mt-3 text-sm font-medium">
-                    Pagamento visual
-                  </p>
+                  <p className="mt-3 text-sm font-medium">Pagamento visual</p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
                     Pix e cartão serão habilitados em sprint futura.
                   </p>

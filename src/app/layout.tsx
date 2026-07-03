@@ -24,19 +24,13 @@ export default async function RootLayout({
   const user = await getCurrentUser();
 
   return (
-    <html
-      className="dark"
-      lang="pt-BR"
-      style={{ colorScheme: "dark" }}
-      suppressHydrationWarning
-    >
+    <html lang="pt-BR" suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           disableTransitionOnChange
           enableSystem={false}
-          forcedTheme="dark"
         >
           <AuthProvider initialUser={user}>
             {children}

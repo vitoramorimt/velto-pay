@@ -107,7 +107,7 @@ export async function signUpAction(
   }
 
   if (data.session) {
-    redirect(next);
+    await supabase.auth.signOut();
   }
 
   return {

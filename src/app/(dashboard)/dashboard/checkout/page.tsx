@@ -97,9 +97,7 @@ export default async function CheckoutPage() {
                     <TableRow key={checkout.product.id}>
                       <TableCell>
                         <div className="max-w-sm">
-                          <p className="font-medium">
-                            {checkout.product.name}
-                          </p>
+                          <p className="font-medium">{checkout.product.name}</p>
                           <p className="mt-1 text-sm text-muted-foreground">
                             {getCheckoutStatusLabel(checkout.checkoutStatus)}
                           </p>
@@ -117,7 +115,10 @@ export default async function CheckoutPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <CheckoutLinkActions href={checkout.link} />
+                        <CheckoutLinkActions
+                          href={checkout.link}
+                          previewHref={`/pay/${checkout.product.slug}`}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -152,7 +153,10 @@ export default async function CheckoutPage() {
                       <ExternalLink className="h-4 w-4" />
                       {getCheckoutStatusLabel(checkout.checkoutStatus)}
                     </div>
-                    <CheckoutLinkActions href={checkout.link} />
+                    <CheckoutLinkActions
+                      href={checkout.link}
+                      previewHref={`/pay/${checkout.product.slug}`}
+                    />
                   </CardContent>
                 </Card>
               ))}

@@ -11,6 +11,7 @@ import { LoginForm } from "@/modules/auth/presentation/components/login-form";
 
 type LoginPageProps = {
   searchParams: Promise<{
+    confirmed?: string;
     next?: string;
   }>;
 };
@@ -20,6 +21,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const next = normalizeAuthRedirectPath(
     params.next ?? DEFAULT_AUTHENTICATED_PATH,
   );
+  const confirmedResult =
+    params.confirmed === "1"
+      ? {
+          message: "E-mail confirmado com sucesso. Faça login para continuar.",
+          status: "success" as const,
+        }
+      : null;
 
   return (
     <GuestGuard nextPath={next}>
@@ -34,7 +42,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         showBrand
         title="Entrar na conta"
       >
-        <LoginForm next={next} />
+        <LoginForm initialResult={confirmedResult} next={next} />
       </AuthCard>
     </GuestGuard>
   );

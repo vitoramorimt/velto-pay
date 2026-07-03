@@ -7,6 +7,7 @@ import { ChevronDown, LogOut, Menu, UserCircle, X } from "lucide-react";
 
 import { appNavigationItems } from "@/components/layout/app-navigation";
 import { VeltoLogo } from "@/components/brand/velto-logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { signOutAction } from "@/modules/auth/application/auth-actions";
@@ -49,7 +50,7 @@ export function AppHeader() {
         <div className="hidden min-w-0 flex-1 lg:block">
           <p className="text-sm font-medium text-foreground">Operação Velto</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Dark mode estável enquanto o tema claro é refinado.
+            Core comercial, checkout MVP e financeiro em evolução.
           </p>
         </div>
 
@@ -62,12 +63,7 @@ export function AppHeader() {
           />
         </div>
 
-        <Badge
-          className="hidden border-accent/30 bg-accent/10 text-accent sm:inline-flex"
-          variant="outline"
-        >
-          Dark
-        </Badge>
+        <ThemeToggle className="hidden sm:grid" />
         <Badge className="hidden sm:inline-flex" variant="success">
           MVP
         </Badge>
@@ -186,13 +182,12 @@ export function AppHeader() {
             </nav>
 
             <div className="mt-auto rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm">
-              <p className="font-medium text-sidebar-foreground">
-                Tema dark fixo
-              </p>
+              <p className="font-medium text-sidebar-foreground">Tema</p>
               <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
-                O modo claro está desabilitado temporariamente para evitar telas
-                inconsistentes.
+                Escolha entre dark e light. A preferência fica salva no
+                navegador.
               </p>
+              <ThemeToggle className="mt-4 border-white/10 bg-white/[0.04]" />
             </div>
           </div>
         </div>

@@ -82,8 +82,8 @@ export function AppSidebar() {
           Suporte visual
         </div>
         <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
-          Checkout, financeiro e compliance ficam visíveis como próximos
-          módulos, sem rotas quebradas.
+          Checkout e financeiro já possuem visão MVP. Pagamentos reais e saque
+          seguem fora desta etapa.
         </p>
       </div>
     </aside>

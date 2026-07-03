@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 
 type CheckoutLinkActionsProps = {
   href: string;
+  previewHref: string;
 };
 
-export function CheckoutLinkActions({ href }: CheckoutLinkActionsProps) {
+export function CheckoutLinkActions({
+  href,
+  previewHref,
+}: CheckoutLinkActionsProps) {
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
@@ -26,7 +30,7 @@ export function CheckoutLinkActions({ href }: CheckoutLinkActionsProps) {
         {copied ? "Copiado" : "Copiar link"}
       </Button>
       <Button asChild size="sm" variant="outline">
-        <Link href={href} target="_blank">
+        <Link href={previewHref} target="_blank">
           <ExternalLink />
           Visualizar
         </Link>

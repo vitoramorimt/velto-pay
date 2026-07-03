@@ -44,10 +44,11 @@ export async function findPublicCheckoutProductBySlug(
     )
     .eq("slug", slug)
     .eq("status", "active")
+    .limit(1)
     .maybeSingle();
 
   if (error) {
-    throw repositoryError("Não foi possível carregar o checkout.");
+    return null;
   }
 
   return data;
