@@ -5,11 +5,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Tables } from "@/shared/database.types";
 
 type DatabaseClient = SupabaseClient<Database>;
-type SupabaseReadError = {
-  code?: string;
-  message?: string;
-};
-
 export type FinanceOrder = Pick<
   Tables<"orders">,
   "created_at" | "currency" | "id" | "status" | "total_cents"
@@ -29,17 +24,6 @@ function repositoryError(message: string): Error {
   return new Error(message);
 }
 
-function shouldReturnEmptyRows(error: SupabaseReadError): boolean {
-  const message = error.message?.toLowerCase() ?? "";
-
-  return (
-    error.code === "42501" ||
-    error.code === "42P01" ||
-    message.includes("permission denied") ||
-    message.includes("does not exist")
-  );
-}
-
 export async function listFinanceOrdersByProducerId(
   supabase: DatabaseClient,
   producerId: string,
@@ -52,10 +36,6 @@ export async function listFinanceOrdersByProducerId(
     .limit(1000);
 
   if (error) {
-    if (shouldReturnEmptyRows(error)) {
-      return [];
-    }
-
     throw repositoryError("Não foi possível carregar os pedidos financeiros.");
   }
 
@@ -76,10 +56,6 @@ export async function listLedgerEntriesByProducerId(
     .limit(1000);
 
   if (error) {
-    if (shouldReturnEmptyRows(error)) {
-      return [];
-    }
-
     throw repositoryError("Não foi possível carregar o histórico financeiro.");
   }
 

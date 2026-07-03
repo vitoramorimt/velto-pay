@@ -1,20 +1,24 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, LogOut, Menu, UserCircle, X } from "lucide-react";
+import { ChevronDown, Menu, UserCircle, X } from "lucide-react";
 
 import { appNavigationItems } from "@/components/layout/app-navigation";
 import { VeltoLogo } from "@/components/brand/velto-logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { signOutAction } from "@/modules/auth/application/auth-actions";
 import { useAuth } from "@/modules/auth/presentation/auth-provider";
 import { cn } from "@/shared/utils/cn";
 
-export function AppHeader() {
+type AppHeaderProps = {
+  signOutSlot?: ReactNode;
+};
+
+export function AppHeader({ signOutSlot }: AppHeaderProps) {
   const pathname = usePathname();
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -87,16 +91,7 @@ export function AppHeader() {
               </p>
             </div>
 
-            <form action={signOutAction} className="mt-2">
-              <Button
-                className="w-full justify-start"
-                type="submit"
-                variant="ghost"
-              >
-                <LogOut className="h-4 w-4" />
-                Sair
-              </Button>
-            </form>
+            {signOutSlot}
           </div>
         </details>
       </div>
