@@ -30,16 +30,24 @@ export async function createPendingCheckoutOrderAction(formData: FormData) {
     redirect(getCheckoutRedirect(safeSlug, "erro"));
   }
 
+  let checkoutUrl: string | null = null;
+
   try {
-    await createCheckoutPaymentUseCase({
+    const paymentAttempt = await createCheckoutPaymentUseCase({
       checkoutSlug: parsedInput.data.slug,
       customer: {
         email: parsedInput.data.customerEmail,
         name: parsedInput.data.customerName,
       },
     });
+
+    checkoutUrl = paymentAttempt.checkoutUrl;
   } catch {
     redirect(getCheckoutRedirect(parsedInput.data.slug, "erro"));
+  }
+
+  if (checkoutUrl) {
+    redirect(checkoutUrl);
   }
 
   redirect(getCheckoutRedirect(parsedInput.data.slug, "pedido"));

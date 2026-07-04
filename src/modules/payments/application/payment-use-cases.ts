@@ -39,8 +39,9 @@ export async function createCheckoutPaymentUseCase(
     throw new PaymentUseCaseError("Checkout indisponível.");
   }
 
-  const method = input.method ?? "pix";
   const provider = getPaymentProvider();
+  const method =
+    input.method ?? (provider.config.name === "stripe" ? "credit_card" : "pix");
   const providerResult = await provider.createCheckout({
     amountCents: checkout.product.price_cents,
     currency: "BRL",
@@ -50,6 +51,8 @@ export async function createCheckoutPaymentUseCase(
     metadata: {
       checkout_id: checkout.checkoutId,
       checkout_slug: checkout.checkoutSlug,
+      product_image_url: checkout.product.image_url ?? "",
+      product_name: checkout.product.name,
       product_id: checkout.product.id,
       producer_id: checkout.product.producer_id,
     },
