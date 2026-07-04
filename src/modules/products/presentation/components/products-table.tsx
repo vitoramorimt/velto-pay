@@ -111,8 +111,8 @@ export function ProductsTable({
           const checkoutLink = checkoutLinksByProductId[product.id];
 
           return (
-            <Card key={product.id}>
-              <CardHeader className="gap-3">
+            <Card className="min-w-0" key={product.id}>
+              <CardHeader className="min-w-0 gap-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <CardTitle className="truncate">{product.name}</CardTitle>
@@ -123,17 +123,17 @@ export function ProductsTable({
                   <ProductStatusBadge status={product.status} />
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="min-w-0 space-y-4">
                 <div className="flex items-center justify-between gap-3 text-sm">
                   <span className="text-muted-foreground">Preço</span>
                   <span className="font-medium">
                     {formatCentsToCurrency(product.price_cents)}
                   </span>
                 </div>
-                <div className="grid gap-1 text-sm">
+                <div className="grid min-w-0 gap-1 text-sm">
                   <span className="text-muted-foreground">Checkout</span>
                   {checkoutLink ? (
-                    <span className="truncate font-medium">
+                    <span className="block max-w-full truncate font-medium">
                       {checkoutLink}
                     </span>
                   ) : (

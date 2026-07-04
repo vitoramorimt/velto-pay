@@ -79,14 +79,14 @@ export default async function CheckoutPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardHeader>
+        <Card className="min-w-0">
+          <CardHeader className="min-w-0">
             <CardTitle>Checkouts gerados</CardTitle>
             <CardDescription>
               Checkouts persistidos e prontos para compartilhamento.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-w-0">
             <div className="hidden overflow-x-auto rounded-lg border md:block">
               <Table>
                 <TableHeader>
@@ -147,16 +147,16 @@ export default async function CheckoutPage() {
               </Table>
             </div>
 
-            <div className="grid gap-3 md:hidden">
+            <div className="grid min-w-0 gap-3 md:hidden">
               {data.links.map((checkout) => (
-                <Card key={checkout.checkoutId}>
-                  <CardHeader className="gap-3">
+                <Card className="min-w-0" key={checkout.checkoutId}>
+                  <CardHeader className="min-w-0 gap-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <CardTitle className="truncate">
                           {checkout.checkoutName}
                         </CardTitle>
-                        <CardDescription className="mt-1 truncate">
+                        <CardDescription className="mt-1 block max-w-full truncate">
                           {checkout.link}
                         </CardDescription>
                       </div>
@@ -165,10 +165,10 @@ export default async function CheckoutPage() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="min-w-0 space-y-4">
                     <div className="flex items-center justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">Produto</span>
-                      <span className="max-w-44 truncate font-medium">
+                      <span className="block min-w-0 max-w-44 truncate font-medium">
                         {checkout.product.name}
                       </span>
                     </div>
@@ -182,9 +182,9 @@ export default async function CheckoutPage() {
                       <ExternalLink className="h-4 w-4" />
                       {getCheckoutStatusLabel(checkout.checkoutStatus)}
                     </div>
-                    <div className="grid gap-1 text-sm">
+                    <div className="grid min-w-0 gap-1 text-sm">
                       <span className="text-muted-foreground">Slug</span>
-                      <span className="truncate font-mono text-xs">
+                      <span className="block max-w-full truncate font-mono text-xs">
                         {checkout.checkoutSlug}
                       </span>
                     </div>

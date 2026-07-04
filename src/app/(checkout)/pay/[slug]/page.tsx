@@ -26,6 +26,26 @@ type PublicCheckoutPageProps = {
   }>;
 };
 
+function getCheckoutImageUrl(value: string | null): string | null {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (!/^https?:$/.test(url.protocol)) {
+      return null;
+    }
+
+    return /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(url.pathname)
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function PublicCheckoutPage({
   params,
   searchParams,
@@ -39,7 +59,8 @@ export default async function PublicCheckoutPage({
   }
 
   const { product } = checkout;
-  const hasImage = Boolean(product.image_url);
+  const checkoutImageUrl = getCheckoutImageUrl(product.image_url);
+  const hasImage = Boolean(checkoutImageUrl);
   const showSuccess = query?.pedido === "criado";
   const showError = query?.erro === "pedido";
 
@@ -75,7 +96,7 @@ export default async function PublicCheckoutPage({
               style={
                 hasImage
                   ? {
-                      backgroundImage: `linear-gradient(rgba(3, 7, 18, 0.18), rgba(3, 7, 18, 0.18)), url(${product.image_url})`,
+                      backgroundImage: `linear-gradient(rgba(3, 7, 18, 0.18), rgba(3, 7, 18, 0.18)), url(${checkoutImageUrl})`,
                       backgroundPosition: "center",
                       backgroundSize: "cover",
                     }
