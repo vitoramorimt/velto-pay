@@ -39,7 +39,7 @@ export function PasswordResetForm() {
 
   return (
     <form
-      className="space-y-4"
+      className="space-y-5"
       noValidate
       onSubmit={form.handleSubmit(onSubmit)}
     >
@@ -49,6 +49,7 @@ export function PasswordResetForm() {
         <Label htmlFor="email">E-mail</Label>
         <Input
           autoComplete="email"
+          className="h-11 border-white/10 bg-black/25 text-white placeholder:text-slate-500 transition-all focus-visible:border-accent/40 focus-visible:ring-accent/35"
           id="email"
           placeholder="nome@empresa.com"
           type="email"
@@ -62,7 +63,7 @@ export function PasswordResetForm() {
       </div>
 
       <Button
-        className="w-full bg-accent text-accent-foreground shadow-[0_18px_52px_rgba(25,205,139,0.18)] hover:bg-accent/90"
+        className="h-11 w-full bg-accent text-accent-foreground shadow-[0_18px_52px_rgba(25,205,139,0.22)] hover:-translate-y-0.5 hover:bg-accent/90 hover:shadow-[0_24px_70px_rgba(25,205,139,0.26)]"
         disabled={isPending}
         type="submit"
       >

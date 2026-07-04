@@ -40,7 +40,7 @@ export function UpdatePasswordForm() {
 
   return (
     <form
-      className="space-y-4"
+      className="space-y-5"
       noValidate
       onSubmit={form.handleSubmit(onSubmit)}
     >
@@ -50,6 +50,7 @@ export function UpdatePasswordForm() {
         <Label htmlFor="password">Nova senha</Label>
         <Input
           autoComplete="new-password"
+          className="h-11 border-white/10 bg-black/25 text-white placeholder:text-slate-500 transition-all focus-visible:border-accent/40 focus-visible:ring-accent/35"
           id="password"
           placeholder="Mínimo de 8 caracteres"
           type="password"
@@ -66,6 +67,7 @@ export function UpdatePasswordForm() {
         <Label htmlFor="confirmPassword">Confirmar senha</Label>
         <Input
           autoComplete="new-password"
+          className="h-11 border-white/10 bg-black/25 text-white placeholder:text-slate-500 transition-all focus-visible:border-accent/40 focus-visible:ring-accent/35"
           id="confirmPassword"
           placeholder="Repita a nova senha"
           type="password"
@@ -79,7 +81,7 @@ export function UpdatePasswordForm() {
       </div>
 
       <Button
-        className="w-full bg-accent text-accent-foreground shadow-[0_18px_52px_rgba(25,205,139,0.18)] hover:bg-accent/90"
+        className="h-11 w-full bg-accent text-accent-foreground shadow-[0_18px_52px_rgba(25,205,139,0.22)] hover:-translate-y-0.5 hover:bg-accent/90 hover:shadow-[0_24px_70px_rgba(25,205,139,0.26)]"
         disabled={isPending}
         type="submit"
       >

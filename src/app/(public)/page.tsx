@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 import { VeltoLogo } from "@/components/brand/velto-logo";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,7 +79,7 @@ const mockupTracks = ["Produto", "Checkout", "Entrega", "IA de Vendas"];
 export default function LandingPage() {
   return (
     <main className="min-h-dvh overflow-hidden bg-[#030806] text-slate-100">
-      <header className="bg-[#030806]/78 fixed inset-x-0 top-0 z-50 border-b border-white/10 backdrop-blur-2xl">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#030806]/72 backdrop-blur-2xl">
         <div className="mx-auto flex h-18 w-full max-w-[1520px] items-center justify-between px-4 sm:px-6 lg:px-10">
           <Link
             aria-label="Velto Pay"
@@ -95,8 +94,27 @@ export default function LandingPage() {
             />
           </Link>
 
+          <nav
+            aria-label="Navegação principal"
+            className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.035] p-1 text-sm text-slate-400 shadow-[0_18px_70px_rgba(0,0,0,0.18)] lg:flex"
+          >
+            {[
+              ["Produto", "#produto"],
+              ["Como funciona", "#como-funciona"],
+              ["IA de Vendas", "#ia-de-vendas"],
+              ["Segurança", "#seguranca"],
+            ].map(([label, href]) => (
+              <Link
+                className="rounded-full px-4 py-2 transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                href={href}
+                key={label}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
           <nav aria-label="Acesso" className="flex items-center gap-2">
-            <ThemeToggle className="hidden border-white/10 bg-white/[0.04] md:grid" />
             <Button
               asChild
               className="text-slate-300 hover:bg-white/10 hover:text-white"
@@ -132,18 +150,18 @@ export default function LandingPage() {
           sizes="100vw"
           src="/brand/velto-pay-logo.jpeg"
         />
-        <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(3,8,6,0.58),#030806_78%),radial-gradient(circle_at_50%_18%,rgba(25,205,139,0.20),transparent_38%),linear-gradient(110deg,rgba(25,205,139,0.12),transparent_42%,rgba(59,130,246,0.07))]" />
+        <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(3,8,6,0.54),#030806_78%),radial-gradient(circle_at_50%_12%,rgba(25,205,139,0.22),transparent_40%),radial-gradient(circle_at_82%_28%,rgba(255,255,255,0.07),transparent_28%),linear-gradient(110deg,rgba(25,205,139,0.13),transparent_42%,rgba(59,130,246,0.06))]" />
         <div className="velto-grid absolute inset-0 -z-10 opacity-[0.10]" />
 
         <div className="mx-auto grid min-h-[84dvh] w-full max-w-[1520px] items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24">
-          <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
+          <div className="velto-fade-up mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
             <Badge
               className="mb-7 border-accent/30 bg-accent/10 px-3 py-1 text-accent shadow-[0_0_48px_rgba(25,205,139,0.18)]"
               variant="outline"
             >
               Plataforma brasileira para produtos digitais
             </Badge>
-            <h1 className="text-balance text-4xl font-semibold tracking-normal text-white sm:text-6xl lg:text-7xl">
+            <h1 className="text-balance text-5xl font-semibold leading-[0.95] tracking-normal text-white sm:text-6xl lg:text-7xl">
               Venda produtos digitais com checkout próprio, IA de vendas e
               operação financeira em um único lugar.
             </h1>
@@ -173,13 +191,30 @@ export default function LandingPage() {
                 <Link href="/login">Acessar minha conta</Link>
               </Button>
             </div>
+
+            <div className="mt-9 grid gap-3 text-left sm:grid-cols-3">
+              {["Checkout próprio", "IA comercial", "Financeiro integrado"].map(
+                (item) => (
+                  <div
+                    className="rounded-lg border border-white/10 bg-white/[0.035] px-4 py-3 text-sm text-slate-300 shadow-[0_16px_55px_rgba(0,0,0,0.16)]"
+                    key={item}
+                  >
+                    <CheckCircle2 className="mb-2 h-4 w-4 text-accent" />
+                    {item}
+                  </div>
+                ),
+              )}
+            </div>
           </div>
 
           <PublicPlatformMockup />
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1520px] px-4 py-18 sm:px-6 lg:px-10 lg:py-22">
+      <section
+        className="mx-auto w-full max-w-[1520px] px-4 py-18 sm:px-6 lg:px-10 lg:py-22"
+        id="produto"
+      >
         <div className="mx-auto max-w-3xl text-center">
           <Badge
             className="border-accent/30 bg-accent/10 text-accent"
@@ -218,7 +253,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.025]">
+      <section
+        className="border-y border-white/10 bg-white/[0.025]"
+        id="como-funciona"
+      >
         <div className="mx-auto grid w-full max-w-[1520px] gap-10 px-4 py-18 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-10 lg:py-22">
           <div className="max-w-xl">
             <Badge
@@ -262,7 +300,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-[1520px] gap-10 px-4 py-18 sm:px-6 lg:grid-cols-[1.04fr_0.96fr] lg:px-10 lg:py-22">
+      <section
+        className="mx-auto grid w-full max-w-[1520px] gap-10 px-4 py-18 sm:px-6 lg:grid-cols-[1.04fr_0.96fr] lg:px-10 lg:py-22"
+        id="ia-de-vendas"
+      >
         <div className="rounded-lg border border-accent/20 bg-[linear-gradient(145deg,rgba(25,205,139,0.11),rgba(255,255,255,0.04)_42%,rgba(5,12,9,0.92))] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.28)] sm:p-8">
           <div className="flex h-12 w-12 items-center justify-center rounded-md border border-accent/25 bg-accent/10 text-accent shadow-[0_0_54px_rgba(25,205,139,0.15)]">
             <Bot className="h-6 w-6" />
@@ -307,7 +348,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.025]">
+      <section
+        className="border-y border-white/10 bg-white/[0.025]"
+        id="seguranca"
+      >
         <div className="mx-auto grid w-full max-w-[1520px] gap-10 px-4 py-18 sm:px-6 lg:grid-cols-[0.88fr_1.12fr] lg:px-10 lg:py-22">
           <div>
             <Badge

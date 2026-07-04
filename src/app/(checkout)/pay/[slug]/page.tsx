@@ -45,7 +45,7 @@ export default async function PublicCheckoutPage({
 
   return (
     <main className="min-h-dvh bg-background text-foreground">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(25,205,139,0.16),transparent_34rem),radial-gradient(circle_at_80%_10%,rgba(59,130,246,0.10),transparent_30rem)]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_0%,hsl(var(--accent)/0.16),transparent_34rem),radial-gradient(circle_at_80%_10%,hsl(var(--foreground)/0.05),transparent_30rem)]" />
       <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between gap-4">
           <Link
@@ -71,7 +71,7 @@ export default async function PublicCheckoutPage({
         <section className="grid flex-1 items-center gap-8 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:py-16">
           <div className="min-w-0">
             <div
-              className="flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border bg-muted/35 shadow-soft-lg"
+              className="flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border border-border/80 bg-muted/35 shadow-soft-lg"
               style={
                 hasImage
                   ? {
@@ -97,7 +97,7 @@ export default async function PublicCheckoutPage({
             <Badge className="mt-6" variant="secondary">
               Produto digital
             </Badge>
-            <h1 className="mt-5 text-balance text-4xl font-semibold tracking-normal sm:text-5xl">
+            <h1 className="mt-5 text-balance text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
               {product.name}
             </h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
@@ -112,7 +112,7 @@ export default async function PublicCheckoutPage({
                 "Suporte do produtor",
               ].map((item) => (
                 <div
-                  className="rounded-lg border border-border bg-card/80 p-4 text-sm text-muted-foreground shadow-sm"
+                  className="rounded-lg border border-border/80 bg-card/80 p-4 text-sm text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-accent/25"
                   key={item}
                 >
                   <Sparkles className="mb-3 h-4 w-4 text-accent" />
@@ -122,8 +122,8 @@ export default async function PublicCheckoutPage({
             </div>
           </div>
 
-          <Card className="overflow-hidden shadow-soft-lg">
-            <CardHeader className="border-b bg-muted/35">
+          <Card className="velto-card overflow-hidden shadow-soft-lg">
+            <CardHeader className="border-b border-border/80 bg-muted/35">
               <CardTitle>Finalizar compra</CardTitle>
               <CardDescription>
                 Informe seus dados para iniciar o pedido.
@@ -150,7 +150,7 @@ export default async function PublicCheckoutPage({
                 </div>
               ) : null}
 
-              <div className="rounded-lg border bg-background/80 p-4">
+              <div className="rounded-lg border border-border/80 bg-background/80 p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="font-medium">{product.name}</p>
@@ -164,7 +164,10 @@ export default async function PublicCheckoutPage({
                 </div>
               </div>
 
-              <form action={createPendingCheckoutOrderAction} className="grid gap-4">
+              <form
+                action={createPendingCheckoutOrderAction}
+                className="grid gap-4"
+              >
                 <input name="slug" type="hidden" value={checkout.checkoutSlug} />
 
                 <div className="grid gap-2">
