@@ -1,9 +1,11 @@
 import "server-only";
 
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
+import type { CheckoutLink } from "@/modules/checkout/domain/types";
 import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 import {
   ensureCheckoutForProduct,
+  findCheckoutLinkByProductId,
   listCheckoutsByProducerId,
 } from "@/modules/checkout/infrastructure/checkout.repository";
 import {
@@ -62,6 +64,11 @@ function getProducerState(producer: Producer | null): ProducerAccessState {
 
   return "ready";
 }
+
+export type ProductSettingsPageData = {
+  checkoutLink: CheckoutLink | null;
+  product: ProductFormValues;
+};
 
 async function requireProductProducer(nextPath: string) {
   const user = await requireAuthenticatedUser(nextPath);
@@ -147,7 +154,7 @@ export async function getProductForEditUseCase(
   productId: string,
 ): Promise<ProductFormValues | null> {
   const { producer, supabase } = await requireProductProducer(
-    `/dashboard/produtos/${productId}/editar`,
+    `/dashboard/produtos/${productId}/configuracoes`,
   );
   const product = await findProductByProducerId(
     supabase,
@@ -156,6 +163,30 @@ export async function getProductForEditUseCase(
   );
 
   return product ? toProductFormValues(product) : null;
+}
+
+export async function getProductSettingsPageData(
+  productId: string,
+): Promise<ProductSettingsPageData | null> {
+  const { producer, supabase } = await requireProductProducer(
+    `/dashboard/produtos/${productId}/configuracoes`,
+  );
+  const product = await findProductByProducerId(
+    supabase,
+    productId,
+    producer.id,
+  );
+
+  if (!product) {
+    return null;
+  }
+
+  const checkoutLink = await findCheckoutLinkByProductId(supabase, productId);
+
+  return {
+    checkoutLink,
+    product: toProductFormValues(product),
+  };
 }
 
 export async function createProductUseCase(
@@ -188,7 +219,7 @@ export async function updateProductUseCase(
   input: UpdateProductInput,
 ): Promise<Product> {
   const { producer, supabase } = await requireProductProducer(
-    `/dashboard/produtos/${input.id}/editar`,
+    `/dashboard/produtos/${input.id}/configuracoes`,
   );
   const currentProduct = await findProductByProducerId(
     supabase,
