@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { publicCheckoutOrderSchema } from "@/modules/checkout/domain/schemas";
-import { createSupabaseServerClient } from "@/shared/supabase";
+import { createCheckoutPaymentUseCase } from "@/modules/payments/application/payment-use-cases";
 
 function getCheckoutRedirect(slug: string, status: "erro" | "pedido") {
   if (!slug) {
@@ -30,14 +30,15 @@ export async function createPendingCheckoutOrderAction(formData: FormData) {
     redirect(getCheckoutRedirect(safeSlug, "erro"));
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc("create_pending_checkout_order", {
-    p_checkout_slug: parsedInput.data.slug,
-    p_customer_email: parsedInput.data.customerEmail,
-    p_customer_name: parsedInput.data.customerName,
-  });
-
-  if (error) {
+  try {
+    await createCheckoutPaymentUseCase({
+      checkoutSlug: parsedInput.data.slug,
+      customer: {
+        email: parsedInput.data.customerEmail,
+        name: parsedInput.data.customerName,
+      },
+    });
+  } catch {
     redirect(getCheckoutRedirect(parsedInput.data.slug, "erro"));
   }
 

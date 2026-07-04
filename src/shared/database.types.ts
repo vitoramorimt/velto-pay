@@ -586,6 +586,10 @@ export type Database = {
           order_id: string
           paid_at: string | null
           provider: Database["public"]["Enums"]["payment_provider"]
+          provider_checkout_url: string | null
+          provider_environment: Database["public"]["Enums"]["payment_environment"]
+          provider_payload: Json
+          provider_reference: string | null
           raw_provider_status: string | null
           status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
@@ -603,6 +607,10 @@ export type Database = {
           order_id: string
           paid_at?: string | null
           provider: Database["public"]["Enums"]["payment_provider"]
+          provider_checkout_url?: string | null
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          provider_payload?: Json
+          provider_reference?: string | null
           raw_provider_status?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
@@ -620,6 +628,10 @@ export type Database = {
           order_id?: string
           paid_at?: string | null
           provider?: Database["public"]["Enums"]["payment_provider"]
+          provider_checkout_url?: string | null
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          provider_payload?: Json
+          provider_reference?: string | null
           raw_provider_status?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
@@ -630,6 +642,82 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      refunds: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          external_refund_id: string | null
+          id: string
+          order_id: string
+          payment_id: string
+          producer_id: string
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_environment: Database["public"]["Enums"]["payment_environment"]
+          provider_payload: Json
+          reason: string | null
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          external_refund_id?: string | null
+          id?: string
+          order_id: string
+          payment_id: string
+          producer_id: string
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          provider_payload?: Json
+          reason?: string | null
+          refunded_at?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          external_refund_id?: string | null
+          id?: string
+          order_id?: string
+          payment_id?: string
+          producer_id?: string
+          provider?: Database["public"]["Enums"]["payment_provider"]
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          provider_payload?: Json
+          reason?: string | null
+          refunded_at?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refunds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_producer_id_fkey"
+            columns: ["producer_id"]
+            isOneToOne: false
+            referencedRelation: "producers"
             referencedColumns: ["id"]
           },
         ]
@@ -731,6 +819,82 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          external_transaction_id: string | null
+          id: string
+          order_id: string
+          payment_id: string
+          processed_at: string | null
+          producer_id: string
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_environment: Database["public"]["Enums"]["payment_environment"]
+          provider_payload: Json
+          status: Database["public"]["Enums"]["payment_status"]
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          external_transaction_id?: string | null
+          id?: string
+          order_id: string
+          payment_id: string
+          processed_at?: string | null
+          producer_id: string
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          provider_payload?: Json
+          status?: Database["public"]["Enums"]["payment_status"]
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          external_transaction_id?: string | null
+          id?: string
+          order_id?: string
+          payment_id?: string
+          processed_at?: string | null
+          producer_id?: string
+          provider?: Database["public"]["Enums"]["payment_provider"]
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          provider_payload?: Json
+          status?: Database["public"]["Enums"]["payment_status"]
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_producer_id_fkey"
+            columns: ["producer_id"]
+            isOneToOne: false
+            referencedRelation: "producers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           avatar_url: string | null
@@ -764,6 +928,51 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"]
           status?: Database["public"]["Enums"]["user_status"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      webhooks: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string
+          external_event_id: string | null
+          id: string
+          payload: Json
+          processed_at: string | null
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_environment: Database["public"]["Enums"]["payment_environment"]
+          received_at: string
+          signature_valid: boolean
+          status: Database["public"]["Enums"]["payment_event_status"]
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          external_event_id?: string | null
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          provider: Database["public"]["Enums"]["payment_provider"]
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          received_at?: string
+          signature_valid?: boolean
+          status?: Database["public"]["Enums"]["payment_event_status"]
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          external_event_id?: string | null
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          provider?: Database["public"]["Enums"]["payment_provider"]
+          provider_environment?: Database["public"]["Enums"]["payment_environment"]
+          received_at?: string
+          signature_valid?: boolean
+          status?: Database["public"]["Enums"]["payment_event_status"]
         }
         Relationships: []
       }
@@ -828,6 +1037,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_payment_webhook_event: {
+        Args: {
+          p_event_type: string
+          p_external_event_id: string
+          p_external_payment_id: string
+          p_payload: Json
+          p_provider: Database["public"]["Enums"]["payment_provider"]
+          p_status: Database["public"]["Enums"]["payment_status"]
+        }
+        Returns: Json
+      }
+      create_checkout_payment_attempt: {
+        Args: {
+          p_checkout_slug: string
+          p_customer_email: string
+          p_customer_name: string
+          p_environment: Database["public"]["Enums"]["payment_environment"]
+          p_external_payment_id: string
+          p_method: Database["public"]["Enums"]["payment_method"]
+          p_provider: Database["public"]["Enums"]["payment_provider"]
+          p_provider_checkout_url: string | null
+          p_provider_payload: Json
+          p_provider_reference: string
+          p_raw_provider_status: string
+          p_status: Database["public"]["Enums"]["payment_status"]
+        }
+        Returns: Json
+      }
       create_pending_checkout_order: {
         Args: {
           p_checkout_slug: string
@@ -872,20 +1109,35 @@ export type Database = {
         | "processed"
         | "failed"
         | "discarded"
+      payment_environment: "development" | "sandbox" | "production"
       payment_event_status: "received" | "processed" | "failed"
       payment_method: "pix" | "credit_card" | "boleto"
-      payment_provider: "mercadopago" | "pagarme" | "stripe" | "manual"
+      payment_provider:
+        | "mercadopago"
+        | "pagarme"
+        | "stripe"
+        | "asaas"
+        | "manual"
       payment_status:
         | "pending"
         | "processing"
         | "paid"
+        | "authorized"
         | "failed"
         | "refunded"
         | "chargeback"
         | "canceled"
+        | "cancelled"
       producer_status: "pending" | "approved" | "rejected" | "blocked"
       product_status: "draft" | "active" | "inactive" | "archived"
       product_type: "one_time"
+      transaction_type:
+        | "payment"
+        | "authorization"
+        | "capture"
+        | "refund"
+        | "chargeback"
+        | "cancellation"
       user_role: "admin" | "producer" | "affiliate" | "support"
       user_status: "active" | "pending" | "disabled"
       withdrawal_status:
@@ -1059,21 +1311,32 @@ export const Constants = {
         "failed",
         "discarded",
       ],
+      payment_environment: ["development", "sandbox", "production"],
       payment_event_status: ["received", "processed", "failed"],
       payment_method: ["pix", "credit_card", "boleto"],
-      payment_provider: ["mercadopago", "pagarme", "stripe", "manual"],
+      payment_provider: ["mercadopago", "pagarme", "stripe", "asaas", "manual"],
       payment_status: [
         "pending",
         "processing",
         "paid",
+        "authorized",
         "failed",
         "refunded",
         "chargeback",
         "canceled",
+        "cancelled",
       ],
       producer_status: ["pending", "approved", "rejected", "blocked"],
       product_status: ["draft", "active", "inactive", "archived"],
       product_type: ["one_time"],
+      transaction_type: [
+        "payment",
+        "authorization",
+        "capture",
+        "refund",
+        "chargeback",
+        "cancellation",
+      ],
       user_role: ["admin", "producer", "affiliate", "support"],
       user_status: ["active", "pending", "disabled"],
       withdrawal_status: [
