@@ -8,6 +8,7 @@ export default async function UpdatePasswordPage() {
   return (
     <AuthCard
       description="Defina uma nova senha para continuar usando a Velto Pay."
+      showBrand
       title="Redefinir senha"
     >
       <UpdatePasswordForm />

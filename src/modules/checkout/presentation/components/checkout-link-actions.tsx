@@ -53,7 +53,13 @@ export function CheckoutLinkActions({
 
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-      <Button onClick={copyLink} size="sm" type="button" variant="outline">
+      <Button
+        className="border-accent/20 bg-accent/10 text-accent hover:bg-accent hover:text-accent-foreground"
+        onClick={copyLink}
+        size="sm"
+        type="button"
+        variant="outline"
+      >
         {copied ? <Check /> : <Copy />}
         {copied ? "Copiado" : "Copiar link"}
       </Button>

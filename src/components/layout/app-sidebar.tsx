@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LifeBuoy } from "lucide-react";
+import { LifeBuoy, Sparkles } from "lucide-react";
 
 import { appNavigationItems } from "@/components/layout/app-navigation";
 import { VeltoLogo } from "@/components/brand/velto-logo";
@@ -13,15 +13,16 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden min-h-dvh w-72 shrink-0 border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground lg:flex lg:flex-col">
-      <VeltoLogo
-        className="px-2"
-        imageClassName="h-10 w-10"
-        labelClassName="text-sm text-sidebar-foreground"
-        priority
-        showLabel
-        size={40}
-      />
+    <aside className="hidden min-h-dvh w-72 shrink-0 border-r border-sidebar-border bg-sidebar/98 px-4 py-5 text-sidebar-foreground lg:flex lg:flex-col">
+      <div className="rounded-lg border border-white/10 bg-white/[0.035] p-3 shadow-[0_18px_70px_rgba(0,0,0,0.20)]">
+        <VeltoLogo
+          imageClassName="h-10 w-10 rounded-md"
+          labelClassName="text-sm text-sidebar-foreground"
+          priority
+          showLabel
+          size={40}
+        />
+      </div>
 
       <nav className="mt-8 space-y-1">
         {appNavigationItems.map((item) => {
@@ -32,9 +33,9 @@ export function AppSidebar() {
               ? pathname === item.href
               : pathname === item.href || pathname.startsWith(`${item.href}/`));
           const itemClassName = cn(
-            "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+            "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",
             item.href
-              ? "text-sidebar-foreground/72 hover:bg-white/5 hover:text-sidebar-foreground"
+              ? "text-sidebar-foreground/72 hover:translate-x-0.5 hover:bg-white/5 hover:text-sidebar-foreground"
               : "cursor-default text-sidebar-foreground/38",
             isActive &&
               "bg-sidebar-active text-sidebar-active-foreground shadow-inner-line",
@@ -76,15 +77,19 @@ export function AppSidebar() {
         })}
       </nav>
 
-      <div className="mt-auto rounded-lg border border-white/10 bg-white/[0.03] p-4">
+      <div className="mt-auto rounded-lg border border-white/10 bg-[linear-gradient(145deg,rgba(25,205,139,0.10),rgba(255,255,255,0.035))] p-4 shadow-[0_22px_80px_rgba(0,0,0,0.18)]">
         <div className="flex items-center gap-2 text-sm font-medium">
-          <LifeBuoy className="h-4 w-4 text-accent" />
-          Suporte visual
+          <Sparkles className="h-4 w-4 text-accent" />
+          Velto MVP
         </div>
         <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
           Checkout e financeiro já possuem visão MVP. Pagamentos reais e saque
           seguem fora desta etapa.
         </p>
+        <div className="mt-4 flex items-center gap-2 rounded-md border border-white/10 bg-black/15 px-3 py-2 text-xs text-sidebar-foreground/70">
+          <LifeBuoy className="h-3.5 w-3.5 text-accent" />
+          Operação preparada para escalar
+        </div>
       </div>
     </aside>
   );

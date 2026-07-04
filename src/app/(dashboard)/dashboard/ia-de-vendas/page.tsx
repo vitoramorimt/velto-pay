@@ -59,8 +59,8 @@ export default async function SalesAiPage() {
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <section className="velto-surface rounded-lg p-6 sm:p-8">
+    <div className="velto-page-shell">
+      <section className="velto-page-hero">
         <Badge
           className="border-accent/30 bg-accent/10 text-accent"
           variant="outline"
@@ -69,7 +69,7 @@ export default async function SalesAiPage() {
         </Badge>
         <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_0.86fr] lg:items-end">
           <div>
-            <h1 className="text-2xl font-semibold tracking-normal sm:text-3xl">
+            <h1 className="text-3xl font-semibold tracking-normal sm:text-4xl">
               IA de Vendas
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -77,9 +77,9 @@ export default async function SalesAiPage() {
               organizar sugestões de conversão. Ainda não há IA real conectada.
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-muted/35 p-4">
+          <div className="rounded-lg border border-accent/20 bg-accent/10 p-4 shadow-[0_18px_60px_hsl(var(--accent)/0.08)]">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-background text-accent">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-background/70 text-accent">
                 <BrainCircuit className="h-5 w-5" />
               </div>
               <div>
@@ -96,9 +96,11 @@ export default async function SalesAiPage() {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((metric) => (
-          <Card key={metric.label}>
+          <Card className="velto-card" key={metric.label}>
             <CardHeader>
-              <CardDescription>{metric.label}</CardDescription>
+              <CardDescription className="text-xs font-medium uppercase tracking-[0.16em]">
+                {metric.label}
+              </CardDescription>
               <CardTitle className="text-2xl">{metric.value}</CardTitle>
             </CardHeader>
           </Card>
@@ -106,10 +108,12 @@ export default async function SalesAiPage() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <Card>
+        <Card className="velto-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <UserRound className="h-4 w-4 text-accent" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
+                <UserRound className="h-4 w-4" />
+              </span>
               Persona principal
             </CardTitle>
             <CardDescription>
@@ -122,7 +126,7 @@ export default async function SalesAiPage() {
               compartilhar checkout próprio e acompanhar sinais comerciais sem
               depender de várias ferramentas.
             </p>
-            <div className="rounded-lg border bg-muted/25 p-4">
+            <div className="rounded-lg border border-accent/20 bg-accent/10 p-4">
               <p className="font-medium text-foreground">Foco sugerido</p>
               <p className="mt-1">
                 Clareza de oferta, link de checkout simples e análise semanal
@@ -132,10 +136,12 @@ export default async function SalesAiPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="velto-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-accent" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
+                <Target className="h-4 w-4" />
+              </span>
               Sugestões para melhorar conversão
             </CardTitle>
             <CardDescription>
@@ -145,7 +151,7 @@ export default async function SalesAiPage() {
           <CardContent className="grid gap-3 sm:grid-cols-2">
             {suggestions.map((suggestion) => (
               <div
-                className="rounded-lg border bg-muted/25 p-4 text-sm leading-6"
+                className="rounded-lg border border-border/80 bg-muted/25 p-4 text-sm leading-6 transition-all hover:-translate-y-0.5 hover:border-accent/25"
                 key={suggestion}
               >
                 <Lightbulb className="mb-3 h-4 w-4 text-accent" />
@@ -156,10 +162,12 @@ export default async function SalesAiPage() {
         </Card>
       </section>
 
-      <Card>
+      <Card className="velto-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MessageSquareText className="h-4 w-4 text-accent" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
+              <MessageSquareText className="h-4 w-4" />
+            </span>
             Perguntar à IA
           </CardTitle>
           <CardDescription>
@@ -168,8 +176,8 @@ export default async function SalesAiPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border bg-muted/25 p-4">
-            <div className="mb-4 flex items-start gap-3 rounded-lg border bg-background/70 p-4">
+          <div className="rounded-lg border border-border/80 bg-muted/25 p-4">
+            <div className="mb-4 flex items-start gap-3 rounded-lg border border-accent/20 bg-background/70 p-4">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
                 <Bot className="h-4 w-4" />
               </div>

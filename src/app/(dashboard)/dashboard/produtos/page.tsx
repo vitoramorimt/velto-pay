@@ -1,4 +1,4 @@
-import { Boxes, Plus, ShieldAlert } from "lucide-react";
+import { Layers3, Plus, ShieldAlert, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,12 +36,18 @@ export default async function ProductsPage() {
   ).length;
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <section className="velto-surface rounded-lg p-6 sm:p-8">
+    <div className="velto-page-shell">
+      <section className="velto-page-hero">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Badge variant="secondary">Catálogo</Badge>
-            <h1 className="mt-4 text-2xl font-semibold tracking-normal sm:text-3xl">
+            <Badge
+              className="border-accent/25 bg-accent/10 text-accent"
+              variant="outline"
+            >
+              <Sparkles className="mr-1 h-3 w-3" />
+              Catálogo
+            </Badge>
+            <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-4xl">
               Produtos
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -52,7 +58,7 @@ export default async function ProductsPage() {
 
           {data.state === "ready" ? (
             <ProductCreateDialog>
-              <Button>
+              <Button className="shadow-[0_18px_52px_hsl(var(--accent)/0.14)]">
                 <Plus />
                 Novo produto
               </Button>
@@ -70,7 +76,7 @@ export default async function ProductsPage() {
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <Card>
+            <Card className="velto-card">
               <CardHeader>
                 <CardDescription>Total</CardDescription>
                 <CardTitle className="text-2xl">
@@ -78,13 +84,13 @@ export default async function ProductsPage() {
                 </CardTitle>
               </CardHeader>
             </Card>
-            <Card>
+            <Card className="velto-card">
               <CardHeader>
                 <CardDescription>Ativos</CardDescription>
                 <CardTitle className="text-2xl">{activeProducts}</CardTitle>
               </CardHeader>
             </Card>
-            <Card>
+            <Card className="velto-card">
               <CardHeader>
                 <CardDescription>Produtor</CardDescription>
                 <CardTitle className="truncate text-base">
@@ -102,11 +108,11 @@ export default async function ProductsPage() {
               products={data.products}
             />
           ) : (
-            <Card>
+            <Card className="velto-card">
               <CardContent className="pt-6">
                 <EmptyState
                   description="Comece cadastrando um produto digital com nome, preço, descrição e status inicial."
-                  icon={Boxes}
+                  icon={Layers3}
                   title="Nenhum produto cadastrado"
                 />
                 <div className="mt-5 flex justify-center">

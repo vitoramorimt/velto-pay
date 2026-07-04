@@ -170,8 +170,8 @@ export function ProductForm({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-soft-lg">
-      <div className="border-b border-border bg-muted/40 p-4 sm:p-5">
+    <div className="overflow-hidden rounded-lg border border-border/80 bg-card text-card-foreground shadow-soft-lg">
+      <div className="border-b border-border/80 bg-[linear-gradient(135deg,hsl(var(--accent)/0.10),hsl(var(--muted)/0.45))] p-4 sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Badge
@@ -180,14 +180,14 @@ export function ProductForm({
             >
               {mode === "create" ? "Novo produto" : "Editar produto"}
             </Badge>
-            <h2 className="mt-3 text-xl font-semibold">
+            <h2 className="mt-3 text-xl font-semibold sm:text-2xl">
               {mode === "create"
                 ? "Configure o produto em poucos passos"
                 : "Atualize as informações do produto"}
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 rounded-lg border border-border bg-background/60 p-1 text-xs">
+          <div className="grid grid-cols-2 gap-2 rounded-lg border border-border/80 bg-background/70 p-1 text-xs shadow-sm">
             <StepPill active={currentStep === 1} disabled={mode === "edit"}>
               1. Estrutura
             </StepPill>
@@ -251,10 +251,10 @@ export function ProductForm({
                   {membersAreaOptions.map((option) => (
                     <button
                       className={cn(
-                        "rounded-lg border p-4 text-left transition-all",
+                        "rounded-lg border p-4 text-left transition-all duration-300",
                         membersAreaMode === option.value
-                          ? "border-accent/40 bg-accent/10 shadow-[0_0_40px_rgba(25,205,139,0.12)]"
-                          : "border-border bg-muted/35 hover:border-accent/25 hover:bg-muted/60",
+                          ? "border-accent/40 bg-accent/10 shadow-[0_0_40px_hsl(var(--accent)/0.12)]"
+                          : "border-border bg-muted/35 hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted/60",
                       )}
                       key={option.value}
                       onClick={() => setMembersAreaMode(option.value)}
@@ -272,7 +272,11 @@ export function ProductForm({
 
             <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-between">
               <CancelButton onCancel={onCancel} />
-              <Button onClick={() => setCurrentStep(2)} type="button">
+              <Button
+                className="shadow-[0_18px_52px_hsl(var(--accent)/0.14)]"
+                onClick={() => setCurrentStep(2)}
+                type="button"
+              >
                 Continuar
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -376,7 +380,11 @@ export function ProductForm({
 
             <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-between">
               <CancelButton onCancel={onCancel} />
-              <Button disabled={isSubmitting} type="submit">
+              <Button
+                className="shadow-[0_18px_52px_hsl(var(--accent)/0.14)]"
+                disabled={isSubmitting}
+                type="submit"
+              >
                 {isSubmitting ? (
                   <Loader2 className="animate-spin" />
                 ) : mode === "create" ? null : (
@@ -420,8 +428,10 @@ function StepPill({
   return (
     <span
       className={cn(
-        "rounded-md px-3 py-2 text-center font-medium",
-        active ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+        "rounded-md px-3 py-2 text-center font-medium transition-all",
+        active
+          ? "bg-accent text-accent-foreground shadow-sm"
+          : "text-muted-foreground",
         disabled && "opacity-50",
       )}
     >
@@ -466,17 +476,17 @@ function OptionCard({
     <button
       aria-pressed={active}
       className={cn(
-        "rounded-lg border p-4 text-left transition-all",
+        "rounded-lg border p-4 text-left transition-all duration-300",
         active
-          ? "border-accent/40 bg-accent/10 shadow-[0_0_40px_rgba(25,205,139,0.12)]"
-          : "border-border bg-muted/35 hover:border-accent/25 hover:bg-muted/60",
+          ? "border-accent/40 bg-accent/10 shadow-[0_0_40px_hsl(var(--accent)/0.12)]"
+          : "border-border bg-muted/35 hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted/60",
       )}
       onClick={onClick}
       tabIndex={onClick ? 0 : -1}
       type="button"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-background/80 text-accent">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
           <Icon className="h-5 w-5" />
         </div>
         <div>
