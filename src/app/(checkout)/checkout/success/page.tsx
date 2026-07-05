@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, Mail, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Gift, Mail, ShieldCheck } from "lucide-react";
 
 import { VeltoLogo } from "@/components/brand/velto-logo";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getCheckoutSuccessContext } from "@/modules/checkout/application/checkout-use-cases";
+import { formatCentsToCurrency } from "@/modules/products/domain/money";
 
 type CheckoutSuccessPageProps = {
   searchParams?: Promise<{
@@ -23,6 +25,9 @@ export default async function CheckoutSuccessPage({
 }: CheckoutSuccessPageProps) {
   const query = await searchParams;
   const sessionId = query?.session_id;
+  const successContext = await getCheckoutSuccessContext(sessionId);
+  const productName = successContext?.product_name ?? "sua compra";
+  const recommendedOffers = successContext?.offers ?? [];
 
   return (
     <main className="min-h-dvh bg-background text-foreground">
@@ -56,15 +61,35 @@ export default async function CheckoutSuccessPage({
                 <CheckCircle2 className="h-8 w-8" />
               </div>
               <CardTitle className="mt-4 text-2xl">
-                Compra confirmada
+                Obrigado pela compra
               </CardTitle>
               <CardDescription className="max-w-md text-sm leading-6">
-                Recebemos a confirmação do Stripe. O produtor será notificado e
-                os dados financeiros serão atualizados via webhook seguro.
+                Recebemos o retorno do Stripe para {productName}. A confirmação
+                final da venda é feita por webhook seguro.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-5 p-6">
-              {sessionId ? (
+              {successContext ? (
+                <div className="rounded-lg border border-border/80 bg-background/80 p-4 text-left">
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                    Resumo do pedido
+                  </p>
+                  <div className="mt-4 grid gap-3 text-sm">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-muted-foreground">Produto</span>
+                      <span className="font-medium">
+                        {successContext.product_name}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-muted-foreground">Total</span>
+                      <span className="font-semibold text-accent">
+                        {formatCentsToCurrency(successContext.total_cents)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : sessionId ? (
                 <div className="rounded-lg border border-border/80 bg-background/80 p-4 text-left">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                     Sessão Stripe
@@ -72,6 +97,41 @@ export default async function CheckoutSuccessPage({
                   <p className="mt-2 break-all text-sm text-foreground">
                     {sessionId}
                   </p>
+                </div>
+              ) : null}
+
+              {recommendedOffers.length > 0 ? (
+                <div className="grid gap-3 text-left">
+                  <div>
+                    <p className="text-sm font-medium">Ofertas recomendadas</p>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      O produtor pode ativar ofertas adicionais para aumentar o
+                      valor percebido após a compra.
+                    </p>
+                  </div>
+                  {recommendedOffers.map((offer) => (
+                    <div
+                      className="rounded-lg border border-border/80 bg-background/80 p-4"
+                      key={offer.id}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <Gift className="h-4 w-4 text-accent" />
+                            <p className="font-medium">{offer.title}</p>
+                          </div>
+                          {offer.description ? (
+                            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                              {offer.description}
+                            </p>
+                          ) : null}
+                        </div>
+                        <p className="shrink-0 text-sm font-semibold text-accent">
+                          {formatCentsToCurrency(offer.amount_cents)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : null}
 

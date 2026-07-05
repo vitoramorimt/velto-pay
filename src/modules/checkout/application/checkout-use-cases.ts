@@ -4,13 +4,17 @@ import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import type {
   CheckoutLink,
+  CheckoutSuccessContext,
+  CheckoutUtm,
   PublicCheckout,
 } from "@/modules/checkout/domain/types";
 import {
   deleteCheckoutByProducerId,
   ensureCheckoutForProduct,
   findPublicCheckoutBySlug,
+  getCheckoutSuccessContextByProviderReference,
   listCheckoutsByProducerId,
+  recordCheckoutVisit,
 } from "@/modules/checkout/infrastructure/checkout.repository";
 import {
   findProducerByUserId,
@@ -66,6 +70,38 @@ export async function getPublicCheckoutBySlug(
   return findPublicCheckoutBySlug(supabase, slug);
 }
 
+export async function recordPublicCheckoutVisit(
+  checkout: PublicCheckout,
+  input: {
+    referrer?: string | null;
+    sessionId?: string | null;
+    userAgent?: string | null;
+    utm: CheckoutUtm;
+  },
+): Promise<void> {
+  const supabase = await createSupabaseServerClient();
+
+  await recordCheckoutVisit(supabase, {
+    checkout,
+    ...input,
+  });
+}
+
+export async function getCheckoutSuccessContext(
+  providerReference?: string | null,
+): Promise<CheckoutSuccessContext | null> {
+  if (!providerReference) {
+    return null;
+  }
+
+  const supabase = await createSupabaseServerClient();
+
+  return getCheckoutSuccessContextByProviderReference(
+    supabase,
+    providerReference,
+  );
+}
+
 export async function createCheckoutForProductUseCase(
   productId: string,
 ): Promise<CheckoutLink> {
@@ -79,7 +115,11 @@ export async function createCheckoutForProductUseCase(
     );
   }
 
-  const product = await findProductByProducerId(supabase, productId, producer.id);
+  const product = await findProductByProducerId(
+    supabase,
+    productId,
+    producer.id,
+  );
 
   if (!product) {
     throw new CheckoutUseCaseError("Produto não encontrado.");

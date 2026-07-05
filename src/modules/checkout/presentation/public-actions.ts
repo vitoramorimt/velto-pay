@@ -17,13 +17,28 @@ function getCheckoutRedirect(slug: string, status: "erro" | "pedido") {
   return `/pay/${slug}?erro=pedido`;
 }
 
+function getOptionalString(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  return value.trim() || undefined;
+}
+
 export async function createPendingCheckoutOrderAction(formData: FormData) {
   const rawSlug = String(formData.get("slug") ?? "");
   const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(rawSlug) ? rawSlug : "";
   const parsedInput = publicCheckoutOrderSchema.safeParse({
+    couponCode: formData.get("couponCode"),
     customerEmail: formData.get("customerEmail"),
     customerName: formData.get("customerName"),
+    orderBumpIds: formData.getAll("orderBumpIds").map(String),
     slug: rawSlug,
+    utmCampaign: getOptionalString(formData.get("utmCampaign")),
+    utmContent: getOptionalString(formData.get("utmContent")),
+    utmMedium: getOptionalString(formData.get("utmMedium")),
+    utmSource: getOptionalString(formData.get("utmSource")),
+    utmTerm: getOptionalString(formData.get("utmTerm")),
   });
 
   if (!parsedInput.success) {
@@ -35,9 +50,18 @@ export async function createPendingCheckoutOrderAction(formData: FormData) {
   try {
     const paymentAttempt = await createCheckoutPaymentUseCase({
       checkoutSlug: parsedInput.data.slug,
+      couponCode: parsedInput.data.couponCode,
       customer: {
         email: parsedInput.data.customerEmail,
         name: parsedInput.data.customerName,
+      },
+      orderBumpIds: parsedInput.data.orderBumpIds,
+      tracking: {
+        utmCampaign: parsedInput.data.utmCampaign,
+        utmContent: parsedInput.data.utmContent,
+        utmMedium: parsedInput.data.utmMedium,
+        utmSource: parsedInput.data.utmSource,
+        utmTerm: parsedInput.data.utmTerm,
       },
     });
 

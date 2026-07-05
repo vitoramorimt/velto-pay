@@ -1,6 +1,15 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { CheckCircle2, Lock, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  BadgeCheck,
+  CheckCircle2,
+  Gift,
+  Lock,
+  ShieldCheck,
+  Sparkles,
+  TicketPercent,
+} from "lucide-react";
 
 import { VeltoLogo } from "@/components/brand/velto-logo";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +21,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPublicCheckoutBySlug } from "@/modules/checkout/application/checkout-use-cases";
+import {
+  getPublicCheckoutBySlug,
+  recordPublicCheckoutVisit,
+} from "@/modules/checkout/application/checkout-use-cases";
+import { CheckoutPixels } from "@/modules/checkout/presentation/components/checkout-pixels";
 import { createPendingCheckoutOrderAction } from "@/modules/checkout/presentation/public-actions";
 import { formatCentsToCurrency } from "@/modules/products/domain/money";
 
@@ -23,6 +36,12 @@ type PublicCheckoutPageProps = {
   searchParams?: Promise<{
     erro?: string;
     pedido?: string;
+    utm_campaign?: string;
+    utm_content?: string;
+    utm_medium?: string;
+    utm_source?: string;
+    utm_term?: string;
+    vlt_session?: string;
   }>;
 };
 
@@ -33,6 +52,7 @@ export default async function PublicCheckoutPage({
   const { slug } = await params;
   const checkout = await getPublicCheckoutBySlug(slug);
   const query = await searchParams;
+  const requestHeaders = await headers();
 
   if (!checkout) {
     notFound();
@@ -42,9 +62,31 @@ export default async function PublicCheckoutPage({
   const hasImage = Boolean(product.image_url);
   const showSuccess = query?.pedido === "criado";
   const showError = query?.erro === "pedido";
+  const orderBumps = checkout.offers.orderBumps;
+  const trackingFields = {
+    utmCampaign: query?.utm_campaign ?? "",
+    utmContent: query?.utm_content ?? "",
+    utmMedium: query?.utm_medium ?? "",
+    utmSource: query?.utm_source ?? "",
+    utmTerm: query?.utm_term ?? "",
+  };
+
+  await recordPublicCheckoutVisit(checkout, {
+    referrer: requestHeaders.get("referer"),
+    sessionId: query?.vlt_session ?? null,
+    userAgent: requestHeaders.get("user-agent"),
+    utm: {
+      campaign: query?.utm_campaign ?? null,
+      content: query?.utm_content ?? null,
+      medium: query?.utm_medium ?? null,
+      source: query?.utm_source ?? null,
+      term: query?.utm_term ?? null,
+    },
+  });
 
   return (
     <main className="min-h-dvh bg-background text-foreground">
+      <CheckoutPixels pixels={checkout.pixels} />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_0%,hsl(var(--accent)/0.16),transparent_34rem),radial-gradient(circle_at_80%_10%,hsl(var(--foreground)/0.05),transparent_30rem)]" />
       <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between gap-4">
@@ -120,6 +162,37 @@ export default async function PublicCheckoutPage({
                 </div>
               ))}
             </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {[
+                {
+                  icon: BadgeCheck,
+                  label: "Garantia clara",
+                  text: "Condições informadas pelo produtor antes da compra.",
+                },
+                {
+                  icon: ShieldCheck,
+                  label: "Pagamento seguro",
+                  text: "Confirmação processada por gateway homologado.",
+                },
+                {
+                  icon: Lock,
+                  label: "Dados protegidos",
+                  text: "Informações usadas somente para concluir o pedido.",
+                },
+              ].map((item) => (
+                <div
+                  className="rounded-lg border border-border/80 bg-card/70 p-4 text-sm shadow-sm"
+                  key={item.label}
+                >
+                  <item.icon className="mb-3 h-4 w-4 text-accent" />
+                  <p className="font-medium">{item.label}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    {item.text}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <Card className="velto-card overflow-hidden shadow-soft-lg">
@@ -151,6 +224,9 @@ export default async function PublicCheckoutPage({
               ) : null}
 
               <div className="rounded-lg border border-border/80 bg-background/80 p-4">
+                <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  Resumo do pedido
+                </p>
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="font-medium">{product.name}</p>
@@ -168,7 +244,16 @@ export default async function PublicCheckoutPage({
                 action={createPendingCheckoutOrderAction}
                 className="grid gap-4"
               >
-                <input name="slug" type="hidden" value={checkout.checkoutSlug} />
+                <input
+                  name="slug"
+                  type="hidden"
+                  value={checkout.checkoutSlug}
+                />
+                {Object.entries(trackingFields).map(([name, value]) =>
+                  value ? (
+                    <input key={name} name={name} type="hidden" value={value} />
+                  ) : null,
+                )}
 
                 <div className="grid gap-2">
                   <label className="text-sm font-medium" htmlFor="customerName">
@@ -203,6 +288,62 @@ export default async function PublicCheckoutPage({
                   />
                 </div>
 
+                {orderBumps.length > 0 ? (
+                  <div className="grid gap-3">
+                    <div>
+                      <p className="text-sm font-medium">
+                        Complemente sua compra
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Selecione ofertas adicionais para incluir no pedido.
+                      </p>
+                    </div>
+                    {orderBumps.map((offer) => (
+                      <label
+                        className="group flex cursor-pointer items-start gap-3 rounded-lg border border-border/80 bg-background/70 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/35 hover:bg-accent/5"
+                        key={offer.id}
+                      >
+                        <input
+                          className="mt-1 h-4 w-4 rounded border-input bg-background text-accent focus:ring-accent"
+                          name="orderBumpIds"
+                          type="checkbox"
+                          value={offer.id}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-start justify-between gap-3">
+                            <span className="font-medium">{offer.title}</span>
+                            <span className="shrink-0 text-sm font-semibold text-accent">
+                              {formatCentsToCurrency(offer.amount_cents)}
+                            </span>
+                          </span>
+                          {offer.description ? (
+                            <span className="mt-1 block text-xs leading-5 text-muted-foreground">
+                              {offer.description}
+                            </span>
+                          ) : null}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium" htmlFor="couponCode">
+                    Cupom
+                  </label>
+                  <div className="relative">
+                    <TicketPercent className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      autoCapitalize="characters"
+                      className="h-11 w-full rounded-md border border-input bg-background/80 pl-9 pr-3 text-sm uppercase shadow-sm outline-none transition-colors placeholder:normal-case placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                      id="couponCode"
+                      maxLength={32}
+                      name="couponCode"
+                      placeholder="Inserir cupom"
+                    />
+                  </div>
+                </div>
+
                 <Button className="h-11" type="submit">
                   <ShieldCheck />
                   Comprar
@@ -219,11 +360,11 @@ export default async function PublicCheckoutPage({
                   </p>
                 </div>
                 <div className="rounded-lg border p-4">
-                  <Lock className="h-5 w-5 text-accent" />
-                  <p className="mt-3 text-sm font-medium">Dados protegidos</p>
+                  <Gift className="h-5 w-5 text-accent" />
+                  <p className="mt-3 text-sm font-medium">Entrega digital</p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Suas informações são usadas apenas para processar este
-                    pedido.
+                    O acesso ao conteúdo é enviado após confirmação do
+                    pagamento.
                   </p>
                 </div>
               </div>

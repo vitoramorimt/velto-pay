@@ -66,25 +66,44 @@ export async function createCheckoutPaymentAttempt(
     method: PaymentMethod;
     provider: PaymentProviderName;
     providerResult: ProviderCheckoutResult;
+    couponCode?: string | null;
+    orderBumpIds?: string[];
+    tracking?: {
+      utmCampaign?: string | null;
+      utmContent?: string | null;
+      utmMedium?: string | null;
+      utmSource?: string | null;
+      utmTerm?: string | null;
+    };
   },
 ): Promise<PaymentAttempt> {
-  const { data, error } = await supabase.rpc("create_checkout_payment_attempt", {
-    p_checkout_slug: input.checkoutSlug,
-    p_customer_email: input.customerEmail,
-    p_customer_name: input.customerName,
-    p_environment: input.environment,
-    p_external_payment_id: input.providerResult.externalPaymentId,
-    p_method: input.method,
-    p_provider: input.provider,
-    p_provider_checkout_url: input.providerResult.providerCheckoutUrl,
-    p_provider_payload: {
-      raw_status: input.providerResult.rawStatus,
-      reference: input.providerResult.providerReference,
-    } satisfies Json,
-    p_provider_reference: input.providerResult.providerReference,
-    p_raw_provider_status: input.providerResult.rawStatus,
-    p_status: input.providerResult.status,
-  });
+  const { data, error } = await supabase.rpc(
+    "create_premium_checkout_payment_attempt",
+    {
+      p_checkout_slug: input.checkoutSlug,
+      p_coupon_code: input.couponCode || null,
+      p_customer_email: input.customerEmail,
+      p_customer_name: input.customerName,
+      p_environment: input.environment,
+      p_external_payment_id: input.providerResult.externalPaymentId,
+      p_method: input.method,
+      p_order_bump_ids: input.orderBumpIds ?? [],
+      p_provider: input.provider,
+      p_provider_checkout_url: input.providerResult.providerCheckoutUrl,
+      p_provider_payload: {
+        raw_status: input.providerResult.rawStatus,
+        reference: input.providerResult.providerReference,
+      } satisfies Json,
+      p_provider_reference: input.providerResult.providerReference,
+      p_raw_provider_status: input.providerResult.rawStatus,
+      p_status: input.providerResult.status,
+      p_utm_campaign: input.tracking?.utmCampaign || null,
+      p_utm_content: input.tracking?.utmContent || null,
+      p_utm_medium: input.tracking?.utmMedium || null,
+      p_utm_source: input.tracking?.utmSource || null,
+      p_utm_term: input.tracking?.utmTerm || null,
+    },
+  );
 
   if (error) {
     console.error("[payments] createCheckoutPaymentAttempt failed", error);
