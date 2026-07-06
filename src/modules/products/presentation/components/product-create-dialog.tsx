@@ -54,7 +54,7 @@ export function ProductCreateDialog({ children }: ProductCreateDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="bottom-0 top-auto max-h-[92dvh] w-[calc(100%-1rem)] translate-y-0 overflow-y-auto rounded-b-none border-white/10 bg-transparent p-0 shadow-[0_42px_140px_rgba(0,0,0,0.48)] sm:bottom-auto sm:top-[50%] sm:max-w-3xl sm:translate-y-[-50%] sm:rounded-lg">
+      <DialogContent className="bottom-[var(--safe-area-bottom)] top-auto max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom)-0.75rem)] w-[calc(100%-1rem)] translate-y-0 overflow-y-auto rounded-b-none border-white/10 bg-transparent p-0 shadow-[0_42px_140px_rgba(0,0,0,0.48)] sm:bottom-auto sm:top-[50%] sm:max-h-[92dvh] sm:max-w-3xl sm:translate-y-[-50%] sm:rounded-lg">
         <DialogHeader className="sr-only">
           <DialogTitle>Criar produto</DialogTitle>
           <DialogDescription>

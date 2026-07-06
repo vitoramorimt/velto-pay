@@ -134,6 +134,12 @@ export function SalesAiChat({ configured }: SalesAiChatProps) {
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Enter envia. Shift+Enter cria uma nova linha.
           </p>
+          {!configured ? (
+            <p className="mt-3 rounded-md border border-warning/25 bg-warning/10 px-3 py-2 text-sm leading-6 text-warning">
+              A IA real ainda não está configurada neste ambiente. Configure
+              OPENAI_API_KEY para ativar respostas com OpenAI.
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -153,7 +159,7 @@ export function SalesAiChat({ configured }: SalesAiChatProps) {
             ) : null}
             <div
               className={cn(
-                "max-w-[min(42rem,85%)] whitespace-pre-wrap break-words rounded-lg px-4 py-3 text-sm leading-6",
+                "max-w-[min(38rem,calc(100%-2.75rem))] whitespace-pre-wrap break-words rounded-lg px-4 py-3 text-sm leading-6",
                 message.role === "user"
                   ? "bg-accent text-accent-foreground"
                   : "border border-border/80 bg-background/75 text-muted-foreground",

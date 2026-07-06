@@ -19,6 +19,7 @@ import { PaymentMethodTabs } from "./checkout-payment-method-tabs";
 
 type CheckoutFormProps = {
   checkoutSlug?: string;
+  errorReason?: string;
   formAction?: (formData: FormData) => void | Promise<void>;
   isPreview?: boolean;
   items: CheckoutOrderItem[];
@@ -29,6 +30,7 @@ type CheckoutFormProps = {
 
 export function CheckoutForm({
   checkoutSlug,
+  errorReason,
   formAction,
   isPreview = false,
   items,
@@ -39,6 +41,10 @@ export function CheckoutForm({
   const customerForm = useForm<CustomerFormValues>({
     resolver: zodResolver(customerFormSchema),
   });
+  const errorMessage =
+    errorReason === "configuracao"
+      ? "O checkout ainda não está configurado para receber pagamentos. Tente novamente em instantes ou entre em contato com o produtor."
+      : "Não foi possível iniciar o pedido. Revise seus dados e tente novamente.";
 
   if (showSuccess) {
     return (
@@ -96,9 +102,7 @@ export function CheckoutForm({
             </p>
           </div>
 
-          {showError ? (
-            <ErrorView message="Não foi possível iniciar o pedido. Revise seus dados e tente novamente." />
-          ) : null}
+          {showError ? <ErrorView message={errorMessage} /> : null}
 
           <PaymentMethodTabs
             disabled={isPreview}

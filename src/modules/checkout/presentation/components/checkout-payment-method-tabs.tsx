@@ -56,7 +56,7 @@ export function PaymentMethodTabs({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {METHODS.map((method) => {
           const Icon = method.icon;
           const isActive = activeMethod === method.value;

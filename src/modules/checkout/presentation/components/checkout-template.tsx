@@ -9,6 +9,7 @@ import { OrderSummarySidebar } from "./checkout-order-summary-sidebar";
 
 type CheckoutTemplateProps = {
   checkoutSlug?: string;
+  errorReason?: string;
   formAction?: (formData: FormData) => void | Promise<void>;
   product: CheckoutProduct;
   showError?: boolean;
@@ -18,6 +19,7 @@ type CheckoutTemplateProps = {
 
 export function CheckoutTemplate({
   checkoutSlug,
+  errorReason,
   formAction,
   product,
   showError = false,
@@ -35,7 +37,7 @@ export function CheckoutTemplate({
   ];
 
   return (
-    <main className="dark relative min-h-dvh overflow-hidden bg-background px-4 py-10 text-foreground">
+    <main className="velto-checkout-shell dark relative min-h-dvh overflow-hidden bg-background px-4 text-foreground">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(25,205,139,0.16),transparent)]"
@@ -53,6 +55,7 @@ export function CheckoutTemplate({
       <div className="relative z-10 mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
         <CheckoutForm
           checkoutSlug={checkoutSlug}
+          errorReason={errorReason}
           formAction={formAction}
           isPreview={isPreview}
           items={items}

@@ -56,9 +56,10 @@ export default async function PublicCheckoutPage({
       <CheckoutPixels pixels={checkout.pixels} />
       <CheckoutTemplate
         checkoutSlug={checkout.checkoutSlug}
+        errorReason={query?.erro}
         formAction={createPendingCheckoutOrderAction}
         product={checkout.product}
-        showError={query?.erro === "pedido"}
+        showError={Boolean(query?.erro)}
         showSuccess={query?.pedido === "criado"}
         variant="public"
       />
