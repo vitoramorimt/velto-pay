@@ -20,13 +20,37 @@ export type StripeEnv = {
   webhookSecret?: string;
 };
 
+function normalizeOrigin(value?: string | null): string | null {
+  const origin = value?.trim();
+
+  if (!origin) {
+    return null;
+  }
+
+  try {
+    return new URL(origin).origin;
+  } catch {
+    return null;
+  }
+}
+
 function resolveAppUrl(env: z.infer<typeof stripeEnvSchema>) {
-  if (env.NEXT_PUBLIC_APP_URL) {
-    return env.NEXT_PUBLIC_APP_URL;
+  const appUrl = normalizeOrigin(env.NEXT_PUBLIC_APP_URL);
+
+  if (appUrl) {
+    return appUrl;
+  }
+
+  const vercelUrl = normalizeOrigin(env.VERCEL_URL);
+
+  if (vercelUrl) {
+    return vercelUrl;
   }
 
   if (env.VERCEL_URL) {
-    return `https://${env.VERCEL_URL}`;
+    return (
+      normalizeOrigin(`https://${env.VERCEL_URL}`) ?? "http://localhost:3000"
+    );
   }
 
   return "http://localhost:3000";

@@ -63,7 +63,7 @@ export default async function CheckoutPage() {
             </p>
           </div>
           <div className="rounded-lg border border-border/80 bg-muted/35 px-4 py-3 text-sm text-muted-foreground">
-            Base local: <span className="font-medium">/pay/slug</span>
+            Formato público: <span className="font-medium">/pay/slug</span>
           </div>
         </div>
       </section>
@@ -110,12 +110,13 @@ export default async function CheckoutPage() {
                 </TableHeader>
                 <TableBody>
                   {data.links.map((checkout) => (
-                    <TableRow className="transition-colors" key={checkout.checkoutId}>
+                    <TableRow
+                      className="transition-colors"
+                      key={checkout.checkoutId}
+                    >
                       <TableCell>
                         <div className="max-w-sm">
-                          <p className="font-medium">
-                            {checkout.checkoutName}
-                          </p>
+                          <p className="font-medium">{checkout.checkoutName}</p>
                           <p className="mt-1 text-sm text-muted-foreground">
                             {getCheckoutStatusLabel(checkout.checkoutStatus)}
                           </p>
@@ -169,7 +170,7 @@ export default async function CheckoutPage() {
                         <CardTitle className="truncate">
                           {checkout.checkoutName}
                         </CardTitle>
-                        <CardDescription className="mt-1 truncate">
+                        <CardDescription className="velto-break-anywhere mt-1 text-xs leading-5">
                           {checkout.link}
                         </CardDescription>
                       </div>

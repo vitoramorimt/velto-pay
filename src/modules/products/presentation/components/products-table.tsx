@@ -216,7 +216,7 @@ export function ProductsTable({
                 <div className="grid min-w-0 gap-1 text-sm">
                   <span className="text-muted-foreground">Checkout</span>
                   {checkoutLink ? (
-                    <span className="block min-w-0 truncate font-medium">
+                    <span className="velto-break-anywhere block min-w-0 font-medium leading-5">
                       {checkoutLink}
                     </span>
                   ) : (

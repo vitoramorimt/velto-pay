@@ -54,7 +54,7 @@ export function CheckoutLinkActions({
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
       <Button
-        className="border-accent/20 bg-accent/10 text-accent hover:bg-accent hover:text-accent-foreground"
+        className="w-full border-accent/20 bg-accent/10 text-accent hover:bg-accent hover:text-accent-foreground sm:w-auto"
         onClick={copyLink}
         size="sm"
         type="button"
@@ -63,13 +63,14 @@ export function CheckoutLinkActions({
         {copied ? <Check /> : <Copy />}
         {copied ? "Copiado" : "Copiar link"}
       </Button>
-      <Button asChild size="sm" variant="outline">
+      <Button asChild className="w-full sm:w-auto" size="sm" variant="outline">
         <Link href={previewHref} target="_blank">
           <ExternalLink />
           Visualizar
         </Link>
       </Button>
       <Button
+        className="w-full sm:w-auto"
         disabled={isDeleting}
         onClick={deleteCheckout}
         size="sm"

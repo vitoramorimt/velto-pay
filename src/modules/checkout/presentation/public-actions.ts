@@ -66,7 +66,12 @@ export async function createPendingCheckoutOrderAction(formData: FormData) {
     });
 
     checkoutUrl = paymentAttempt.checkoutUrl;
-  } catch {
+  } catch (error) {
+    console.error("[checkout] createPendingCheckoutOrderAction failed", {
+      error,
+      slug: parsedInput.data.slug,
+    });
+
     redirect(getCheckoutRedirect(parsedInput.data.slug, "erro"));
   }
 

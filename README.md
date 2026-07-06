@@ -58,6 +58,7 @@ Configure `.env.local` com:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 PAYMENT_PROVIDER=stripe
 PAYMENT_ENVIRONMENT=sandbox
 STRIPE_SECRET_KEY=
@@ -65,6 +66,8 @@ STRIPE_PUBLISHABLE_KEY=
 STRIPE_WEBHOOK_SECRET=
 STRIPE_SUCCESS_URL=http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}
 STRIPE_CANCEL_URL=http://localhost:3000/checkout/cancel
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
 ```
 
 ## Supabase
