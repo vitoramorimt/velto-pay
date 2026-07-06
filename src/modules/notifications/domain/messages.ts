@@ -21,6 +21,12 @@ export const notificationMessageTemplates: Record<
   NotificationEventType,
   NotificationMessageTemplate
 > = {
+  balance_available: {
+    body: "Seu saldo disponível foi atualizado.",
+    preference: "financial_enabled",
+    route: "/dashboard/financeiro",
+    title: "Saldo disponível atualizado",
+  },
   chargeback_created: {
     body: "Um chargeback foi registrado na sua operação.",
     preference: "chargebacks_enabled",
@@ -80,6 +86,24 @@ export const notificationMessageTemplates: Record<
     preference: "sales_enabled",
     route: "/dashboard",
     title: "Nova venda aprovada",
+  },
+  withdrawal_failed: {
+    body: "Não foi possível concluir uma solicitação de saque.",
+    preference: "financial_enabled",
+    route: "/dashboard/financeiro",
+    title: "Saque não concluído",
+  },
+  withdrawal_paid: {
+    body: "Um saque foi marcado como pago.",
+    preference: "financial_enabled",
+    route: "/dashboard/financeiro",
+    title: "Saque pago",
+  },
+  withdrawal_requested: {
+    body: "Sua solicitação de saque foi registrada.",
+    preference: "financial_enabled",
+    route: "/dashboard/financeiro",
+    title: "Saque solicitado com sucesso",
   },
 };
 

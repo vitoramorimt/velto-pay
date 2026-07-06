@@ -1438,6 +1438,329 @@ export type Database = {
         };
         Relationships: [];
       };
+      platform_revenue: {
+        Row: {
+          created_at: string;
+          gateway_fee_amount_cents: number;
+          gross_amount_cents: number;
+          id: string;
+          net_amount_to_producer_cents: number;
+          order_id: string | null;
+          payment_id: string | null;
+          platform_fee_amount_cents: number;
+          producer_id: string;
+          status: Database["public"]["Enums"]["payment_status"];
+        };
+        Insert: {
+          created_at?: string;
+          gateway_fee_amount_cents?: number;
+          gross_amount_cents?: number;
+          id?: string;
+          net_amount_to_producer_cents?: number;
+          order_id?: string | null;
+          payment_id?: string | null;
+          platform_fee_amount_cents?: number;
+          producer_id: string;
+          status?: Database["public"]["Enums"]["payment_status"];
+        };
+        Update: {
+          created_at?: string;
+          gateway_fee_amount_cents?: number;
+          gross_amount_cents?: number;
+          id?: string;
+          net_amount_to_producer_cents?: number;
+          order_id?: string | null;
+          payment_id?: string | null;
+          platform_fee_amount_cents?: number;
+          producer_id?: string;
+          status?: Database["public"]["Enums"]["payment_status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "platform_revenue_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "platform_revenue_payment_id_fkey";
+            columns: ["payment_id"];
+            isOneToOne: true;
+            referencedRelation: "payments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "platform_revenue_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: false;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      wallets: {
+        Row: {
+          available_balance_cents: number;
+          created_at: string;
+          id: string;
+          pending_balance_cents: number;
+          producer_id: string;
+          total_fees_paid_cents: number;
+          total_received_cents: number;
+          total_withdrawn_cents: number;
+          updated_at: string;
+        };
+        Insert: {
+          available_balance_cents?: number;
+          created_at?: string;
+          id?: string;
+          pending_balance_cents?: number;
+          producer_id: string;
+          total_fees_paid_cents?: number;
+          total_received_cents?: number;
+          total_withdrawn_cents?: number;
+          updated_at?: string;
+        };
+        Update: {
+          available_balance_cents?: number;
+          created_at?: string;
+          id?: string;
+          pending_balance_cents?: number;
+          producer_id?: string;
+          total_fees_paid_cents?: number;
+          total_received_cents?: number;
+          total_withdrawn_cents?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wallets_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: true;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      wallet_transactions: {
+        Row: {
+          available_at: string | null;
+          created_at: string;
+          description: string | null;
+          gateway_fee_amount_cents: number;
+          gross_amount_cents: number;
+          id: string;
+          metadata: Json;
+          net_amount_cents: number;
+          order_id: string | null;
+          payment_id: string | null;
+          platform_fee_amount_cents: number;
+          producer_id: string;
+          status: Database["public"]["Enums"]["wallet_transaction_status"];
+          type: Database["public"]["Enums"]["wallet_transaction_type"];
+          updated_at: string;
+          wallet_id: string;
+          withdrawal_request_id: string | null;
+        };
+        Insert: {
+          available_at?: string | null;
+          created_at?: string;
+          description?: string | null;
+          gateway_fee_amount_cents?: number;
+          gross_amount_cents?: number;
+          id?: string;
+          metadata?: Json;
+          net_amount_cents?: number;
+          order_id?: string | null;
+          payment_id?: string | null;
+          platform_fee_amount_cents?: number;
+          producer_id: string;
+          status: Database["public"]["Enums"]["wallet_transaction_status"];
+          type: Database["public"]["Enums"]["wallet_transaction_type"];
+          updated_at?: string;
+          wallet_id: string;
+          withdrawal_request_id?: string | null;
+        };
+        Update: {
+          available_at?: string | null;
+          created_at?: string;
+          description?: string | null;
+          gateway_fee_amount_cents?: number;
+          gross_amount_cents?: number;
+          id?: string;
+          metadata?: Json;
+          net_amount_cents?: number;
+          order_id?: string | null;
+          payment_id?: string | null;
+          platform_fee_amount_cents?: number;
+          producer_id?: string;
+          status?: Database["public"]["Enums"]["wallet_transaction_status"];
+          type?: Database["public"]["Enums"]["wallet_transaction_type"];
+          updated_at?: string;
+          wallet_id?: string;
+          withdrawal_request_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wallet_transactions_payment_id_fkey";
+            columns: ["payment_id"];
+            isOneToOne: false;
+            referencedRelation: "payments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wallet_transactions_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: false;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wallet_transactions_wallet_id_fkey";
+            columns: ["wallet_id"];
+            isOneToOne: false;
+            referencedRelation: "wallets";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wallet_transactions_withdrawal_request_id_fkey";
+            columns: ["withdrawal_request_id"];
+            isOneToOne: false;
+            referencedRelation: "withdrawal_requests";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      withdrawal_requests: {
+        Row: {
+          amount_cents: number;
+          bank_name: string | null;
+          created_at: string;
+          failed_reason: string | null;
+          holder_document: string;
+          holder_name: string;
+          id: string;
+          metadata: Json;
+          pix_key: string;
+          pix_key_type: Database["public"]["Enums"]["pix_key_type"];
+          processed_at: string | null;
+          producer_id: string;
+          requested_at: string;
+          status: Database["public"]["Enums"]["withdrawal_status"];
+          updated_at: string;
+          wallet_id: string;
+        };
+        Insert: {
+          amount_cents: number;
+          bank_name?: string | null;
+          created_at?: string;
+          failed_reason?: string | null;
+          holder_document: string;
+          holder_name: string;
+          id?: string;
+          metadata?: Json;
+          pix_key: string;
+          pix_key_type: Database["public"]["Enums"]["pix_key_type"];
+          processed_at?: string | null;
+          producer_id: string;
+          requested_at?: string;
+          status?: Database["public"]["Enums"]["withdrawal_status"];
+          updated_at?: string;
+          wallet_id: string;
+        };
+        Update: {
+          amount_cents?: number;
+          bank_name?: string | null;
+          created_at?: string;
+          failed_reason?: string | null;
+          holder_document?: string;
+          holder_name?: string;
+          id?: string;
+          metadata?: Json;
+          pix_key?: string;
+          pix_key_type?: Database["public"]["Enums"]["pix_key_type"];
+          processed_at?: string | null;
+          producer_id?: string;
+          requested_at?: string;
+          status?: Database["public"]["Enums"]["withdrawal_status"];
+          updated_at?: string;
+          wallet_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_requests_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: false;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "withdrawal_requests_wallet_id_fkey";
+            columns: ["wallet_id"];
+            isOneToOne: false;
+            referencedRelation: "wallets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      withdrawal_settings: {
+        Row: {
+          created_at: string;
+          default_bank_name: string | null;
+          default_holder_document: string | null;
+          default_holder_name: string | null;
+          default_pix_key: string | null;
+          default_pix_key_type:
+            | Database["public"]["Enums"]["pix_key_type"]
+            | null;
+          id: string;
+          producer_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          default_bank_name?: string | null;
+          default_holder_document?: string | null;
+          default_holder_name?: string | null;
+          default_pix_key?: string | null;
+          default_pix_key_type?:
+            | Database["public"]["Enums"]["pix_key_type"]
+            | null;
+          id?: string;
+          producer_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          default_bank_name?: string | null;
+          default_holder_document?: string | null;
+          default_holder_name?: string | null;
+          default_pix_key?: string | null;
+          default_pix_key_type?:
+            | Database["public"]["Enums"]["pix_key_type"]
+            | null;
+          id?: string;
+          producer_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_settings_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: true;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       withdrawals: {
         Row: {
           amount_cents: number;
@@ -1583,11 +1906,42 @@ export type Database = {
         };
         Returns: Database["public"]["Tables"]["notification_preferences"]["Row"];
       };
+      ensure_wallet_for_producer: {
+        Args: { p_producer_id: string };
+        Returns: Database["public"]["Tables"]["wallets"]["Row"];
+      };
       get_checkout_success_context: {
         Args: { p_provider_reference: string };
         Returns: Json;
       };
       is_admin: { Args: never; Returns: boolean };
+      process_wallet_payment_event: {
+        Args: {
+          p_gateway_fee_amount_cents?: number;
+          p_payment_id: string;
+          p_platform_fee_fixed_amount_cents?: number;
+          p_platform_fee_percentage?: number;
+          p_settlement_days?: number;
+          p_status: Database["public"]["Enums"]["payment_status"];
+        };
+        Returns: Json;
+      };
+      release_due_wallet_transactions: {
+        Args: { p_producer_id: string };
+        Returns: number;
+      };
+      request_wallet_withdrawal: {
+        Args: {
+          p_amount_cents: number;
+          p_bank_name?: string | null;
+          p_holder_document: string;
+          p_holder_name: string;
+          p_pix_key: string;
+          p_pix_key_type: Database["public"]["Enums"]["pix_key_type"];
+          p_producer_id: string;
+        };
+        Returns: Json;
+      };
     };
     Enums: {
       affiliate_link_status: "active" | "inactive";
@@ -1627,7 +1981,11 @@ export type Database = {
         | "refund_created"
         | "chargeback_created"
         | "order_created"
-        | "customer_created";
+        | "customer_created"
+        | "balance_available"
+        | "withdrawal_requested"
+        | "withdrawal_paid"
+        | "withdrawal_failed";
       order_status:
         | "pending"
         | "paid"
@@ -1652,6 +2010,7 @@ export type Database = {
         | "stripe"
         | "asaas"
         | "manual";
+      pix_key_type: "cpf" | "cnpj" | "email" | "phone" | "random";
       payment_status:
         | "pending"
         | "processing"
@@ -1674,12 +2033,29 @@ export type Database = {
         | "cancellation";
       user_role: "admin" | "producer" | "affiliate" | "support";
       user_status: "active" | "pending" | "disabled";
+      wallet_transaction_status:
+        | "pending"
+        | "available"
+        | "processing"
+        | "paid"
+        | "failed"
+        | "cancelled";
+      wallet_transaction_type:
+        | "sale"
+        | "refund"
+        | "chargeback"
+        | "withdrawal"
+        | "withdrawal_cancelled"
+        | "platform_fee"
+        | "adjustment";
       withdrawal_status:
         | "requested"
         | "processing"
         | "paid"
         | "rejected"
-        | "canceled";
+        | "canceled"
+        | "failed"
+        | "cancelled";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -1842,6 +2218,22 @@ export const Constants = {
         "release",
         "adjustment",
       ],
+      notification_event_type: [
+        "sale_approved",
+        "pix_created",
+        "pix_expired",
+        "payment_pending",
+        "payment_failed",
+        "payment_paid",
+        "refund_created",
+        "chargeback_created",
+        "order_created",
+        "customer_created",
+        "balance_available",
+        "withdrawal_requested",
+        "withdrawal_paid",
+        "withdrawal_failed",
+      ],
       order_status: [
         "pending",
         "paid",
@@ -1863,6 +2255,7 @@ export const Constants = {
       payment_event_status: ["received", "processed", "failed"],
       payment_method: ["pix", "credit_card", "boleto"],
       payment_provider: ["mercadopago", "pagarme", "stripe", "asaas", "manual"],
+      pix_key_type: ["cpf", "cnpj", "email", "phone", "random"],
       payment_status: [
         "pending",
         "processing",
@@ -1887,12 +2280,31 @@ export const Constants = {
       ],
       user_role: ["admin", "producer", "affiliate", "support"],
       user_status: ["active", "pending", "disabled"],
+      wallet_transaction_status: [
+        "pending",
+        "available",
+        "processing",
+        "paid",
+        "failed",
+        "cancelled",
+      ],
+      wallet_transaction_type: [
+        "sale",
+        "refund",
+        "chargeback",
+        "withdrawal",
+        "withdrawal_cancelled",
+        "platform_fee",
+        "adjustment",
+      ],
       withdrawal_status: [
         "requested",
         "processing",
         "paid",
         "rejected",
         "canceled",
+        "failed",
+        "cancelled",
       ],
     },
   },

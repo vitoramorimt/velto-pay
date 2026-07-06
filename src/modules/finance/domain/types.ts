@@ -1,32 +1,35 @@
 import type { Enums } from "@/shared/database.types";
 
 export type FinanceMetrics = {
-  approvedSales: number;
   availableBalanceCents: number;
-  blockedBalanceCents: number;
   chargebacksCents: number;
   grossRevenueCents: number;
   netRevenueCents: number;
+  pendingBalanceCents: number;
   refundsCents: number;
+  totalFeesPaidCents: number;
+  totalReceivedCents: number;
+  totalWithdrawnCents: number;
 };
 
-export type FinanceLedgerEntry = {
+export type FinanceWalletTransaction = {
   amountCents: number;
   createdAt: string;
   description: string;
-  direction: Enums<"ledger_entry_direction">;
+  grossAmountCents: number;
   id: string;
-  type: Enums<"ledger_entry_type">;
+  status: Enums<"wallet_transaction_status">;
+  type: Enums<"wallet_transaction_type">;
 };
 
 export type FinancePageData =
   | {
-      entries: [];
       metrics: FinanceMetrics;
       state: "missing_producer";
+      transactions: [];
     }
   | {
-      entries: FinanceLedgerEntry[];
       metrics: FinanceMetrics;
       state: "ready";
+      transactions: FinanceWalletTransaction[];
     };

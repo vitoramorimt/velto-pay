@@ -6,6 +6,7 @@ import {
   BrainCircuit,
   CreditCard,
   Home,
+  Landmark,
   ShieldCheck,
   WalletCards,
 } from "lucide-react";
@@ -43,6 +44,11 @@ export const appNavigationItems: AppNavigationItem[] = [
     href: "/dashboard/financeiro",
     icon: WalletCards,
     label: "Financeiro",
+  },
+  {
+    href: "/dashboard/configuracoes/recebimentos",
+    icon: Landmark,
+    label: "Recebimentos",
   },
   {
     href: "/dashboard/notificacoes",

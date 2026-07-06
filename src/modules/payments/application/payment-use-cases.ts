@@ -19,6 +19,7 @@ import {
   applyPaymentWebhookEvent,
   createCheckoutPaymentAttempt,
 } from "@/modules/payments/infrastructure/payment.repository";
+import { settleWalletForPaymentEvent } from "@/modules/wallet/application/wallet-use-cases";
 import { paymentEnv } from "@/shared/config/payment-env";
 import { createSupabaseServerClient } from "@/shared/supabase";
 
@@ -117,6 +118,12 @@ export async function processPaymentWebhookUseCase({
   });
 
   if (result.paymentId) {
+    await settleWalletForPaymentEvent({
+      paymentId: result.paymentId,
+      payload: event.payload,
+      status: result.status,
+    });
+
     await sendNotificationForPaymentEvent({
       paymentId: result.paymentId,
       providerEventType: event.eventType,

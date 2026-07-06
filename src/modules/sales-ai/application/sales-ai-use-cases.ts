@@ -2,7 +2,6 @@ import "server-only";
 
 import { getCurrentUser } from "@/modules/auth/application/guards";
 import { listCheckoutsByProducerId } from "@/modules/checkout/infrastructure/checkout.repository";
-import { listLedgerEntriesByProducerId } from "@/modules/finance/infrastructure/finance.repository";
 import { listOrdersByProducerId } from "@/modules/orders/infrastructure/orders.repository";
 import {
   findProducerByUserId,
@@ -13,6 +12,12 @@ import type {
   SalesAiChatMessage,
   SalesAiContext,
 } from "@/modules/sales-ai/domain/types";
+import {
+  ensureWalletForProducer,
+  getWalletByProducerId,
+  listWalletTransactionsByProducerId,
+  releaseDueWalletTransactions,
+} from "@/modules/wallet/infrastructure/wallet.repository";
 import { createSupabaseServerClient } from "@/shared/supabase";
 
 type AssistantIntent =
@@ -60,11 +65,15 @@ function detectIntent(message: string): AssistantIntent {
     return "sales";
   }
 
-  if (/\b(produto|produtos|catalogo|oferta|ofertas)\b/.test(normalizedMessage)) {
+  if (
+    /\b(produto|produtos|catalogo|oferta|ofertas)\b/.test(normalizedMessage)
+  ) {
     return "products";
   }
 
-  if (/\b(checkout|link|slug|comprar|pagamento|publico)\b/.test(normalizedMessage)) {
+  if (
+    /\b(checkout|link|slug|comprar|pagamento|publico)\b/.test(normalizedMessage)
+  ) {
     return "checkout";
   }
 
@@ -146,7 +155,10 @@ function answerSales(context: SalesAiContext): string {
     return createNoDataGuidance();
   }
 
-  const approvalRate = getPercentage(context.approvedSales, context.totalOrders);
+  const approvalRate = getPercentage(
+    context.approvedSales,
+    context.totalOrders,
+  );
 
   return [
     "Analisei suas vendas com base nos dados disponíveis da sua operação.",
@@ -319,15 +331,6 @@ function buildRulesBasedAnswer({
   return answerGeneral(context);
 }
 
-function getLedgerSignedAmount(entry: {
-  amount_cents: number;
-  direction: "credit" | "debit";
-}): number {
-  return entry.direction === "credit"
-    ? entry.amount_cents
-    : -entry.amount_cents;
-}
-
 async function getSalesAiContext(userId: string): Promise<SalesAiContext> {
   const supabase = await createSupabaseServerClient();
   const producer = await findProducerByUserId(supabase, userId);
@@ -336,12 +339,17 @@ async function getSalesAiContext(userId: string): Promise<SalesAiContext> {
     throw new SalesAiUseCaseError("Produtor não encontrado.");
   }
 
-  const [products, checkouts, orders, ledgerEntries] = await Promise.all([
-    listProductsByProducerId(supabase, producer.id),
-    listCheckoutsByProducerId(supabase, producer.id),
-    listOrdersByProducerId(supabase, producer.id),
-    listLedgerEntriesByProducerId(supabase, producer.id),
-  ]);
+  await ensureWalletForProducer(supabase, producer.id);
+  await releaseDueWalletTransactions(supabase, producer.id);
+
+  const [products, checkouts, orders, wallet, walletTransactions] =
+    await Promise.all([
+      listProductsByProducerId(supabase, producer.id),
+      listCheckoutsByProducerId(supabase, producer.id),
+      listOrdersByProducerId(supabase, producer.id),
+      getWalletByProducerId(supabase, producer.id),
+      listWalletTransactionsByProducerId(supabase, producer.id, 1000),
+    ]);
   const paidOrders = orders.filter((order) => order.status === "paid");
   const refundedOrders = orders.filter((order) => order.status === "refunded");
   const pendingOrders = orders.filter((order) => order.status === "pending");
@@ -359,21 +367,6 @@ async function getSalesAiContext(userId: string): Promise<SalesAiContext> {
     (total, order) => total + order.total_cents,
     0,
   );
-  const now = Date.now();
-  const availableBalanceCents = ledgerEntries.reduce((total, entry) => {
-    if (entry.available_at && new Date(entry.available_at).getTime() > now) {
-      return total;
-    }
-
-    return total + getLedgerSignedAmount(entry);
-  }, 0);
-  const blockedBalanceCents = ledgerEntries.reduce((total, entry) => {
-    if (!entry.available_at || new Date(entry.available_at).getTime() <= now) {
-      return total;
-    }
-
-    return total + getLedgerSignedAmount(entry);
-  }, 0);
   const checkoutProductIds = new Set(
     checkouts.map((checkout) => checkout.product.id),
   );
@@ -392,34 +385,48 @@ async function getSalesAiContext(userId: string): Promise<SalesAiContext> {
     },
     {},
   );
-  const ledgerBalanceCents = ledgerEntries.reduce(
-    (total, entry) => total + getLedgerSignedAmount(entry),
-    0,
-  );
+  const refundsCentsFromWallet = walletTransactions
+    .filter((transaction) => transaction.type === "refund")
+    .reduce(
+      (total, transaction) => total + Math.abs(transaction.net_amount_cents),
+      0,
+    );
+  const chargebacksCentsFromWallet = walletTransactions
+    .filter((transaction) => transaction.type === "chargeback")
+    .reduce(
+      (total, transaction) => total + Math.abs(transaction.net_amount_cents),
+      0,
+    );
+  const walletNetRevenueCents = wallet
+    ? Math.max(
+        wallet.total_received_cents -
+          refundsCentsFromWallet -
+          chargebacksCentsFromWallet,
+        0,
+      )
+    : null;
 
   return {
     activeProducts: products.filter((product) => product.status === "active")
       .length,
     approvedSales: paidOrders.length,
-    availableBalanceCents,
+    availableBalanceCents: wallet?.available_balance_cents ?? 0,
     averageTicketCents:
       paidOrders.length > 0
         ? Math.round(grossRevenueCents / paidOrders.length)
         : 0,
-    blockedBalanceCents,
+    blockedBalanceCents: wallet?.pending_balance_cents ?? 0,
     cancelledOrders: cancelledOrders.length,
     chargebackOrders: chargebackOrders.length,
     checkoutCount: checkouts.length,
     checkoutStatusCounts,
     grossRevenueCents,
     netRevenueCents:
-      ledgerEntries.length > 0
-        ? ledgerBalanceCents
-        : grossRevenueCents - refundsCents,
+      walletNetRevenueCents ?? Math.max(grossRevenueCents - refundsCents, 0),
     pendingOrders: pendingOrders.length,
     productCount: products.length,
     productsWithoutCheckout,
-    refundsCents,
+    refundsCents: refundsCentsFromWallet || refundsCents,
     topProducts: products.slice(0, 5).map((product) => ({
       name: product.name,
       priceCents: product.price_cents,
