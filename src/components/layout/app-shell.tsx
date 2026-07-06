@@ -17,10 +17,15 @@ import { cn } from "@/shared/utils/cn";
 
 type AppShellProps = {
   children: ReactNode;
+  notificationSlot?: ReactNode;
   signOutSlot?: ReactNode;
 };
 
-export function AppShell({ children, signOutSlot }: AppShellProps) {
+export function AppShell({
+  children,
+  notificationSlot,
+  signOutSlot,
+}: AppShellProps) {
   const pathname = usePathname();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
@@ -105,6 +110,7 @@ export function AppShell({ children, signOutSlot }: AppShellProps) {
       >
         <AppHeader
           isMobileNavigationOpen={isMobileNavigationOpen}
+          notificationSlot={notificationSlot}
           onOpenMobileNavigation={() => setIsMobileNavigationOpen(true)}
           signOutSlot={signOutSlot}
         />

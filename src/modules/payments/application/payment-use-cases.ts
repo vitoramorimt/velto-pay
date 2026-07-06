@@ -7,6 +7,7 @@ import {
   getCheckoutQuote,
 } from "@/modules/checkout/infrastructure/checkout.repository";
 import type { WebhookHeaders } from "@/modules/payments/domain/provider";
+import { sendNotificationForPaymentEvent } from "@/modules/notifications/application/notification-use-cases";
 import type {
   CreateCheckoutPaymentInput,
   PaymentAttempt,
@@ -110,9 +111,18 @@ export async function processPaymentWebhookUseCase({
 
   const event = await provider.webhook(rawBody, headers);
   const supabase = await createSupabaseServerClient();
-
-  return applyPaymentWebhookEvent(supabase, {
+  const result = await applyPaymentWebhookEvent(supabase, {
     event,
     provider: provider.config.name,
   });
+
+  if (result.paymentId) {
+    await sendNotificationForPaymentEvent({
+      paymentId: result.paymentId,
+      providerEventType: event.eventType,
+      status: result.status,
+    });
+  }
+
+  return result;
 }

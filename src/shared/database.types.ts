@@ -768,6 +768,177 @@ export type Database = {
           },
         ];
       };
+      notification_preferences: {
+        Row: {
+          chargebacks_enabled: boolean;
+          created_at: string;
+          failed_payments_enabled: boolean;
+          financial_enabled: boolean;
+          id: string;
+          pix_enabled: boolean;
+          producer_id: string;
+          refunds_enabled: boolean;
+          sales_enabled: boolean;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          chargebacks_enabled?: boolean;
+          created_at?: string;
+          failed_payments_enabled?: boolean;
+          financial_enabled?: boolean;
+          id?: string;
+          pix_enabled?: boolean;
+          producer_id: string;
+          refunds_enabled?: boolean;
+          sales_enabled?: boolean;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          chargebacks_enabled?: boolean;
+          created_at?: string;
+          failed_payments_enabled?: boolean;
+          financial_enabled?: boolean;
+          id?: string;
+          pix_enabled?: boolean;
+          producer_id?: string;
+          refunds_enabled?: boolean;
+          sales_enabled?: boolean;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: false;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notification_subscriptions: {
+        Row: {
+          auth: string;
+          created_at: string;
+          enabled: boolean;
+          endpoint: string;
+          id: string;
+          last_used_at: string | null;
+          p256dh: string;
+          platform: string | null;
+          producer_id: string;
+          updated_at: string;
+          user_agent: string | null;
+          user_id: string;
+        };
+        Insert: {
+          auth: string;
+          created_at?: string;
+          enabled?: boolean;
+          endpoint: string;
+          id?: string;
+          last_used_at?: string | null;
+          p256dh: string;
+          platform?: string | null;
+          producer_id: string;
+          updated_at?: string;
+          user_agent?: string | null;
+          user_id: string;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          enabled?: boolean;
+          endpoint?: string;
+          id?: string;
+          last_used_at?: string | null;
+          p256dh?: string;
+          platform?: string | null;
+          producer_id?: string;
+          updated_at?: string;
+          user_agent?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notification_subscriptions_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: false;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notification_subscriptions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notifications: {
+        Row: {
+          body: string;
+          created_at: string;
+          data: Json;
+          event_type: Database["public"]["Enums"]["notification_event_type"];
+          id: string;
+          producer_id: string;
+          read_at: string | null;
+          sent_at: string | null;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          body: string;
+          created_at?: string;
+          data?: Json;
+          event_type: Database["public"]["Enums"]["notification_event_type"];
+          id?: string;
+          producer_id: string;
+          read_at?: string | null;
+          sent_at?: string | null;
+          title: string;
+          user_id: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          data?: Json;
+          event_type?: Database["public"]["Enums"]["notification_event_type"];
+          id?: string;
+          producer_id?: string;
+          read_at?: string | null;
+          sent_at?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: false;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       outbox_events: {
         Row: {
           aggregate_id: string | null;
@@ -1388,7 +1559,30 @@ export type Database = {
         };
         Returns: string;
       };
+      create_notification_for_payment_event: {
+        Args: {
+          p_payment_id: string;
+          p_provider_event_type?: string | null;
+          p_status: Database["public"]["Enums"]["payment_status"];
+        };
+        Returns: {
+          body: string;
+          event_type: Database["public"]["Enums"]["notification_event_type"];
+          notification_id: string;
+          producer_id: string;
+          target_url: string;
+          title: string;
+          user_id: string;
+        }[];
+      };
       current_user_role: { Args: never; Returns: string };
+      ensure_notification_preferences: {
+        Args: {
+          p_producer_id: string;
+          p_user_id: string;
+        };
+        Returns: Database["public"]["Tables"]["notification_preferences"]["Row"];
+      };
       get_checkout_success_context: {
         Args: { p_provider_reference: string };
         Returns: Json;
@@ -1423,6 +1617,17 @@ export type Database = {
         | "hold"
         | "release"
         | "adjustment";
+      notification_event_type:
+        | "sale_approved"
+        | "pix_created"
+        | "pix_expired"
+        | "payment_pending"
+        | "payment_failed"
+        | "payment_paid"
+        | "refund_created"
+        | "chargeback_created"
+        | "order_created"
+        | "customer_created";
       order_status:
         | "pending"
         | "paid"

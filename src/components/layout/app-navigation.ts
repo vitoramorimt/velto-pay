@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
+  Bell,
   Boxes,
   BrainCircuit,
   CreditCard,
@@ -42,6 +43,11 @@ export const appNavigationItems: AppNavigationItem[] = [
     href: "/dashboard/financeiro",
     icon: WalletCards,
     label: "Financeiro",
+  },
+  {
+    href: "/dashboard/notificacoes",
+    icon: Bell,
+    label: "Notificações",
   },
   {
     description: "Relatórios avançados entram depois dos primeiros eventos.",

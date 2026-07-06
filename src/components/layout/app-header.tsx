@@ -11,12 +11,14 @@ import { useAuth } from "@/modules/auth/presentation/auth-provider";
 
 type AppHeaderProps = {
   isMobileNavigationOpen?: boolean;
+  notificationSlot?: ReactNode;
   onOpenMobileNavigation?: () => void;
   signOutSlot?: ReactNode;
 };
 
 export function AppHeader({
   isMobileNavigationOpen = false,
+  notificationSlot,
   onOpenMobileNavigation,
   signOutSlot,
 }: AppHeaderProps) {
@@ -56,6 +58,7 @@ export function AppHeader({
           />
         </div>
 
+        {notificationSlot}
         <ThemeToggle className="hidden sm:grid" />
         <Badge
           className="hidden border-accent/25 bg-accent/10 text-accent sm:inline-flex"
