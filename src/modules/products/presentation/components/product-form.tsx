@@ -22,6 +22,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  maskPriceInputFromDigits,
+  parseProductPriceToCents,
+  formatCentsToMaskedInput,
+} from "@/modules/products/domain/money";
 import { productFormSchema } from "@/modules/products/domain/schemas";
 import type { ProductFormValues } from "@/modules/products/domain/types";
 import {
@@ -30,6 +35,16 @@ import {
   updateProductAction,
 } from "@/modules/products/presentation/actions";
 import { cn } from "@/shared/utils/cn";
+
+function toMaskedPriceInput(rawPrice: string): string {
+  if (!rawPrice) {
+    return "";
+  }
+
+  const cents = parseProductPriceToCents(rawPrice);
+
+  return cents === null ? rawPrice : formatCentsToMaskedInput(cents);
+}
 
 type ProductFormProps = {
   defaultValues: ProductFormValues;
@@ -118,18 +133,24 @@ export function ProductForm({
   onCancel,
   onSuccess,
 }: ProductFormProps) {
-  const [currentStep, setCurrentStep] = useState(mode === "create" ? 1 : 2);
+  const [currentStep, setCurrentStep] = useState<1 | 2>(
+    mode === "create" ? 1 : 2,
+  );
   const [deliveryMethod, setDeliveryMethod] =
     useState<DeliveryMethod>("members_area");
   const [membersAreaMode, setMembersAreaMode] =
     useState<MembersAreaMode>("new");
   const [result, setResult] = useState<ProductActionResult | null>(null);
   const form = useForm<ProductFormValues>({
-    defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      price: toMaskedPriceInput(defaultValues.price),
+    },
     resolver: zodResolver(productFormSchema),
   });
   const descriptionLength = form.watch("description")?.length ?? 0;
   const isSubmitting = form.formState.isSubmitting;
+  const priceField = form.register("price");
 
   async function onSubmit(values: ProductFormValues) {
     setResult(null);
@@ -188,10 +209,16 @@ export function ProductForm({
           </div>
 
           <div className="grid grid-cols-2 gap-2 rounded-lg border border-border/80 bg-background/70 p-1 text-xs shadow-sm">
-            <StepPill active={currentStep === 1} disabled={mode === "edit"}>
+            <StepPill
+              active={currentStep === 1}
+              disabled={mode === "edit"}
+              onClick={() => setCurrentStep(1)}
+            >
               1. Estrutura
             </StepPill>
-            <StepPill active={currentStep === 2}>2. Detalhes</StepPill>
+            <StepPill active={currentStep === 2} onClick={() => setCurrentStep(2)}>
+              2. Detalhes
+            </StepPill>
           </div>
         </div>
       </div>
@@ -284,19 +311,17 @@ export function ProductForm({
           </div>
         ) : (
           <div className="grid gap-5 sm:gap-6">
-            {mode === "create" ? (
-              <div>
-                <Button
-                  className="h-auto px-0 text-sm text-muted-foreground hover:text-foreground"
-                  onClick={() => setCurrentStep(1)}
-                  type="button"
-                  variant="link"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Voltar para estrutura
-                </Button>
-              </div>
-            ) : null}
+            <div>
+              <Button
+                className="h-auto px-0 text-sm text-muted-foreground hover:text-foreground"
+                onClick={() => setCurrentStep(1)}
+                type="button"
+                variant="link"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar para estrutura
+              </Button>
+            </div>
 
             <div className="grid gap-5">
               <div className="space-y-2">
@@ -355,14 +380,27 @@ export function ProductForm({
               <div className="grid gap-5 md:grid-cols-[1fr_10rem]">
                 <div className="space-y-2">
                   <Label htmlFor="price">Preço</Label>
-                  <Input
-                    id="price"
-                    inputMode="decimal"
-                    placeholder="R$ 27,90"
-                    {...form.register("price")}
-                  />
+                  <div className="relative">
+                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-muted-foreground">
+                      R$
+                    </span>
+                    <Input
+                      className="pl-9"
+                      id="price"
+                      inputMode="numeric"
+                      placeholder="0,00"
+                      {...priceField}
+                      onChange={(event) => {
+                        event.target.value = maskPriceInputFromDigits(
+                          event.target.value,
+                        );
+                        priceField.onChange(event);
+                      }}
+                    />
+                  </div>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    Informe em reais, entre R$ 5,00 e R$ 50.000,00.
+                    Digite apenas os números, a vírgula é aplicada
+                    automaticamente. Entre R$ 5,00 e R$ 50.000,00.
                   </p>
                   {form.formState.errors.price ? (
                     <p className="text-sm text-destructive">
@@ -420,23 +458,28 @@ function StepPill({
   active,
   children,
   disabled = false,
+  onClick,
 }: {
   active: boolean;
   children: React.ReactNode;
   disabled?: boolean;
+  onClick: () => void;
 }) {
   return (
-    <span
+    <button
       className={cn(
         "rounded-md px-3 py-2 text-center font-medium transition-all",
         active
           ? "bg-accent text-accent-foreground shadow-sm"
-          : "text-muted-foreground",
-        disabled && "opacity-50",
+          : "text-muted-foreground hover:text-foreground",
+        disabled && "cursor-not-allowed opacity-50",
       )}
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
     >
       {children}
-    </span>
+    </button>
   );
 }
 

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { redirect } from "next/navigation";
 
 import {
@@ -14,14 +15,16 @@ import {
 } from "@/modules/auth/domain/types";
 import { createSupabaseServerClient } from "@/shared/supabase";
 
-export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export const getCurrentUser = cache(
+  async (): Promise<AuthenticatedUser | null> => {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  return user ? mapSupabaseUser(user) : null;
-}
+    return user ? mapSupabaseUser(user) : null;
+  },
+);
 
 export async function requireAuthenticatedUser(
   nextPath = DEFAULT_AUTHENTICATED_PATH,

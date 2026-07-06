@@ -31,7 +31,27 @@ function validationError(): AuthActionResult {
   };
 }
 
+function normalizeOrigin(value?: string | null): string | null {
+  const trimmed = value?.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return null;
+  }
+}
+
 async function getRequestOrigin(): Promise<string> {
+  const configuredOrigin = normalizeOrigin(process.env.NEXT_PUBLIC_APP_URL);
+
+  if (configuredOrigin) {
+    return configuredOrigin;
+  }
+
   const headersList = await headers();
   const origin = headersList.get("origin");
 

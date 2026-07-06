@@ -15,6 +15,7 @@ import type {
   CheckoutUtm,
   PublicCheckout,
 } from "@/modules/checkout/domain/types";
+import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import { calculateCheckoutTotal } from "@/modules/checkout/domain/pricing";
 import type { Product } from "@/modules/products/domain/types";
 import {
@@ -87,7 +88,7 @@ function toCheckoutLink(checkout: CheckoutWithProductRow): CheckoutLink | null {
     checkoutSlug: checkout.slug,
     checkoutStatus: checkout.status,
     checkoutUpdatedAt: checkout.updated_at,
-    link: "",
+    link: createCheckoutUrl(checkout.slug),
     product: checkout.product,
   };
 }
@@ -168,6 +169,25 @@ async function findCheckoutByProductId(
   }
 
   return data;
+}
+
+export async function findCheckoutLinkByProductId(
+  supabase: DatabaseClient,
+  productId: string,
+): Promise<CheckoutLink | null> {
+  const { data, error } = await supabase
+    .from("checkouts")
+    .select(
+      "id, producer_id, product_id, slug, status, headline, description, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+    )
+    .eq("product_id", productId)
+    .maybeSingle();
+
+  if (error) {
+    throw repositoryError("Não foi possível carregar o checkout do produto.");
+  }
+
+  return data ? toCheckoutLink(data as CheckoutWithProductRow) : null;
 }
 
 export async function ensureCheckoutForProduct(

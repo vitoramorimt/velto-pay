@@ -49,4 +49,18 @@ export function formatCentsToDecimalInput(cents: number): string {
   return (cents / 100).toFixed(2);
 }
 
+export function formatCentsToMaskedInput(cents: number): string {
+  return (cents / 100).toLocaleString("pt-BR", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+}
+
+export function maskPriceInputFromDigits(rawValue: string): string {
+  const digits = rawValue.replace(/\D/g, "");
+  const cents = digits ? Number(digits) : 0;
+
+  return formatCentsToMaskedInput(cents);
+}
+
 export { MAX_PRODUCT_PRICE_CENTS, MIN_PRODUCT_PRICE_CENTS };
