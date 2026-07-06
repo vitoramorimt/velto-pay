@@ -6,6 +6,7 @@
   :root {
     --safe-area-top: env(safe-area-inset-top, 0px);
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --velto-mobile-nav-width: min(20rem, 84vw);
     --background: 214 40% 96%;
     --foreground: 222 47% 7%;
     --card: 0 0% 100%;

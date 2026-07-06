@@ -1,73 +1,37 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, Sparkles, UserCircle, X } from "lucide-react";
+import { ChevronDown, Menu, Sparkles, UserCircle } from "lucide-react";
 
-import { appNavigationItems } from "@/components/layout/app-navigation";
 import { VeltoLogo } from "@/components/brand/velto-logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/modules/auth/presentation/auth-provider";
-import { cn } from "@/shared/utils/cn";
 
 type AppHeaderProps = {
+  isMobileNavigationOpen?: boolean;
+  onOpenMobileNavigation?: () => void;
   signOutSlot?: ReactNode;
 };
 
-export function AppHeader({ signOutSlot }: AppHeaderProps) {
-  const pathname = usePathname();
+export function AppHeader({
+  isMobileNavigationOpen = false,
+  onOpenMobileNavigation,
+  signOutSlot,
+}: AppHeaderProps) {
   const { user } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const userName = user?.fullName?.trim() || user?.email || "Conta Velto";
   const userEmail = user?.email ?? "Usuário autenticado";
-
-  function isNavigationItemActive(href?: string): boolean {
-    if (!href) {
-      return false;
-    }
-
-    if (href === "/dashboard") {
-      return pathname === href;
-    }
-
-    return pathname === href || pathname.startsWith(`${href}/`);
-  }
-
-  useEffect(() => {
-    if (!isMobileMenuOpen) {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-
-    document.body.style.overflow = "hidden";
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setIsMobileMenuOpen(false);
-      }
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isMobileMenuOpen]);
 
   return (
     <header className="velto-app-header bg-background/88 sticky top-0 z-[70] border-b border-border/70 backdrop-blur-2xl">
       <div className="flex h-16 min-w-0 items-center gap-2 px-3 sm:gap-3 sm:px-6">
         <Button
           aria-controls="velto-mobile-navigation"
-          aria-expanded={isMobileMenuOpen}
+          aria-expanded={isMobileNavigationOpen}
           className="border border-border/70 bg-card/70 shadow-sm lg:hidden"
-          onClick={() => setIsMobileMenuOpen(true)}
+          onClick={onOpenMobileNavigation}
           size="icon"
           type="button"
           variant="ghost"
@@ -124,103 +88,6 @@ export function AppHeader({ signOutSlot }: AppHeaderProps) {
           </div>
         </details>
       </div>
-
-      {isMobileMenuOpen ? (
-        <div
-          aria-modal="true"
-          className="fixed inset-0 z-[90] lg:hidden"
-          id="velto-mobile-navigation"
-          role="dialog"
-        >
-          <button
-            aria-label="Fechar navegação"
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            onClick={() => setIsMobileMenuOpen(false)}
-            type="button"
-          />
-          <div className="velto-mobile-drawer-panel absolute inset-y-0 left-0 z-[95] flex w-[min(21rem,calc(100vw-1.25rem))] flex-col overflow-y-auto border-r border-white/10 bg-sidebar px-4 text-sidebar-foreground shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
-            <div className="flex items-center justify-between gap-3">
-              <VeltoLogo
-                imageClassName="h-10 w-10 rounded-md"
-                labelClassName="text-sm text-sidebar-foreground"
-                priority
-                showLabel
-                size={40}
-              />
-              <Button
-                onClick={() => setIsMobileMenuOpen(false)}
-                size="icon"
-                type="button"
-                variant="ghost"
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">Fechar navegação</span>
-              </Button>
-            </div>
-
-            <nav className="mt-8 space-y-1">
-              {appNavigationItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = isNavigationItemActive(item.href);
-                const itemClassName = cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",
-                  item.href
-                    ? "text-sidebar-foreground/72 hover:translate-x-0.5 hover:bg-white/5 hover:text-sidebar-foreground"
-                    : "cursor-default text-sidebar-foreground/38",
-                  isActive &&
-                    "bg-sidebar-active text-sidebar-active-foreground shadow-inner-line",
-                );
-                const content = (
-                  <>
-                    <Icon className="h-4 w-4" />
-                    <span className="min-w-0 flex-1 truncate">
-                      {item.label}
-                    </span>
-                    {item.status === "soon" ? (
-                      <Badge
-                        className="ml-auto border-white/10 bg-white/[0.06] text-[10px] text-sidebar-foreground/60"
-                        variant="outline"
-                      >
-                        Em breve
-                      </Badge>
-                    ) : null}
-                  </>
-                );
-
-                return item.href ? (
-                  <Link
-                    aria-current={isActive ? "page" : undefined}
-                    className={itemClassName}
-                    href={item.href}
-                    key={item.label}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {content}
-                  </Link>
-                ) : (
-                  <div
-                    aria-disabled="true"
-                    className={itemClassName}
-                    key={item.label}
-                    title={item.description}
-                  >
-                    {content}
-                  </div>
-                );
-              })}
-            </nav>
-
-            <div className="mt-auto rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm">
-              <p className="font-medium text-sidebar-foreground">Tema</p>
-              <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
-                Escolha entre dark e light. A preferência fica salva no
-                navegador.
-              </p>
-              <ThemeToggle className="mt-4 border-white/10 bg-white/[0.04]" />
-            </div>
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }
