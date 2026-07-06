@@ -31,7 +31,6 @@ export default async function SalesAiPage() {
   await requireAuthenticatedUser("/dashboard/ia-de-vendas");
 
   const dashboard = await getDashboardOverviewData();
-  const aiConfigured = Boolean(process.env.OPENAI_API_KEY);
   const metrics = [
     {
       label: "Faturamento",
@@ -62,16 +61,17 @@ export default async function SalesAiPage() {
           className="border-accent/30 bg-accent/10 text-accent"
           variant="outline"
         >
-          Prévia MVP
+          Assistente gratuito
         </Badge>
         <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_0.86fr] lg:items-end">
           <div>
             <h1 className="text-3xl font-semibold tracking-normal sm:text-4xl">
-              IA de Vendas
+              Assistente Comercial Velto
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Converse com a IA para analisar métricas, entender a persona e
-              priorizar ações comerciais com contexto real da sua operação.
+              Faça perguntas sobre vendas, produtos, checkouts e financeiro.
+              As respostas usam regras comerciais e dados reais do produtor,
+              sem custo de API.
             </p>
           </div>
           <div className="rounded-lg border border-accent/20 bg-accent/10 p-4 shadow-[0_18px_60px_hsl(var(--accent)/0.08)]">
@@ -80,11 +80,10 @@ export default async function SalesAiPage() {
                 <BrainCircuit className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-medium">Análise comercial assistida</p>
+                <p className="font-medium">Análise comercial guiada</p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  A conversa usa produtos, vendas, checkouts, financeiro e
-                  pedidos como contexto. Sem chave OpenAI, a tela avisa de forma
-                  transparente.
+                  O assistente cruza produtos, pedidos, checkouts e financeiro
+                  para sugerir próximos passos de operação e conversão.
                 </p>
               </div>
             </div>
@@ -115,7 +114,7 @@ export default async function SalesAiPage() {
               Persona principal
             </CardTitle>
             <CardDescription>
-              Hipótese base para orientar o produtor digital no MVP.
+              Hipótese operacional para orientar o produtor digital no MVP.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-6 text-muted-foreground">
@@ -143,7 +142,8 @@ export default async function SalesAiPage() {
               Sugestões para melhorar conversão
             </CardTitle>
             <CardDescription>
-              Recomendações estáticas enquanto a IA real não está ativa.
+              Recomendações práticas para revisar oferta, checkout e primeiros
+              sinais comerciais.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
@@ -160,19 +160,19 @@ export default async function SalesAiPage() {
         </Card>
       </section>
 
-      <SalesAiChat configured={aiConfigured} />
+      <SalesAiChat />
 
       {!dashboard.hasAnyData ? (
         <div className="rounded-lg border border-accent/20 bg-accent/10 p-4 text-sm leading-6 text-muted-foreground">
           <Sparkles className="mb-3 h-4 w-4 text-accent" />
-          Assim que produtos e vendas reais existirem, esta área poderá cruzar
-          números comerciais com recomendações mais úteis.
+          Assim que produtos e vendas reais existirem, o Assistente Comercial
+          Velto passa a orientar próximos passos com mais contexto.
         </div>
       ) : (
         <div className="rounded-lg border bg-muted/25 p-4 text-sm leading-6 text-muted-foreground">
           <BarChart3 className="mb-3 h-4 w-4 text-accent" />
           Os números acima já refletem o produtor autenticado e servem como base
-          visual para a futura IA real.
+          para as respostas do Assistente Comercial Velto.
         </div>
       )}
     </div>

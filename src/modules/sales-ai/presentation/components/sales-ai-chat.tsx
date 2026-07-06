@@ -16,22 +16,21 @@ import type { SalesAiChatMessage } from "@/modules/sales-ai/domain/types";
 import { cn } from "@/shared/utils/cn";
 
 type SalesAiChatProps = {
-  configured: boolean;
+  className?: string;
 };
 
 type SalesAiResponse = {
-  configured: boolean;
   message: string;
-  model?: string;
+  source: "rules";
 };
 
 const initialMessage: SalesAiChatMessage = {
   content:
-    "Olá. Eu posso analisar produtos, vendas, checkouts, pedidos e financeiro da sua operação Velto Pay. Faça uma pergunta objetiva para começar.",
+    "Olá. Eu sou o Assistente Comercial Velto. Posso analisar produtos, vendas, checkouts, pedidos e financeiro com base nos dados reais da sua operação. Faça uma pergunta objetiva para começar.",
   role: "assistant",
 };
 
-export function SalesAiChat({ configured }: SalesAiChatProps) {
+export function SalesAiChat({ className }: SalesAiChatProps) {
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -115,31 +114,29 @@ export function SalesAiChat({ configured }: SalesAiChatProps) {
   }
 
   return (
-    <div className="grid min-h-[34rem] overflow-hidden rounded-lg border border-border/80 bg-card/90 shadow-soft">
+    <div
+      className={cn(
+        "grid min-h-[34rem] overflow-hidden rounded-lg border border-border/80 bg-card/90 shadow-soft",
+        className,
+      )}
+    >
       <div className="flex flex-col gap-3 border-b border-border/80 bg-muted/35 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-semibold">Chat com IA de Vendas</h2>
+            <h2 className="text-lg font-semibold">
+              Assistente Comercial Velto
+            </h2>
             <Badge
-              className={cn(
-                configured
-                  ? "border-accent/30 bg-accent/10 text-accent"
-                  : "border-warning/30 bg-warning/10 text-warning",
-              )}
+              className="border-accent/30 bg-accent/10 text-accent"
               variant="outline"
             >
-              {configured ? "OpenAI ativa" : "Configuração pendente"}
+              Regras + dados reais
             </Badge>
           </div>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Enter envia. Shift+Enter cria uma nova linha.
+            Sem custo de API por enquanto. Enter envia. Shift+Enter cria uma
+            nova linha.
           </p>
-          {!configured ? (
-            <p className="mt-3 rounded-md border border-warning/25 bg-warning/10 px-3 py-2 text-sm leading-6 text-warning">
-              A IA real ainda não está configurada neste ambiente. Configure
-              OPENAI_API_KEY para ativar respostas com OpenAI.
-            </p>
-          ) : null}
         </div>
       </div>
 
@@ -180,7 +177,7 @@ export function SalesAiChat({ configured }: SalesAiChatProps) {
             <span className="flex h-8 w-8 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
               <Loader2 className="h-4 w-4 animate-spin" />
             </span>
-            A IA está analisando seus dados...
+            O Assistente Comercial Velto está analisando seus dados...
           </div>
         ) : null}
         <div ref={bottomRef} />

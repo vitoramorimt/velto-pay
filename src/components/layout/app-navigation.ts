@@ -31,7 +31,7 @@ export const appNavigationItems: AppNavigationItem[] = [
   {
     href: "/dashboard/ia-de-vendas",
     icon: BrainCircuit,
-    label: "IA de Vendas",
+    label: "Assistente Comercial",
   },
   {
     href: "/dashboard/checkout",

@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json(
       {
-        message: "Envie uma pergunta válida para a IA de Vendas.",
+        message: "Envie uma pergunta válida para o Assistente Comercial Velto.",
       },
       { status: 400 },
     );
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   if (!payload.success) {
     return NextResponse.json(
       {
-        message: "Envie uma pergunta válida para a IA de Vendas.",
+        message: "Envie uma pergunta válida para o Assistente Comercial Velto.",
       },
       { status: 400 },
     );
