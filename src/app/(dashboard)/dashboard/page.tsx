@@ -86,12 +86,12 @@ export default async function DashboardPage() {
               Dashboard comercial
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Uma leitura limpa dos principais sinais da sua operação, com
-              dados reais do produtor autenticado.
+              Acompanhe seus principais indicadores em tempo real e identifique
+              onde concentrar a próxima ação comercial.
             </p>
           </div>
-          <div className="rounded-lg border border-accent/20 bg-accent/10 px-4 py-3 text-sm text-accent shadow-[0_18px_52px_hsl(var(--accent)/0.10)]">
-            Últimos 30 dias · Supabase
+          <div className="rounded-lg border border-accent/20 bg-accent/10 px-3 py-2 text-sm text-accent shadow-[0_18px_52px_hsl(var(--accent)/0.10)] sm:px-4 sm:py-3">
+            Últimos 30 dias
           </div>
         </div>
       </section>
@@ -127,17 +127,17 @@ function MetricCard({
       className="velto-card overflow-hidden"
       style={{ animationDelay: `${index * 45}ms` }}
     >
-      <CardHeader className="space-y-4">
+      <CardHeader className="space-y-3 p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <CardDescription className="text-xs font-medium uppercase tracking-[0.16em]">
               {label}
             </CardDescription>
-            <CardTitle className="mt-3 truncate text-2xl sm:text-3xl">
+            <CardTitle className="mt-2 truncate text-2xl sm:text-3xl">
               {value}
             </CardTitle>
           </div>
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent shadow-[0_0_44px_hsl(var(--accent)/0.12)]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent shadow-[0_0_44px_hsl(var(--accent)/0.12)]">
             <Icon className="h-5 w-5" />
           </div>
         </div>
@@ -168,17 +168,14 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
             Faturamento e vendas aprovadas nos últimos 30 dias.
           </CardDescription>
         </div>
-        <Badge
-          className="border-accent/30 bg-accent/10 text-accent"
-          variant="outline"
-        >
-          Dados reais
+        <Badge className="border-accent/30 bg-accent/10 text-accent" variant="outline">
+          Atualizado
         </Badge>
       </CardHeader>
       <CardContent>
         {data.length > 0 ? (
           <div className="grid gap-5">
-            <div className="relative grid h-80 grid-cols-[repeat(30,minmax(0,1fr))] items-end gap-1 overflow-hidden rounded-lg border border-border/80 bg-[linear-gradient(180deg,hsl(var(--muted)/0.58),hsl(var(--muted)/0.22))] px-3 py-5 sm:gap-2 sm:px-4">
+            <div className="relative grid h-64 grid-cols-[repeat(30,minmax(0,1fr))] items-end gap-1 overflow-hidden rounded-lg border border-border/80 bg-[linear-gradient(180deg,hsl(var(--muted)/0.58),hsl(var(--muted)/0.22))] px-3 py-4 sm:h-80 sm:gap-2 sm:px-4 sm:py-5">
               <div className="pointer-events-none absolute inset-x-0 top-1/4 border-t border-dashed border-border/70" />
               <div className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-dashed border-border/60" />
               <div className="pointer-events-none absolute inset-x-0 top-3/4 border-t border-dashed border-border/50" />
@@ -222,7 +219,7 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
         ) : (
           <EmptyState
             className="border-accent/20 bg-accent/5"
-            description="Quando houver vendas aprovadas para este produtor, o gráfico exibirá faturamento e quantidade por período."
+            description="Assim que sua primeira venda for aprovada, seus indicadores de faturamento e vendas aparecerão aqui."
             icon={BarChart3}
             title="Sem dados para o gráfico"
           />

@@ -26,7 +26,7 @@ type SalesAiResponse = {
 
 const initialMessage: SalesAiChatMessage = {
   content:
-    "Olá. Eu sou o Assistente Comercial Velto. Posso analisar produtos, vendas, checkouts, pedidos e financeiro com base nos dados reais da sua operação. Faça uma pergunta objetiva para começar.",
+    "Olá. Eu sou o Assistente Comercial Velto. Posso analisar produtos, vendas, checkouts, pedidos e financeiro para sugerir próximos passos. Faça uma pergunta objetiva para começar.",
   role: "assistant",
 };
 
@@ -116,7 +116,7 @@ export function SalesAiChat({ className }: SalesAiChatProps) {
   return (
     <div
       className={cn(
-        "grid min-h-[34rem] overflow-hidden rounded-lg border border-border/80 bg-card/90 shadow-soft",
+        "grid min-h-[30rem] overflow-hidden rounded-lg border border-border/80 bg-card/90 shadow-soft sm:min-h-[34rem]",
         className,
       )}
     >
@@ -130,17 +130,17 @@ export function SalesAiChat({ className }: SalesAiChatProps) {
               className="border-accent/30 bg-accent/10 text-accent"
               variant="outline"
             >
-              Regras + dados reais
+              Recomendações
             </Badge>
           </div>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Sem custo de API por enquanto. Enter envia. Shift+Enter cria uma
-            nova linha.
+            Pergunte sobre vendas, produtos, checkouts ou saldo. Enter envia e
+            Shift+Enter cria uma nova linha.
           </p>
         </div>
       </div>
 
-      <div className="flex max-h-[58dvh] min-h-0 flex-col gap-4 overflow-y-auto px-4 py-5 sm:px-5">
+      <div className="flex max-h-[56dvh] min-h-0 flex-col gap-4 overflow-y-auto px-4 py-4 sm:max-h-[58dvh] sm:px-5 sm:py-5">
         {messages.map((message, index) => (
           <div
             className={cn(
@@ -177,7 +177,7 @@ export function SalesAiChat({ className }: SalesAiChatProps) {
             <span className="flex h-8 w-8 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
               <Loader2 className="h-4 w-4 animate-spin" />
             </span>
-            O Assistente Comercial Velto está analisando seus dados...
+            O Assistente Comercial Velto está analisando sua operação...
           </div>
         ) : null}
         <div ref={bottomRef} />
@@ -214,7 +214,7 @@ export function SalesAiChat({ className }: SalesAiChatProps) {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <textarea
-            className="min-h-24 flex-1 resize-none rounded-md border border-input bg-background/90 px-3 py-2 text-sm shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-20 flex-1 resize-none rounded-md border border-input bg-background/90 px-3 py-2 text-sm shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-24"
             disabled={isLoading}
             maxLength={1200}
             onChange={(event) => setDraft(event.target.value)}

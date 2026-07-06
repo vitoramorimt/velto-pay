@@ -83,7 +83,7 @@ export default async function NotificationsPage({
             Filtros
           </CardTitle>
           <CardDescription>
-            Visualize os alertas por tipo de evento.
+            Visualize seus alertas por tipo.
           </CardDescription>
         </CardHeader>
         <CardContent>

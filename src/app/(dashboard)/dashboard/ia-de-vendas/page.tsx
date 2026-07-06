@@ -61,7 +61,7 @@ export default async function SalesAiPage() {
           className="border-accent/30 bg-accent/10 text-accent"
           variant="outline"
         >
-          Assistente gratuito
+          Assistente Comercial
         </Badge>
         <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_0.86fr] lg:items-end">
           <div>
@@ -69,9 +69,8 @@ export default async function SalesAiPage() {
               Assistente Comercial Velto
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Faça perguntas sobre vendas, produtos, checkouts e financeiro.
-              As respostas usam regras comerciais e dados reais do produtor,
-              sem custo de API.
+              Receba recomendações automáticas com base nos seus produtos,
+              vendas, checkouts e movimentações financeiras.
             </p>
           </div>
           <div className="rounded-lg border border-accent/20 bg-accent/10 p-4 shadow-[0_18px_60px_hsl(var(--accent)/0.08)]">
@@ -114,7 +113,8 @@ export default async function SalesAiPage() {
               Persona principal
             </CardTitle>
             <CardDescription>
-              Hipótese operacional para orientar o produtor digital no MVP.
+              Perfil de operação para orientar suas próximas decisões
+              comerciais.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-6 text-muted-foreground">
@@ -165,14 +165,14 @@ export default async function SalesAiPage() {
       {!dashboard.hasAnyData ? (
         <div className="rounded-lg border border-accent/20 bg-accent/10 p-4 text-sm leading-6 text-muted-foreground">
           <Sparkles className="mb-3 h-4 w-4 text-accent" />
-          Assim que produtos e vendas reais existirem, o Assistente Comercial
-          Velto passa a orientar próximos passos com mais contexto.
+          Assim que produtos e vendas existirem, o Assistente Comercial Velto
+          passa a orientar próximos passos com mais precisão.
         </div>
       ) : (
         <div className="rounded-lg border bg-muted/25 p-4 text-sm leading-6 text-muted-foreground">
           <BarChart3 className="mb-3 h-4 w-4 text-accent" />
-          Os números acima já refletem o produtor autenticado e servem como base
-          para as respostas do Assistente Comercial Velto.
+          Os números acima orientam as respostas do Assistente Comercial Velto e
+          ajudam a priorizar ações de conversão.
         </div>
       )}
     </div>

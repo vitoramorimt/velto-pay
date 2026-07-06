@@ -58,19 +58,19 @@ export default async function CheckoutPage() {
               Links de checkout
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Gerencie links públicos, status e prévias dos checkouts vinculados
-              aos seus produtos.
+              Compartilhe links de pagamento, acompanhe status e abra prévias
+              dos checkouts vinculados aos seus produtos.
             </p>
           </div>
-          <div className="rounded-lg border border-border/80 bg-muted/35 px-4 py-3 text-sm text-muted-foreground">
-            Formato público: <span className="font-medium">/pay/slug</span>
+          <div className="rounded-lg border border-border/80 bg-muted/35 px-3 py-2 text-sm text-muted-foreground sm:px-4 sm:py-3">
+            Compartilhe seus links de pagamento com seus clientes.
           </div>
         </div>
       </section>
 
       {data.state !== "ready" ? (
         <EmptyState
-          description="Não foi possível encontrar um perfil de produtor vinculado à sua conta."
+          description="Não conseguimos localizar sua área comercial agora. Saia da conta e entre novamente para atualizar o acesso."
           icon={ShieldAlert}
           title="Checkout indisponível"
         />
@@ -90,7 +90,7 @@ export default async function CheckoutPage() {
           <CardHeader>
             <CardTitle className="text-xl">Checkouts gerados</CardTitle>
             <CardDescription>
-              Checkouts persistidos e prontos para compartilhamento.
+              Links ativos para vender seus produtos digitais.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -164,7 +164,7 @@ export default async function CheckoutPage() {
                   className="min-w-0 border-border/80 bg-card/80"
                   key={checkout.checkoutId}
                 >
-                  <CardHeader className="gap-3">
+                  <CardHeader className="gap-3 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <CardTitle className="truncate">
@@ -182,7 +182,7 @@ export default async function CheckoutPage() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3 p-4 pt-0">
                     <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">Produto</span>
                       <span className="min-w-0 max-w-[52vw] truncate font-medium">

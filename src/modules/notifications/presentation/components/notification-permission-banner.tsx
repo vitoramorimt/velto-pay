@@ -75,7 +75,7 @@ export function NotificationPermissionBanner({
 
   async function activateNotifications() {
     if (!publicKey || permissionState === "unsupported") {
-      toast.info("As notificações ainda não estão disponíveis neste ambiente.");
+      toast.info("As notificações ainda não estão disponíveis nesta versão.");
       return;
     }
 
@@ -149,7 +149,7 @@ export function NotificationPermissionBanner({
             <p className="mt-1 leading-6 text-muted-foreground">
               {permissionState === "denied"
                 ? "As notificações foram bloqueadas neste navegador. Você pode liberar o acesso nas configurações do dispositivo."
-                : "Receba avisos de vendas, pagamentos, reembolsos e chargebacks no PWA da Velto Pay."}
+                : "Receba avisos de vendas, pagamentos, reembolsos e chargebacks no app da Velto Pay."}
             </p>
           </div>
         </div>

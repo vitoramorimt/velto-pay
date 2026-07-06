@@ -39,7 +39,7 @@ export function CheckoutLinkBox({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2",
+        "flex min-w-0 items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2",
         className,
       )}
     >
@@ -48,7 +48,7 @@ export function CheckoutLinkBox({
           {statusLabel[status]}
         </Badge>
       ) : null}
-      <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+      <span className="velto-break-anywhere min-w-0 flex-1 text-sm leading-5 text-muted-foreground">
         {link}
       </span>
       <Button

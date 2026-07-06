@@ -64,8 +64,8 @@ export default async function CheckoutSuccessPage({
                 Obrigado pela compra
               </CardTitle>
               <CardDescription className="max-w-md text-sm leading-6">
-                Recebemos o retorno do Stripe para {productName}. A confirmação
-                final da venda é feita por webhook seguro.
+                Recebemos a confirmação inicial para {productName}. Você
+                receberá as próximas instruções por e-mail.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-5 p-6">
@@ -92,7 +92,7 @@ export default async function CheckoutSuccessPage({
               ) : sessionId ? (
                 <div className="rounded-lg border border-border/80 bg-background/80 p-4 text-left">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                    Sessão Stripe
+                    Referência da compra
                   </p>
                   <p className="mt-2 break-all text-sm text-foreground">
                     {sessionId}
@@ -147,8 +147,8 @@ export default async function CheckoutSuccessPage({
                   <ShieldCheck className="h-5 w-5 text-accent" />
                   <p className="mt-3 text-sm font-medium">Compra protegida</p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    A Velto Pay registra a venda somente após confirmação
-                    assinada do gateway.
+                    A Velto Pay confirma a venda com segurança antes de liberar
+                    as próximas etapas.
                   </p>
                 </div>
               </div>

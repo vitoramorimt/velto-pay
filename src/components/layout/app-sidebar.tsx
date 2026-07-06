@@ -80,11 +80,11 @@ export function AppSidebar() {
       <div className="mt-auto rounded-lg border border-white/10 bg-[linear-gradient(145deg,rgba(25,205,139,0.10),rgba(255,255,255,0.035))] p-4 shadow-[0_22px_80px_rgba(0,0,0,0.18)]">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Sparkles className="h-4 w-4 text-accent" />
-          Velto MVP
+          Operação comercial
         </div>
         <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
-          Checkout e financeiro já possuem visão MVP. Pagamentos reais e saque
-          seguem fora desta etapa.
+          Produtos, checkout e financeiro em uma rotina simples para vender com
+          mais clareza.
         </p>
         <div className="mt-4 flex items-center gap-2 rounded-md border border-white/10 bg-black/15 px-3 py-2 text-xs text-sidebar-foreground/70">
           <LifeBuoy className="h-3.5 w-3.5 text-accent" />

@@ -92,8 +92,7 @@ export function NotificationPreferencesPanel({
         <div>
           <h2 className="text-lg font-semibold">Preferências</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Escolha quais alertas deseja receber. As preferências são respeitadas
-            antes do envio de push.
+            Escolha quais alertas deseja receber no aplicativo.
           </p>
         </div>
         <Button

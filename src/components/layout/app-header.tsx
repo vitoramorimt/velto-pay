@@ -1,11 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ChevronDown, Menu, Sparkles, UserCircle } from "lucide-react";
+import { ChevronDown, Menu, UserCircle } from "lucide-react";
 
 import { VeltoLogo } from "@/components/brand/velto-logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/modules/auth/presentation/auth-provider";
 
@@ -60,14 +59,6 @@ export function AppHeader({
 
         {notificationSlot}
         <ThemeToggle className="hidden sm:grid" />
-        <Badge
-          className="hidden border-accent/25 bg-accent/10 text-accent sm:inline-flex"
-          variant="outline"
-        >
-          <Sparkles className="mr-1 h-3 w-3" />
-          MVP
-        </Badge>
-
         <details className="group relative z-[75]">
           <summary className="flex h-10 cursor-pointer list-none items-center gap-2 rounded-md border border-border/80 bg-card/80 px-2.5 text-sm shadow-sm transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
             <span className="flex h-7 w-7 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">

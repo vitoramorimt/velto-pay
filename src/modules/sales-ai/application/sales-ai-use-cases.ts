@@ -149,7 +149,7 @@ function answerSales(context: SalesAiContext): string {
   const approvalRate = getPercentage(context.approvedSales, context.totalOrders);
 
   return [
-    "Analisei suas vendas com os dados reais do produtor autenticado.",
+    "Analisei suas vendas com base nos dados disponíveis da sua operação.",
     "",
     `- Faturamento bruto: ${formatCents(context.grossRevenueCents)}`,
     `- Vendas aprovadas: ${formatNumber(context.approvedSales)}`,
@@ -269,7 +269,7 @@ function answerNextSteps(context: SalesAiContext): string {
 
 function answerGeneral(context: SalesAiContext): string {
   return [
-    "Sou o Assistente Comercial Velto. Eu respondo com base em regras e nos dados reais da sua conta, sem custo de API.",
+    "Sou o Assistente Comercial Velto. Eu respondo com base nos dados disponíveis da sua operação e foco em ações práticas.",
     "",
     "Posso ajudar com:",
     "- vendas e faturamento;",

@@ -168,7 +168,7 @@ export function AppShell({
             </Button>
           </div>
 
-          <nav className="mt-8 space-y-1">
+          <nav className="mt-6 space-y-1">
             {appNavigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = isNavigationItemActive(item.href);
@@ -218,12 +218,12 @@ export function AppShell({
             })}
           </nav>
 
-          <div className="mt-auto rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm">
+          <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm">
             <p className="font-medium text-sidebar-foreground">Tema</p>
             <p className="mt-2 text-xs leading-5 text-sidebar-foreground/55">
               Escolha entre dark e light. A preferência fica salva no navegador.
             </p>
-            <ThemeToggle className="mt-4 border-white/10 bg-white/[0.04]" />
+            <ThemeToggle className="mt-3 border-white/10 bg-white/[0.04]" />
           </div>
         </aside>
       </div>

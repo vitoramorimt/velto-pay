@@ -68,7 +68,7 @@ const aiHighlights = [
 ];
 
 const securityItems = [
-  "Autenticação Supabase preparada para sessões seguras",
+  "Sessões seguras para proteger sua operação",
   "PostgreSQL com políticas de acesso por contexto",
   "Service role restrita a adapters server-only",
   "Base preparada para CSP, HSTS, rate limiting e logs mascarados",
@@ -440,7 +440,7 @@ export default function LandingPage() {
 function PublicPlatformMockup() {
   return (
     <div
-      aria-label="Mockup visual da plataforma Velto Pay"
+      aria-label="Prévia visual da plataforma Velto Pay"
       className="relative mx-auto w-full max-w-3xl rounded-lg border border-white/10 bg-[rgba(6,16,12,0.92)] p-3 shadow-[0_34px_120px_rgba(0,0,0,0.46)] backdrop-blur-xl"
     >
       <div className="absolute -inset-px -z-10 rounded-lg bg-[linear-gradient(135deg,rgba(25,205,139,0.36),transparent_32%,rgba(255,255,255,0.10)_64%,transparent)] opacity-70" />
@@ -501,7 +501,7 @@ function PublicPlatformMockup() {
                     Painel do produtor
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    Mockup sem dados operacionais
+                    Prévia sem dados da sua conta
                   </p>
                 </div>
                 <span className="w-fit rounded-md border border-accent/20 bg-accent/10 px-2.5 py-1 text-xs text-accent">

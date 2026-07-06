@@ -18,13 +18,13 @@ function getAccessMessage(state: string) {
   if (state === "missing_producer") {
     return {
       description:
-        "Sua conta está autenticada, mas ainda não possui um perfil de produtor vinculado. Faça login novamente ou aguarde a sincronização do onboarding.",
-      title: "Perfil de produtor necessário",
+        "Não conseguimos localizar sua área comercial agora. Saia da conta e entre novamente para atualizar o acesso.",
+      title: "Área comercial indisponível",
     };
   }
 
   return {
-    description: "Não foi possível liberar o catálogo para esta conta.",
+    description: "Não foi possível liberar o catálogo para esta conta agora.",
     title: "Acesso indisponível",
   };
 }
@@ -51,14 +51,14 @@ export default async function ProductsPage() {
               Produtos
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Cadastre e mantenha seus produtos digitais. Para o MVP atual, todo
-              produtor autenticado pode criar e gerenciar produtos.
+              Cadastre produtos digitais, organize suas ofertas e compartilhe
+              links de pagamento com seus clientes.
             </p>
           </div>
 
           {data.state === "ready" ? (
             <ProductCreateDialog>
-              <Button className="shadow-[0_18px_52px_hsl(var(--accent)/0.14)]">
+              <Button className="h-10 shadow-[0_18px_52px_hsl(var(--accent)/0.14)] sm:h-11">
                 <Plus />
                 Novo produto
               </Button>
@@ -75,9 +75,9 @@ export default async function ProductsPage() {
         />
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2">
             <Card className="velto-card">
-              <CardHeader>
+              <CardHeader className="p-4 sm:p-5">
                 <CardDescription>Total</CardDescription>
                 <CardTitle className="text-2xl">
                   {data.products.length}
@@ -85,19 +85,9 @@ export default async function ProductsPage() {
               </CardHeader>
             </Card>
             <Card className="velto-card">
-              <CardHeader>
+              <CardHeader className="p-4 sm:p-5">
                 <CardDescription>Ativos</CardDescription>
                 <CardTitle className="text-2xl">{activeProducts}</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card className="velto-card">
-              <CardHeader>
-                <CardDescription>Produtor</CardDescription>
-                <CardTitle className="truncate text-base">
-                  {data.producer.brand_name ??
-                    data.producer.company_name ??
-                    "Velto"}
-                </CardTitle>
               </CardHeader>
             </Card>
           </div>

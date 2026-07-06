@@ -60,7 +60,7 @@ export function NotificationList({
     return (
       <div className="space-y-4">
         <EmptyState
-          description="Alertas de vendas, pagamentos e financeiro aparecerão aqui assim que existirem eventos reais."
+          description="Quando houver vendas, pagamentos, reembolsos ou alertas importantes, eles aparecerão aqui."
           icon={Bell}
           title="Nenhuma notificação encontrada"
         />

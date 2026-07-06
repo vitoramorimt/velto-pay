@@ -80,7 +80,7 @@ export function ProductsTable({
 
   return (
     <>
-      <div className="velto-card p-4">
+      <div className="velto-card p-3 sm:p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm font-medium">Catálogo de produtos</p>
@@ -127,7 +127,7 @@ export function ProductsTable({
 
       {visibleProducts.length === 0 ? (
         <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center px-6 py-10 text-center">
+          <CardContent className="flex flex-col items-center justify-center px-5 py-8 text-center sm:px-6 sm:py-10">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent">
               <SlidersHorizontal className="h-5 w-5" />
             </div>
@@ -220,10 +220,12 @@ export function ProductsTable({
               key={product.id}
               onClick={() => goToSettings(product.id)}
             >
-              <CardHeader className="gap-3">
+              <CardHeader className="gap-3 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <CardTitle className="truncate">{product.name}</CardTitle>
+                    <CardTitle className="line-clamp-2 text-lg">
+                      {product.name}
+                    </CardTitle>
                     <CardDescription className="mt-1 truncate">
                       /{product.slug}
                     </CardDescription>
@@ -231,10 +233,10 @@ export function ProductsTable({
                   <ProductStatusBadge status={product.status} />
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 p-4 pt-0">
                 <div className="flex items-center justify-between gap-3 text-sm">
                   <span className="text-muted-foreground">Preço</span>
-                  <span className="font-medium">
+                  <span className="font-semibold text-foreground">
                     {formatCentsToCurrency(product.price_cents)}
                   </span>
                 </div>

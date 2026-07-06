@@ -241,7 +241,7 @@ export function ProductForm({
           <div className="grid gap-5 sm:gap-6">
             <section className="grid gap-3">
               <SectionHeading
-                description="Para o MVP atual, produtos digitais usam pagamento único."
+                description="Na versão atual da plataforma, produtos digitais usam pagamento único."
                 title="Tipo de pagamento"
               />
               <OptionCard

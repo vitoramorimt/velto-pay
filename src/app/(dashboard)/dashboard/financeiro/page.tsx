@@ -65,13 +65,13 @@ export default async function FinancePage() {
   const data = await getFinancePageData();
   const metrics = [
     {
-      description: "Total bruto de pedidos pagos.",
+      description: "Total recebido antes de taxas e ajustes.",
       icon: CircleDollarSign,
       label: "Receita Bruta",
       value: formatCentsToCurrency(data.metrics.grossRevenueCents),
     },
     {
-      description: "Receita após reembolsos e chargebacks.",
+      description: "Total estimado após reembolsos e chargebacks.",
       icon: BadgeCheck,
       label: "Receita Líquida",
       value: formatCentsToCurrency(data.metrics.netRevenueCents),
@@ -89,13 +89,13 @@ export default async function FinancePage() {
       value: formatCentsToCurrency(data.metrics.chargebacksCents),
     },
     {
-      description: "Créditos liberados no ledger.",
+      description: "Valores liberados para saque.",
       icon: WalletCards,
       label: "Saldo disponível",
       value: formatCentsToCurrency(data.metrics.availableBalanceCents),
     },
     {
-      description: "Créditos retidos por data futura.",
+      description: "Valores em processamento.",
       icon: LockKeyhole,
       label: "Saldo pendente",
       value: formatCentsToCurrency(data.metrics.blockedBalanceCents),
@@ -116,14 +116,14 @@ export default async function FinancePage() {
           Visão financeira
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-          Acompanhe receita, reembolsos, chargebacks e saldos com dados reais
-          do Supabase quando existirem.
+          Acompanhe saldo, receita, reembolsos e chargebacks em uma visão
+          preparada para sua rotina financeira.
         </p>
       </section>
 
       {data.state !== "ready" ? (
         <EmptyState
-          description="Não foi possível encontrar um perfil de produtor vinculado à sua conta."
+          description="Não conseguimos localizar sua área comercial agora. Saia da conta e entre novamente para atualizar o acesso."
           icon={ShieldAlert}
           title="Financeiro indisponível"
         />
@@ -146,7 +146,7 @@ export default async function FinancePage() {
                 Histórico financeiro
               </CardTitle>
               <CardDescription>
-                Últimas transações vinculadas ao produtor autenticado.
+                Últimas movimentações financeiras da sua operação.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -193,7 +193,7 @@ export default async function FinancePage() {
                 </div>
               ) : (
                 <EmptyState
-                  description="Quando houver vendas, reembolsos, chargebacks ou lançamentos financeiros, as transações aparecerão aqui."
+                  description="Quando suas vendas forem aprovadas, os valores e movimentações aparecerão aqui."
                   icon={History}
                   title="Nenhuma transação financeira"
                 />
@@ -226,15 +226,15 @@ function FinanceMetricCard({
       className="velto-card overflow-hidden"
       style={{ animationDelay: `${index * 45}ms` }}
     >
-      <CardHeader className="space-y-4">
+      <CardHeader className="space-y-3 p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <CardDescription className="text-xs font-medium uppercase tracking-[0.16em]">
               {label}
             </CardDescription>
-            <CardTitle className="mt-3 truncate text-2xl">{value}</CardTitle>
+            <CardTitle className="mt-2 truncate text-2xl">{value}</CardTitle>
           </div>
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
             <Icon className="h-5 w-5" />
           </div>
         </div>
@@ -275,7 +275,7 @@ function FinancialFlowChart({ metrics }: { metrics: FinanceMetrics }) {
           Fluxo financeiro
         </CardTitle>
         <CardDescription>
-          Comparativo visual dos principais saldos calculados a partir do banco.
+          Comparativo visual dos principais saldos da sua operação.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">

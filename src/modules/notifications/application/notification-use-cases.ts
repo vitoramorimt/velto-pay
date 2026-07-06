@@ -133,7 +133,7 @@ export async function subscribeToPushNotifications(
 
   if (!getPublicKey()) {
     throw new NotificationUseCaseError(
-      "As notificações ainda não estão disponíveis neste ambiente.",
+      "As notificações ainda não estão disponíveis nesta versão.",
     );
   }
 
