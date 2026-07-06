@@ -2,7 +2,10 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 
-import { findPublicCheckoutBySlug } from "@/modules/checkout/infrastructure/checkout.repository";
+import {
+  findPublicCheckoutBySlug,
+  getCheckoutQuote,
+} from "@/modules/checkout/infrastructure/checkout.repository";
 import type { WebhookHeaders } from "@/modules/payments/domain/provider";
 import type {
   CreateCheckoutPaymentInput,
@@ -39,10 +42,15 @@ export async function createCheckoutPaymentUseCase(
     throw new PaymentUseCaseError("Checkout indisponível.");
   }
 
-  const method = input.method ?? "pix";
   const provider = getPaymentProvider();
+  const method =
+    input.method ?? (provider.config.name === "stripe" ? "credit_card" : "pix");
+  const quote = await getCheckoutQuote(supabase, checkout, {
+    couponCode: input.couponCode,
+    orderBumpIds: input.orderBumpIds,
+  });
   const providerResult = await provider.createCheckout({
-    amountCents: checkout.product.price_cents,
+    amountCents: quote.totalCents,
     currency: "BRL",
     customer: input.customer,
     description: createPaymentDescription(checkout.product.name),
@@ -50,8 +58,20 @@ export async function createCheckoutPaymentUseCase(
     metadata: {
       checkout_id: checkout.checkoutId,
       checkout_slug: checkout.checkoutSlug,
+      coupon_code: quote.coupon?.code ?? "",
+      discount_cents: String(quote.discountCents),
+      order_bump_ids: quote.orderBumps.map((offer) => offer.id).join(","),
+      product_image_url: checkout.product.image_url ?? "",
+      product_name: checkout.product.name,
       product_id: checkout.product.id,
       producer_id: checkout.product.producer_id,
+      subtotal_cents: String(quote.subtotalCents),
+      total_cents: String(quote.totalCents),
+      utm_campaign: input.tracking?.utmCampaign ?? "",
+      utm_content: input.tracking?.utmContent ?? "",
+      utm_medium: input.tracking?.utmMedium ?? "",
+      utm_source: input.tracking?.utmSource ?? "",
+      utm_term: input.tracking?.utmTerm ?? "",
     },
     method,
   });
@@ -64,6 +84,9 @@ export async function createCheckoutPaymentUseCase(
     method,
     provider: provider.config.name,
     providerResult,
+    couponCode: input.couponCode,
+    orderBumpIds: quote.orderBumps.map((offer) => offer.id),
+    tracking: input.tracking,
   });
 }
 

@@ -2,6 +2,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Button } from "@/components/ui/button";
 import { signOutAction } from "@/modules/auth/application/auth-actions";
+import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 import { LogOut } from "lucide-react";
 
 export default async function DashboardLayout({
@@ -9,6 +10,8 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  await requireAuthenticatedUser("/dashboard");
+
   return (
     <main className="min-h-dvh bg-background">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_18%_0%,hsl(var(--accent)/0.10),transparent_28rem),radial-gradient(circle_at_85%_8%,hsl(var(--foreground)/0.04),transparent_26rem)]" />

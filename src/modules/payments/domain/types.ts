@@ -1,6 +1,10 @@
 export type PaymentEnvironment = "development" | "sandbox" | "production";
 
-export type PaymentProviderName = "stripe" | "mercadopago" | "asaas" | "pagarme";
+export type PaymentProviderName =
+  | "stripe"
+  | "mercadopago"
+  | "asaas"
+  | "pagarme";
 
 export type PaymentMethod = "pix" | "credit_card" | "boleto";
 
@@ -23,8 +27,17 @@ export type PaymentCustomer = {
 
 export type CreateCheckoutPaymentInput = {
   checkoutSlug: string;
+  couponCode?: string | null;
   customer: PaymentCustomer;
   method?: PaymentMethod;
+  orderBumpIds?: string[];
+  tracking?: {
+    utmCampaign?: string | null;
+    utmContent?: string | null;
+    utmMedium?: string | null;
+    utmSource?: string | null;
+    utmTerm?: string | null;
+  };
 };
 
 export type CreateProviderCheckoutInput = {

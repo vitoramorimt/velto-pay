@@ -38,8 +38,8 @@ export function AppHeader({ signOutSlot }: AppHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/82 backdrop-blur-2xl">
-      <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
+    <header className="bg-background/82 sticky top-0 z-40 border-b border-border/70 backdrop-blur-2xl">
+      <div className="flex h-16 min-w-0 items-center gap-2 px-3 sm:gap-3 sm:px-6">
         <Button
           className="border border-border/70 bg-card/70 shadow-sm lg:hidden"
           onClick={() => setIsMobileMenuOpen(true)}
@@ -87,7 +87,7 @@ export function AppHeader({ signOutSlot }: AppHeaderProps) {
             <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground transition-transform group-open:rotate-180 md:block" />
           </summary>
 
-          <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-lg border border-border/80 bg-popover/95 p-2 text-popover-foreground shadow-soft-lg backdrop-blur-xl">
+          <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-1rem))] rounded-lg border border-border/80 bg-popover/95 p-2 text-popover-foreground shadow-soft-lg backdrop-blur-xl">
             <div className="rounded-md border border-border/70 bg-muted/50 px-3 py-2">
               <p className="truncate text-sm font-medium">{userName}</p>
               <p className="mt-1 truncate text-xs text-muted-foreground">
@@ -108,7 +108,7 @@ export function AppHeader({ signOutSlot }: AppHeaderProps) {
             onClick={() => setIsMobileMenuOpen(false)}
             type="button"
           />
-          <div className="absolute inset-y-0 left-0 flex w-[min(22rem,88vw)] flex-col border-r border-white/10 bg-sidebar p-4 text-sidebar-foreground shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
+          <div className="absolute inset-y-0 left-0 flex w-[min(21rem,calc(100vw-1.25rem))] flex-col overflow-y-auto border-r border-white/10 bg-sidebar p-4 text-sidebar-foreground shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
             <div className="flex items-center justify-between gap-3">
               <VeltoLogo
                 imageClassName="h-10 w-10 rounded-md"
@@ -133,7 +133,7 @@ export function AppHeader({ signOutSlot }: AppHeaderProps) {
                 const Icon = item.icon;
                 const isActive = isNavigationItemActive(item.href);
                 const itemClassName = cn(
-                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",
+                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",
                   item.href
                     ? "text-sidebar-foreground/72 hover:translate-x-0.5 hover:bg-white/5 hover:text-sidebar-foreground"
                     : "cursor-default text-sidebar-foreground/38",

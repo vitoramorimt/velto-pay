@@ -1,17 +1,13 @@
 import {
   BarChart3,
-  Bot,
   BrainCircuit,
   Lightbulb,
-  MessageSquareText,
-  Send,
   Sparkles,
   Target,
   UserRound,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,10 +15,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 import { getDashboardOverviewData } from "@/modules/dashboard/application/dashboard-use-cases";
 import { formatCentsToCurrency } from "@/modules/products/domain/money";
+import { SalesAiChat } from "@/modules/sales-ai/presentation/components/sales-ai-chat";
 
 const suggestions = [
   "Publique primeiro os produtos com promessa mais clara e preço mais simples de entender.",
@@ -35,6 +31,7 @@ export default async function SalesAiPage() {
   await requireAuthenticatedUser("/dashboard/ia-de-vendas");
 
   const dashboard = await getDashboardOverviewData();
+  const aiConfigured = Boolean(process.env.OPENAI_API_KEY);
   const metrics = [
     {
       label: "Faturamento",
@@ -73,8 +70,8 @@ export default async function SalesAiPage() {
               IA de Vendas
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Uma área inicial para analisar métricas, entender a persona e
-              organizar sugestões de conversão. Ainda não há IA real conectada.
+              Converse com a IA para analisar métricas, entender a persona e
+              priorizar ações comerciais com contexto real da sua operação.
             </p>
           </div>
           <div className="rounded-lg border border-accent/20 bg-accent/10 p-4 shadow-[0_18px_60px_hsl(var(--accent)/0.08)]">
@@ -85,8 +82,9 @@ export default async function SalesAiPage() {
               <div>
                 <p className="font-medium">Análise comercial assistida</p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  A tela usa seus números reais como contexto visual, mas as
-                  recomendações ainda são estáticas no MVP.
+                  A conversa usa produtos, vendas, checkouts, financeiro e
+                  pedidos como contexto. Sem chave OpenAI, a tela avisa de forma
+                  transparente.
                 </p>
               </div>
             </div>
@@ -162,43 +160,7 @@ export default async function SalesAiPage() {
         </Card>
       </section>
 
-      <Card className="velto-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
-              <MessageSquareText className="h-4 w-4" />
-            </span>
-            Perguntar à IA
-          </CardTitle>
-          <CardDescription>
-            Campo visual/mockado. A resposta automática será integrada em etapa
-            futura.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-lg border border-border/80 bg-muted/25 p-4">
-            <div className="mb-4 flex items-start gap-3 rounded-lg border border-accent/20 bg-background/70 p-4">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
-                <Bot className="h-4 w-4" />
-              </div>
-              <p className="text-sm leading-6 text-muted-foreground">
-                Prévia MVP: faça perguntas sobre métricas, persona e conversão
-                quando a IA real for conectada.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Input
-                disabled
-                placeholder="Ex.: como posso melhorar a conversão deste produto?"
-              />
-              <Button disabled type="button">
-                <Send />
-                Prévia
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <SalesAiChat configured={aiConfigured} />
 
       {!dashboard.hasAnyData ? (
         <div className="rounded-lg border border-accent/20 bg-accent/10 p-4 text-sm leading-6 text-muted-foreground">
