@@ -280,6 +280,7 @@ export async function findPublicCheckoutBySlug(
     .maybeSingle();
 
   if (error) {
+    console.error("[checkout] findPublicCheckoutBySlug failed", error);
     return null;
   }
 

@@ -5,7 +5,10 @@ import { redirect } from "next/navigation";
 import { publicCheckoutOrderSchema } from "@/modules/checkout/domain/schemas";
 import { createCheckoutPaymentUseCase } from "@/modules/payments/application/payment-use-cases";
 
-function getCheckoutRedirect(slug: string, status: "erro" | "pedido") {
+function getCheckoutRedirect(
+  slug: string,
+  status: "configuracao" | "erro" | "pedido",
+) {
   if (!slug) {
     return "/";
   }
@@ -14,7 +17,19 @@ function getCheckoutRedirect(slug: string, status: "erro" | "pedido") {
     return `/pay/${slug}?pedido=criado`;
   }
 
+  if (status === "configuracao") {
+    return `/pay/${slug}?erro=configuracao`;
+  }
+
   return `/pay/${slug}?erro=pedido`;
+}
+
+function isPaymentConfigurationError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return /STRIPE_|PAYMENT_|configur|gateway|provider/i.test(error.message);
 }
 
 function getOptionalString(value: FormDataEntryValue | null) {
@@ -71,6 +86,10 @@ export async function createPendingCheckoutOrderAction(formData: FormData) {
       error,
       slug: parsedInput.data.slug,
     });
+
+    if (isPaymentConfigurationError(error)) {
+      redirect(getCheckoutRedirect(parsedInput.data.slug, "configuracao"));
+    }
 
     redirect(getCheckoutRedirect(parsedInput.data.slug, "erro"));
   }

@@ -4,19 +4,21 @@
 
 @layer base {
   :root {
-    --background: 220 33% 98%;
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --background: 214 40% 96%;
     --foreground: 222 47% 7%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 7%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 7%;
-    --primary: 160 84% 42%;
+    --primary: 160 84% 36%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 29% 94%;
-    --secondary-foreground: 222 35% 12%;
-    --muted: 220 25% 95%;
-    --muted-foreground: 222 11% 43%;
-    --accent: 171 72% 42%;
+    --secondary: 216 32% 90%;
+    --secondary-foreground: 222 47% 9%;
+    --muted: 216 34% 91%;
+    --muted-foreground: 222 24% 32%;
+    --accent: 164 78% 34%;
     --accent-foreground: 180 100% 98%;
     --destructive: 0 77% 56%;
     --destructive-foreground: 0 0% 100%;
@@ -24,13 +26,13 @@
     --success-foreground: 150 100% 98%;
     --warning: 37 92% 53%;
     --warning-foreground: 36 100% 8%;
-    --border: 220 18% 88%;
-    --input: 220 18% 88%;
-    --ring: 160 84% 42%;
+    --border: 215 24% 78%;
+    --input: 215 24% 78%;
+    --ring: 160 84% 36%;
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 214 32% 91%;
     --sidebar-border: 222 24% 15%;
-    --sidebar-active: 221 89% 55%;
+    --sidebar-active: 160 84% 36%;
     --sidebar-active-foreground: 0 0% 100%;
     --shadow-color: 222 47% 7%;
     --radius: 0.5rem;
@@ -80,6 +82,8 @@
 
   body {
     @apply min-h-dvh bg-background text-foreground antialiased;
+    position: relative;
+    width: 100%;
     max-width: 100%;
     overflow-x: clip;
     transition:
@@ -187,6 +191,37 @@
   .velto-break-anywhere {
     overflow-wrap: anywhere;
     word-break: break-word;
+  }
+
+  .velto-app-header {
+    padding-top: var(--safe-area-top);
+  }
+
+  .velto-mobile-drawer-panel {
+    padding-top: calc(1rem + var(--safe-area-top));
+    padding-bottom: calc(1rem + var(--safe-area-bottom));
+  }
+
+  .velto-safe-bottom {
+    padding-bottom: var(--safe-area-bottom);
+  }
+
+  .velto-auth-mobile-bar {
+    top: calc(1rem + var(--safe-area-top));
+  }
+
+  .velto-auth-content {
+    padding-top: calc(5rem + var(--safe-area-top));
+    padding-bottom: calc(2rem + var(--safe-area-bottom));
+  }
+
+  .velto-checkout-shell {
+    padding-top: calc(2.5rem + var(--safe-area-top));
+    padding-bottom: calc(2.5rem + var(--safe-area-bottom));
+  }
+
+  .velto-public-hero {
+    padding-top: calc(4.5rem + var(--safe-area-top));
   }
 }
 

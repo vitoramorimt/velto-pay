@@ -216,7 +216,10 @@ export function ProductForm({
             >
               1. Estrutura
             </StepPill>
-            <StepPill active={currentStep === 2} onClick={() => setCurrentStep(2)}>
+            <StepPill
+              active={currentStep === 2}
+              onClick={() => setCurrentStep(2)}
+            >
               2. Detalhes
             </StepPill>
           </div>
@@ -300,7 +303,7 @@ export function ProductForm({
             <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-between">
               <CancelButton onCancel={onCancel} />
               <Button
-                className="shadow-[0_18px_52px_hsl(var(--accent)/0.14)]"
+                className="w-full shadow-[0_18px_52px_hsl(var(--accent)/0.14)] sm:w-auto"
                 onClick={() => setCurrentStep(2)}
                 type="button"
               >
@@ -419,7 +422,7 @@ export function ProductForm({
             <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-between">
               <CancelButton onCancel={onCancel} />
               <Button
-                className="shadow-[0_18px_52px_hsl(var(--accent)/0.14)]"
+                className="w-full shadow-[0_18px_52px_hsl(var(--accent)/0.14)] sm:w-auto"
                 disabled={isSubmitting}
                 type="submit"
               >
@@ -441,14 +444,19 @@ export function ProductForm({
 function CancelButton({ onCancel }: { onCancel?: () => void }) {
   if (onCancel) {
     return (
-      <Button onClick={onCancel} type="button" variant="outline">
+      <Button
+        className="w-full sm:w-auto"
+        onClick={onCancel}
+        type="button"
+        variant="outline"
+      >
         Cancelar
       </Button>
     );
   }
 
   return (
-    <Button asChild variant="outline">
+    <Button asChild className="w-full sm:w-auto" variant="outline">
       <Link href="/dashboard/produtos">Cancelar</Link>
     </Button>
   );

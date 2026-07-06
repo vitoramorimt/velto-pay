@@ -82,7 +82,7 @@ export default function AuthLayout({
         </section>
 
         <section className="relative flex min-h-dvh items-center justify-center px-4 py-8 sm:px-6 lg:px-10">
-          <div className="absolute inset-x-4 top-4 flex items-center justify-between lg:hidden">
+          <div className="velto-auth-mobile-bar absolute inset-x-4 z-10 flex items-center justify-between lg:hidden">
             <Link
               aria-label="Velto Pay"
               className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
@@ -105,7 +105,7 @@ export default function AuthLayout({
             </Button>
           </div>
 
-          <div className="velto-fade-up w-full max-w-[27rem] pt-20 lg:pt-0">
+          <div className="velto-auth-content velto-fade-up w-full max-w-[27rem] lg:py-0">
             {children}
           </div>
         </section>
