@@ -15,6 +15,7 @@ export default function RecoverPasswordPage() {
             Lembrou a senha? <AuthLink href="/login">Entrar</AuthLink>
           </>
         }
+        showBrand
         title="Recuperar senha"
       >
         <PasswordResetForm />

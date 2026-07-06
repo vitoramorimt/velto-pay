@@ -4,6 +4,7 @@ import {
   CircleDollarSign,
   PackageCheck,
   RefreshCcw,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,7 +54,7 @@ function getMetricCards(metrics: DashboardMetrics) {
     {
       description: "Pedidos reembolsados.",
       icon: RefreshCcw,
-      label: "Reembolso",
+      label: "Reembolsos",
       value: formatCents(metrics.refundsAmountCents),
     },
     {
@@ -70,28 +71,34 @@ export default async function DashboardPage() {
   const metricCards = getMetricCards(dashboard.metrics);
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <section className="velto-surface rounded-lg p-6 sm:p-8">
-        <Badge variant="secondary">Visão geral</Badge>
+    <div className="velto-page-shell">
+      <section className="velto-page-hero">
+        <Badge
+          className="border-accent/25 bg-accent/10 text-accent"
+          variant="outline"
+        >
+          <Sparkles className="mr-1 h-3 w-3" />
+          Visão geral
+        </Badge>
         <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-normal sm:text-3xl">
+            <h1 className="text-3xl font-semibold tracking-normal sm:text-4xl">
               Dashboard comercial
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Acompanhe os principais sinais da sua operação com dados reais do
-              produtor autenticado.
+              Uma leitura limpa dos principais sinais da sua operação, com
+              dados reais do produtor autenticado.
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-muted/35 px-4 py-3 text-sm text-muted-foreground">
-            Atualização baseada em pedidos e produtos do Supabase.
+          <div className="rounded-lg border border-accent/20 bg-accent/10 px-4 py-3 text-sm text-accent shadow-[0_18px_52px_hsl(var(--accent)/0.10)]">
+            Últimos 30 dias · Supabase
           </div>
         </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {metricCards.map((metric) => (
-          <MetricCard key={metric.label} {...metric} />
+        {metricCards.map((metric, index) => (
+          <MetricCard key={metric.label} index={index} {...metric} />
         ))}
       </section>
 
@@ -103,6 +110,7 @@ export default async function DashboardPage() {
 type MetricCardProps = {
   description: string;
   icon: LucideIcon;
+  index: number;
   label: string;
   value: string;
 };
@@ -110,18 +118,26 @@ type MetricCardProps = {
 function MetricCard({
   description,
   icon: Icon,
+  index,
   label,
   value,
 }: MetricCardProps) {
   return (
-    <Card className="transition-colors hover:border-accent/30">
+    <Card
+      className="velto-card overflow-hidden"
+      style={{ animationDelay: `${index * 45}ms` }}
+    >
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <CardDescription>{label}</CardDescription>
-            <CardTitle className="mt-2 truncate text-2xl">{value}</CardTitle>
+            <CardDescription className="text-xs font-medium uppercase tracking-[0.16em]">
+              {label}
+            </CardDescription>
+            <CardTitle className="mt-3 truncate text-2xl sm:text-3xl">
+              {value}
+            </CardTitle>
           </div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-muted/50 text-accent">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent shadow-[0_0_44px_hsl(var(--accent)/0.12)]">
             <Icon className="h-5 w-5" />
           </div>
         </div>
@@ -139,14 +155,16 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
   );
 
   return (
-    <Card>
+    <Card className="velto-card overflow-hidden">
       <CardHeader className="flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
         <div>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-accent" />
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
+              <BarChart3 className="h-4 w-4" />
+            </span>
             Faturamento por período
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="mt-2">
             Faturamento e vendas aprovadas nos últimos 30 dias.
           </CardDescription>
         </div>
@@ -160,7 +178,10 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
       <CardContent>
         {data.length > 0 ? (
           <div className="grid gap-5">
-            <div className="grid h-72 grid-cols-[repeat(30,minmax(0,1fr))] items-end gap-1 rounded-lg border bg-muted/25 px-3 py-5 sm:gap-2 sm:px-4">
+            <div className="relative grid h-80 grid-cols-[repeat(30,minmax(0,1fr))] items-end gap-1 overflow-hidden rounded-lg border border-border/80 bg-[linear-gradient(180deg,hsl(var(--muted)/0.58),hsl(var(--muted)/0.22))] px-3 py-5 sm:gap-2 sm:px-4">
+              <div className="pointer-events-none absolute inset-x-0 top-1/4 border-t border-dashed border-border/70" />
+              <div className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-dashed border-border/60" />
+              <div className="pointer-events-none absolute inset-x-0 top-3/4 border-t border-dashed border-border/50" />
               {data.map((item, index) => (
                 <div
                   className="flex h-full min-w-0 flex-col justify-end gap-3"
@@ -169,7 +190,7 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
                   <div className="flex flex-1 items-end">
                     <div
                       aria-label={`${item.day}: ${formatCents(item.amountCents)} e ${formatNumber(item.approvedSales)} vendas`}
-                      className="w-full rounded-t-md bg-gradient-to-t from-accent/75 to-emerald-300 shadow-[0_0_28px_rgba(25,205,139,0.18)] transition-all hover:from-accent hover:to-emerald-200"
+                      className="w-full rounded-t-md bg-gradient-to-t from-accent/70 via-accent to-emerald-200 shadow-[0_0_28px_hsl(var(--accent)/0.20)] transition-all duration-300 hover:from-accent hover:to-white"
                       style={{ height: `${item.percentage}%` }}
                     />
                   </div>
@@ -200,6 +221,7 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
           </div>
         ) : (
           <EmptyState
+            className="border-accent/20 bg-accent/5"
             description="Quando houver vendas aprovadas para este produtor, o gráfico exibirá faturamento e quantidade por período."
             icon={BarChart3}
             title="Sem dados para o gráfico"
@@ -212,7 +234,7 @@ function RevenueChart({ data }: { data: DashboardChartPoint[] }) {
 
 function SignalTile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border bg-muted/25 p-4">
+    <div className="rounded-lg border border-border/80 bg-muted/25 p-4">
       <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
         {label}
       </p>

@@ -4,11 +4,19 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type {
   CheckoutLink,
+  CheckoutCoupon,
+  CheckoutOffer,
+  CheckoutOfferGroups,
+  CheckoutPixel,
   CheckoutProduct,
+  CheckoutQuote,
   CheckoutStatus,
+  CheckoutSuccessContext,
+  CheckoutUtm,
   PublicCheckout,
 } from "@/modules/checkout/domain/types";
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
+import { calculateCheckoutTotal } from "@/modules/checkout/domain/pricing";
 import type { Product } from "@/modules/products/domain/types";
 import {
   appendSlugSuffix,
@@ -37,10 +45,12 @@ type CheckoutWithProductRow = CheckoutRow & {
 };
 type PublicCheckoutRow = Pick<
   CheckoutRow,
-  "description" | "id" | "slug"
+  "description" | "id" | "producer_id" | "slug"
 > & {
   product: CheckoutProduct | null;
 };
+
+type SuccessContextPayload = CheckoutSuccessContext | null;
 
 function repositoryError(message: string): Error {
   return new Error(message);
@@ -81,6 +91,20 @@ function toCheckoutLink(checkout: CheckoutWithProductRow): CheckoutLink | null {
     link: createCheckoutUrl(checkout.slug),
     product: checkout.product,
   };
+}
+
+function toOfferGroups(offers: CheckoutOffer[]): CheckoutOfferGroups {
+  return {
+    downsells: offers.filter((offer) => offer.offer_type === "downsell"),
+    orderBumps: offers.filter((offer) => offer.offer_type === "order_bump"),
+    upsells: offers.filter((offer) => offer.offer_type === "upsell"),
+  };
+}
+
+function normalizeCouponCode(code?: string | null) {
+  const normalized = code?.trim();
+
+  return normalized ? normalized.toUpperCase() : null;
 }
 
 async function checkoutSlugExists(
@@ -248,7 +272,7 @@ export async function findPublicCheckoutBySlug(
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, slug, description, product:products!inner(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+      "id, producer_id, slug, description, product:products!inner(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
     )
     .eq("slug", slug)
     .eq("status", "published")
@@ -265,12 +289,183 @@ export async function findPublicCheckoutBySlug(
     return null;
   }
 
+  const [offersResult, pixelsResult] = await Promise.all([
+    supabase
+      .from("checkout_offers")
+      .select(
+        "id, offer_type, title, description, amount_cents, currency, badge_text, position",
+      )
+      .eq("checkout_id", checkout.id)
+      .eq("status", "active")
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("checkout_pixels")
+      .select("id, provider, pixel_id")
+      .eq("checkout_id", checkout.id)
+      .eq("status", "active")
+      .order("created_at", { ascending: true }),
+  ]);
+
+  if (offersResult.error || pixelsResult.error) {
+    console.error("[checkout] premium checkout data failed", {
+      offersError: offersResult.error,
+      pixelsError: pixelsResult.error,
+    });
+    throw repositoryError("Não foi possível carregar o checkout premium.");
+  }
+
   return {
     checkoutId: checkout.id,
     checkoutSlug: checkout.slug,
     description: checkout.description,
+    offers: toOfferGroups((offersResult.data ?? []) as CheckoutOffer[]),
+    pixels: (pixelsResult.data ?? []) as CheckoutPixel[],
     product: checkout.product,
   };
+}
+
+export async function findCheckoutCouponByCode(
+  supabase: DatabaseClient,
+  checkout: PublicCheckout,
+  code?: string | null,
+): Promise<CheckoutCoupon | null> {
+  const couponCode = normalizeCouponCode(code);
+
+  if (!couponCode) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("coupons")
+    .select(
+      "id, code, discount_type, discount_value, max_redemptions, expires_at",
+    )
+    .eq("producer_id", checkout.product.producer_id)
+    .eq("status", "active")
+    .ilike("code", couponCode)
+    .order("checkout_id", { ascending: false, nullsFirst: false })
+    .limit(10);
+
+  if (error) {
+    throw repositoryError("Não foi possível validar o cupom.");
+  }
+
+  const coupon = (
+    (data ?? []) as (CheckoutCoupon & {
+      checkout_id?: string | null;
+    })[]
+  ).find(
+    (item) => !item.checkout_id || item.checkout_id === checkout.checkoutId,
+  );
+
+  if (!coupon) {
+    throw repositoryError("Cupom inválido ou expirado.");
+  }
+
+  if (coupon.expires_at && new Date(coupon.expires_at) <= new Date()) {
+    throw repositoryError("Cupom inválido ou expirado.");
+  }
+
+  if (coupon.max_redemptions) {
+    const { count, error: countError } = await supabase
+      .from("coupon_redemptions")
+      .select("id", { count: "exact", head: true })
+      .eq("coupon_id", coupon.id)
+      .in("status", ["reserved", "redeemed"]);
+
+    if (countError) {
+      throw repositoryError("Não foi possível validar o limite do cupom.");
+    }
+
+    if ((count ?? 0) >= coupon.max_redemptions) {
+      throw repositoryError("Cupom sem usos disponíveis.");
+    }
+  }
+
+  return coupon;
+}
+
+export async function getCheckoutQuote(
+  supabase: DatabaseClient,
+  checkout: PublicCheckout,
+  input: {
+    couponCode?: string | null;
+    orderBumpIds?: string[];
+  },
+): Promise<CheckoutQuote> {
+  const selectedBumpIds = new Set(input.orderBumpIds ?? []);
+  const orderBumps = checkout.offers.orderBumps.filter((offer) =>
+    selectedBumpIds.has(offer.id),
+  );
+
+  if (orderBumps.length !== selectedBumpIds.size) {
+    throw repositoryError("Oferta adicional inválida.");
+  }
+
+  const coupon = await findCheckoutCouponByCode(
+    supabase,
+    checkout,
+    input.couponCode,
+  );
+  const totals = calculateCheckoutTotal({
+    coupon,
+    orderBumps,
+    productPriceCents: checkout.product.price_cents,
+  });
+
+  return {
+    coupon,
+    discountCents: totals.discountCents,
+    orderBumps,
+    productPriceCents: checkout.product.price_cents,
+    subtotalCents: totals.subtotalCents,
+    totalCents: totals.totalCents,
+  };
+}
+
+export async function recordCheckoutVisit(
+  supabase: DatabaseClient,
+  input: {
+    checkout: PublicCheckout;
+    referrer?: string | null;
+    sessionId?: string | null;
+    userAgent?: string | null;
+    utm: CheckoutUtm;
+  },
+): Promise<void> {
+  const { error } = await supabase.from("checkout_tracking_events").insert({
+    checkout_id: input.checkout.checkoutId,
+    event_type: "view",
+    producer_id: input.checkout.product.producer_id,
+    referrer: input.referrer?.slice(0, 500) || null,
+    session_id: input.sessionId?.slice(0, 120) || null,
+    user_agent: input.userAgent?.slice(0, 500) || null,
+    utm_campaign: input.utm.campaign || null,
+    utm_content: input.utm.content || null,
+    utm_medium: input.utm.medium || null,
+    utm_source: input.utm.source || null,
+    utm_term: input.utm.term || null,
+  });
+
+  if (error) {
+    console.error("[checkout] recordCheckoutVisit failed", error);
+  }
+}
+
+export async function getCheckoutSuccessContextByProviderReference(
+  supabase: DatabaseClient,
+  providerReference: string,
+): Promise<CheckoutSuccessContext | null> {
+  const { data, error } = await supabase.rpc("get_checkout_success_context", {
+    p_provider_reference: providerReference,
+  });
+
+  if (error) {
+    throw repositoryError("Não foi possível carregar a página de obrigado.");
+  }
+
+  return data as SuccessContextPayload;
 }
 
 export async function deleteCheckoutByProducerId(

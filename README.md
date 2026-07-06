@@ -1,71 +1,124 @@
 # Velto Pay
 
-Plataforma SaaS brasileira de checkout e pagamentos para produtores digitais.
+Plataforma SaaS brasileira para produtores digitais venderem produtos com checkout próprio, pagamentos, dashboard, financeiro e IA comercial.
 
-## Status
+## Visão
 
-Projeto em fase de fundacao arquitetural. A aplicacao Next.js ja possui
-bootstrap tecnico, Design System e autenticacao base com Supabase Auth.
+A Velto Pay centraliza operação comercial, checkout, pagamentos, pedidos e finanças em uma experiência premium para produtores digitais. O produto usa Supabase como backend e Next.js como aplicação full-stack, com uma arquitetura preparada para múltiplos gateways.
 
-## Stack alvo
+## Tecnologias
 
-- Next.js 15 (App Router)
+- Next.js 15 com App Router
 - TypeScript strict
 - Tailwind CSS + shadcn/ui
-- Supabase + PostgreSQL
+- Supabase Auth, Database e RLS
+- PostgreSQL com migrations versionadas
 - React Hook Form + Zod
 - TanStack Query
+- Stripe Checkout em modo test
+- Vitest
 - Vercel
 
-## Direcao do MVP
+## Arquitetura
 
-O MVP deve permitir que um produtor crie um produto de pagamento unico, gere um checkout publico e processe pagamentos com PIX/cartao usando um Payment Service multi-provider, com apenas um PSP real implementado inicialmente.
+O projeto é organizado por módulos em `src/modules`:
 
-Assinaturas, multi-PSP ativo, afiliados completos e API publica ficam para fases posteriores.
+- `auth`
+- `products`
+- `checkout`
+- `orders`
+- `payments`
+- `dashboard`
+- `finance`
 
-## Banco de dados versionado
+Cada módulo separa domínio, aplicação, infraestrutura e apresentação quando aplicável. Acesso a dados fica em repositories server-only; mutações internas usam Server Actions; webhooks usam Route Handlers em Node runtime.
 
-O schema PostgreSQL da Velto Pay deve ser evoluido apenas por migrations SQL
-versionadas em `supabase/migrations/`. A pasta ja esta preparada, mas ainda nao
-existe migration inicial neste repositorio.
+Leia mais em:
 
-### Pre-requisitos
+- [ARCHITECTURE.md](./ARCHITECTURE.md)
+- [docs/architecture.md](./docs/architecture.md)
+- [docs/payments.md](./docs/payments.md)
+- [docs/database.md](./docs/database.md)
 
-- Docker em execucao
-- Dependencias instaladas com `pnpm install`
-- Variaveis locais em `.env.local`
-
-### Fluxo local
+## Rodando Localmente
 
 ```bash
-# Inicia a stack local do Supabase
-pnpm supabase:start
-
-# Para a stack local
-pnpm supabase:stop
-
-# Cria uma migration vazia para uma alteracao planejada
-pnpm supabase:migration:new nome_da_migration
-
-# Gera uma migration a partir do diff do banco local
-pnpm supabase:migration:diff nome_da_migration
-
-# Recria o banco local aplicando todas as migrations e seed.sql
-pnpm supabase:db:reset
-
-# Gera os tipos TypeScript a partir do banco local
-pnpm supabase:gen-types
+corepack enable
+corepack pnpm install
+cp .env.example .env.local
+corepack pnpm dev
 ```
 
-### Banco remoto
+A aplicação roda em `http://localhost:3000`.
 
-`pnpm supabase:db:push` existe para aplicar migrations em um projeto Supabase
-linkado, mas so deve ser executado com autorizacao explicita. O fluxo padrao de
-desenvolvimento e validar tudo localmente antes de qualquer alteracao remota.
+## Ambiente
 
-### Regras
+Configure `.env.local` com:
 
-- Nunca alterar tabelas manualmente no dashboard sem refletir em migration.
-- Nunca editar migrations ja aplicadas em ambientes compartilhados.
-- Manter `src/shared/database.types.ts` atualizado apos mudancas de schema.
-- `supabase/seed.sql` deve conter apenas dados seguros para desenvolvimento.
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+PAYMENT_PROVIDER=stripe
+PAYMENT_ENVIRONMENT=sandbox
+STRIPE_SECRET_KEY=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_SUCCESS_URL=http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}
+STRIPE_CANCEL_URL=http://localhost:3000/checkout/cancel
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+## Supabase
+
+```bash
+corepack pnpm supabase:start
+corepack pnpm supabase:db:reset
+corepack pnpm supabase:gen-types
+```
+
+Migrations ficam em `supabase/migrations`. Não altere tabelas manualmente sem criar migration.
+
+## Stripe
+
+Use Stripe em modo test:
+
+```bash
+stripe listen --forward-to localhost:3000/api/payments/webhooks/stripe
+```
+
+Copie o `whsec_...` para `STRIPE_WEBHOOK_SECRET`.
+
+Cartões de teste:
+
+- Aprovado: `4242 4242 4242 4242`
+- Recusado: `4000 0000 0000 0002`
+
+Eventos úteis:
+
+```bash
+stripe trigger checkout.session.completed
+stripe trigger payment_intent.payment_failed
+stripe trigger charge.refunded
+stripe trigger charge.dispute.created
+```
+
+## Testes e Validação
+
+```bash
+corepack pnpm lint
+corepack pnpm test
+corepack pnpm typecheck
+corepack pnpm build
+```
+
+## Contribuição
+
+- Nunca trabalhar direto na `main`.
+- Criar branch por funcionalidade.
+- Fazer commits pequenos e descritivos.
+- Manter RLS, migrations, use cases e repositories coerentes.
+- Não expor service role ou secrets no frontend.
+
+Veja [docs/contributing.md](./docs/contributing.md) e [docs/coding-standards.md](./docs/coding-standards.md).

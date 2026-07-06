@@ -31,6 +31,7 @@ export function CreateCheckoutButton({ productId }: CreateCheckoutButtonProps) {
 
   return (
     <Button
+      className="border-accent/20 bg-accent/10 text-accent hover:bg-accent hover:text-accent-foreground"
       disabled={isPending}
       onClick={createCheckout}
       size="sm"

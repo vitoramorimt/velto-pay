@@ -1,4 +1,4 @@
-import { ExternalLink, Link2, ShieldAlert } from "lucide-react";
+import { ExternalLink, Link2, ShieldAlert, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -43,21 +43,27 @@ export default async function CheckoutPage() {
   const data = await getCheckoutLinksPageData();
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <section className="velto-surface rounded-lg p-6 sm:p-8">
-        <Badge variant="secondary">Checkout</Badge>
+    <div className="velto-page-shell">
+      <section className="velto-page-hero">
+        <Badge
+          className="border-accent/25 bg-accent/10 text-accent"
+          variant="outline"
+        >
+          <Sparkles className="mr-1 h-3 w-3" />
+          Checkout
+        </Badge>
         <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-normal sm:text-3xl">
+            <h1 className="text-3xl font-semibold tracking-normal sm:text-4xl">
               Links de checkout
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Gerencie os links públicos de checkout salvos no Supabase e
-              vinculados aos produtos do produtor autenticado.
+              Gerencie links públicos, status e prévias dos checkouts vinculados
+              aos seus produtos.
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-muted/35 px-4 py-3 text-sm text-muted-foreground">
-            Base local: <span className="font-medium">/pay/slug</span>
+          <div className="rounded-lg border border-border/80 bg-muted/35 px-4 py-3 text-sm text-muted-foreground">
+            Formato público: <span className="font-medium">/pay/slug</span>
           </div>
         </div>
       </section>
@@ -69,9 +75,10 @@ export default async function CheckoutPage() {
           title="Checkout indisponível"
         />
       ) : data.links.length === 0 ? (
-        <Card>
+        <Card className="velto-card">
           <CardContent className="pt-6">
             <EmptyState
+              className="border-accent/20 bg-accent/5"
               description="Crie um produto para gerar automaticamente um link público de checkout."
               icon={Link2}
               title="Nenhum checkout gerado"
@@ -79,9 +86,9 @@ export default async function CheckoutPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className="velto-card">
           <CardHeader>
-            <CardTitle>Checkouts gerados</CardTitle>
+            <CardTitle className="text-xl">Checkouts gerados</CardTitle>
             <CardDescription>
               Checkouts persistidos e prontos para compartilhamento.
             </CardDescription>
@@ -103,12 +110,13 @@ export default async function CheckoutPage() {
                 </TableHeader>
                 <TableBody>
                   {data.links.map((checkout) => (
-                    <TableRow key={checkout.checkoutId}>
+                    <TableRow
+                      className="transition-colors"
+                      key={checkout.checkoutId}
+                    >
                       <TableCell>
                         <div className="max-w-sm">
-                          <p className="font-medium">
-                            {checkout.checkoutName}
-                          </p>
+                          <p className="font-medium">{checkout.checkoutName}</p>
                           <p className="mt-1 text-sm text-muted-foreground">
                             {getCheckoutStatusLabel(checkout.checkoutStatus)}
                           </p>
@@ -119,7 +127,10 @@ export default async function CheckoutPage() {
                         {formatCentsToCurrency(checkout.product.price_cents)}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">
+                        <Badge
+                          className="border-accent/25 bg-accent/10 text-accent"
+                          variant="outline"
+                        >
                           {getCheckoutStatusLabel(checkout.checkoutStatus)}
                         </Badge>
                       </TableCell>
@@ -147,28 +158,34 @@ export default async function CheckoutPage() {
               </Table>
             </div>
 
-            <div className="grid gap-3 md:hidden">
+            <div className="grid min-w-0 gap-3 md:hidden">
               {data.links.map((checkout) => (
-                <Card key={checkout.checkoutId}>
+                <Card
+                  className="min-w-0 border-border/80 bg-card/80"
+                  key={checkout.checkoutId}
+                >
                   <CardHeader className="gap-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <CardTitle className="truncate">
                           {checkout.checkoutName}
                         </CardTitle>
-                        <CardDescription className="mt-1 truncate">
+                        <CardDescription className="velto-break-anywhere mt-1 text-xs leading-5">
                           {checkout.link}
                         </CardDescription>
                       </div>
-                      <Badge variant="outline">
+                      <Badge
+                        className="border-accent/25 bg-accent/10 text-accent"
+                        variant="outline"
+                      >
                         {getCheckoutStatusLabel(checkout.checkoutStatus)}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between gap-3 text-sm">
+                    <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">Produto</span>
-                      <span className="max-w-44 truncate font-medium">
+                      <span className="min-w-0 max-w-[52vw] truncate font-medium">
                         {checkout.product.name}
                       </span>
                     </div>

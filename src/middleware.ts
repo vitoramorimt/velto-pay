@@ -1,5 +1,5 @@
-import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 import {
   LOGIN_PATH,
@@ -95,6 +95,7 @@ export async function middleware(request: NextRequest) {
     const loginUrl = request.nextUrl.clone();
 
     loginUrl.pathname = LOGIN_PATH;
+    loginUrl.search = "";
     loginUrl.searchParams.set(
       "next",
       `${request.nextUrl.pathname}${request.nextUrl.search}`,

@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { publicCheckoutOrderSchema } from "@/modules/checkout/domain/schemas";
-import { createSupabaseServerClient } from "@/shared/supabase";
+import { createCheckoutPaymentUseCase } from "@/modules/payments/application/payment-use-cases";
 
 function getCheckoutRedirect(slug: string, status: "erro" | "pedido") {
   if (!slug) {
@@ -17,28 +17,66 @@ function getCheckoutRedirect(slug: string, status: "erro" | "pedido") {
   return `/pay/${slug}?erro=pedido`;
 }
 
+function getOptionalString(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  return value.trim() || undefined;
+}
+
 export async function createPendingCheckoutOrderAction(formData: FormData) {
   const rawSlug = String(formData.get("slug") ?? "");
   const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(rawSlug) ? rawSlug : "";
   const parsedInput = publicCheckoutOrderSchema.safeParse({
+    couponCode: formData.get("couponCode"),
     customerEmail: formData.get("customerEmail"),
     customerName: formData.get("customerName"),
+    orderBumpIds: formData.getAll("orderBumpIds").map(String),
     slug: rawSlug,
+    utmCampaign: getOptionalString(formData.get("utmCampaign")),
+    utmContent: getOptionalString(formData.get("utmContent")),
+    utmMedium: getOptionalString(formData.get("utmMedium")),
+    utmSource: getOptionalString(formData.get("utmSource")),
+    utmTerm: getOptionalString(formData.get("utmTerm")),
   });
 
   if (!parsedInput.success) {
     redirect(getCheckoutRedirect(safeSlug, "erro"));
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc("create_pending_checkout_order", {
-    p_checkout_slug: parsedInput.data.slug,
-    p_customer_email: parsedInput.data.customerEmail,
-    p_customer_name: parsedInput.data.customerName,
-  });
+  let checkoutUrl: string | null = null;
 
-  if (error) {
+  try {
+    const paymentAttempt = await createCheckoutPaymentUseCase({
+      checkoutSlug: parsedInput.data.slug,
+      couponCode: parsedInput.data.couponCode,
+      customer: {
+        email: parsedInput.data.customerEmail,
+        name: parsedInput.data.customerName,
+      },
+      orderBumpIds: parsedInput.data.orderBumpIds,
+      tracking: {
+        utmCampaign: parsedInput.data.utmCampaign,
+        utmContent: parsedInput.data.utmContent,
+        utmMedium: parsedInput.data.utmMedium,
+        utmSource: parsedInput.data.utmSource,
+        utmTerm: parsedInput.data.utmTerm,
+      },
+    });
+
+    checkoutUrl = paymentAttempt.checkoutUrl;
+  } catch (error) {
+    console.error("[checkout] createPendingCheckoutOrderAction failed", {
+      error,
+      slug: parsedInput.data.slug,
+    });
+
     redirect(getCheckoutRedirect(parsedInput.data.slug, "erro"));
+  }
+
+  if (checkoutUrl) {
+    redirect(checkoutUrl);
   }
 
   redirect(getCheckoutRedirect(parsedInput.data.slug, "pedido"));

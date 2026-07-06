@@ -69,6 +69,7 @@ web_modules/
 .env
 .env.*
 !.env.example
+!.env.production.example
 
 # Supabase local runtime state
 supabase/.branches/
@@ -146,3 +147,4 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+.cursor/

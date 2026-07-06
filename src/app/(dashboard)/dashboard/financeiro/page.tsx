@@ -5,6 +5,7 @@ import {
   LockKeyhole,
   RefreshCcw,
   ShieldAlert,
+  Sparkles,
   TrendingDown,
   WalletCards,
   type LucideIcon,
@@ -28,7 +29,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getFinancePageData } from "@/modules/finance/application/finance-use-cases";
-import type { FinanceLedgerEntry } from "@/modules/finance/domain/types";
+import type {
+  FinanceLedgerEntry,
+  FinanceMetrics,
+} from "@/modules/finance/domain/types";
 import { formatCentsToCurrency } from "@/modules/products/domain/money";
 
 function formatDate(value: string): string {
@@ -93,16 +97,22 @@ export default async function FinancePage() {
     {
       description: "Créditos retidos por data futura.",
       icon: LockKeyhole,
-      label: "Saldo bloqueado",
+      label: "Saldo pendente",
       value: formatCentsToCurrency(data.metrics.blockedBalanceCents),
     },
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <section className="velto-surface rounded-lg p-6 sm:p-8">
-        <Badge variant="secondary">Financeiro</Badge>
-        <h1 className="mt-4 text-2xl font-semibold tracking-normal sm:text-3xl">
+    <div className="velto-page-shell">
+      <section className="velto-page-hero">
+        <Badge
+          className="border-accent/25 bg-accent/10 text-accent"
+          variant="outline"
+        >
+          <Sparkles className="mr-1 h-3 w-3" />
+          Financeiro
+        </Badge>
+        <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-4xl">
           Visão financeira
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -120,15 +130,19 @@ export default async function FinancePage() {
       ) : (
         <>
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {metrics.map((metric) => (
-              <FinanceMetricCard key={metric.label} {...metric} />
+            {metrics.map((metric, index) => (
+              <FinanceMetricCard key={metric.label} index={index} {...metric} />
             ))}
           </section>
 
-          <Card>
+          <FinancialFlowChart metrics={data.metrics} />
+
+          <Card className="velto-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <History className="h-4 w-4 text-accent" />
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <span className="flex h-9 w-9 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
+                  <History className="h-4 w-4" />
+                </span>
                 Histórico financeiro
               </CardTitle>
               <CardDescription>
@@ -195,6 +209,7 @@ export default async function FinancePage() {
 type FinanceMetricCardProps = {
   description: string;
   icon: LucideIcon;
+  index: number;
   label: string;
   value: string;
 };
@@ -202,23 +217,89 @@ type FinanceMetricCardProps = {
 function FinanceMetricCard({
   description,
   icon: Icon,
+  index,
   label,
   value,
 }: FinanceMetricCardProps) {
   return (
-    <Card>
+    <Card
+      className="velto-card overflow-hidden"
+      style={{ animationDelay: `${index * 45}ms` }}
+    >
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <CardDescription>{label}</CardDescription>
-            <CardTitle className="mt-2 truncate text-2xl">{value}</CardTitle>
+            <CardDescription className="text-xs font-medium uppercase tracking-[0.16em]">
+              {label}
+            </CardDescription>
+            <CardTitle className="mt-3 truncate text-2xl">{value}</CardTitle>
           </div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-muted/50 text-accent">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
             <Icon className="h-5 w-5" />
           </div>
         </div>
         <p className="text-xs leading-5 text-muted-foreground">{description}</p>
       </CardHeader>
+    </Card>
+  );
+}
+
+function FinancialFlowChart({ metrics }: { metrics: FinanceMetrics }) {
+  const rows = [
+    {
+      label: "Receita Bruta",
+      value: metrics.grossRevenueCents,
+    },
+    {
+      label: "Receita Líquida",
+      value: metrics.netRevenueCents,
+    },
+    {
+      label: "Saldo disponível",
+      value: metrics.availableBalanceCents,
+    },
+    {
+      label: "Saldo pendente",
+      value: metrics.blockedBalanceCents,
+    },
+  ];
+  const maxValue = Math.max(...rows.map((row) => Math.abs(row.value)), 1);
+
+  return (
+    <Card className="velto-card">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <span className="flex h-9 w-9 items-center justify-center rounded-md border border-accent/20 bg-accent/10 text-accent">
+            <TrendingDown className="h-4 w-4 rotate-180" />
+          </span>
+          Fluxo financeiro
+        </CardTitle>
+        <CardDescription>
+          Comparativo visual dos principais saldos calculados a partir do banco.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        {rows.map((row) => {
+          const percentage = Math.max(4, Math.round((Math.abs(row.value) / maxValue) * 100));
+
+          return (
+            <div className="grid gap-2" key={row.label}>
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <span className="font-medium">{row.label}</span>
+                <span className="text-muted-foreground">
+                  {formatCentsToCurrency(row.value)}
+                </span>
+              </div>
+              <div className="h-3 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-accent/60 to-emerald-200 shadow-[0_0_24px_hsl(var(--accent)/0.20)]"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </CardContent>
     </Card>
   );
 }
