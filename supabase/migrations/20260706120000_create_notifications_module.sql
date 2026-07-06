@@ -1,15 +1,21 @@
-create type public.notification_event_type as enum (
-  'sale_approved',
-  'pix_created',
-  'pix_expired',
-  'payment_pending',
-  'payment_failed',
-  'payment_paid',
-  'refund_created',
-  'chargeback_created',
-  'order_created',
-  'customer_created'
-);
+do $$
+begin
+  create type public.notification_event_type as enum (
+    'sale_approved',
+    'pix_created',
+    'pix_expired',
+    'payment_pending',
+    'payment_failed',
+    'payment_paid',
+    'refund_created',
+    'chargeback_created',
+    'order_created',
+    'customer_created'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
 
 create table public.notification_subscriptions (
   id uuid primary key default extensions.gen_random_uuid(),

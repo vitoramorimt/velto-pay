@@ -1,74 +1,70 @@
 do $$
 begin
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'checkout_offer_type'
-  ) then
-    create type public.checkout_offer_type as enum (
-      'order_bump',
-      'upsell',
-      'downsell'
-    );
-  end if;
+  create type public.checkout_offer_type as enum (
+    'order_bump',
+    'upsell',
+    'downsell'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
 
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'checkout_offer_status'
-  ) then
-    create type public.checkout_offer_status as enum (
-      'active',
-      'inactive'
-    );
-  end if;
+do $$
+begin
+  create type public.checkout_offer_status as enum (
+    'active',
+    'inactive'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
 
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'coupon_discount_type'
-  ) then
-    create type public.coupon_discount_type as enum (
-      'percentage',
-      'fixed'
-    );
-  end if;
+do $$
+begin
+  create type public.coupon_discount_type as enum (
+    'percentage',
+    'fixed'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
 
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'coupon_status'
-  ) then
-    create type public.coupon_status as enum (
-      'active',
-      'inactive'
-    );
-  end if;
+do $$
+begin
+  create type public.coupon_status as enum (
+    'active',
+    'inactive'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
 
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'coupon_redemption_status'
-  ) then
-    create type public.coupon_redemption_status as enum (
-      'reserved',
-      'redeemed',
-      'cancelled'
-    );
-  end if;
+do $$
+begin
+  create type public.coupon_redemption_status as enum (
+    'reserved',
+    'redeemed',
+    'cancelled'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
 
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'checkout_pixel_provider'
-  ) then
-    create type public.checkout_pixel_provider as enum (
-      'meta',
-      'google_analytics',
-      'google_tag_manager',
-      'tiktok'
-    );
-  end if;
+do $$
+begin
+  create type public.checkout_pixel_provider as enum (
+    'meta',
+    'google_analytics',
+    'google_tag_manager',
+    'tiktok'
+  );
+exception
+  when duplicate_object then null;
 end;
 $$;
 

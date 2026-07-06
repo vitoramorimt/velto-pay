@@ -1,39 +1,86 @@
-alter type public.payment_provider add value if not exists 'asaas';
-alter type public.payment_status add value if not exists 'authorized';
-alter type public.payment_status add value if not exists 'cancelled';
-
 do $$
 begin
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'payment_environment'
-  ) then
-    create type public.payment_environment as enum (
-      'development',
-      'sandbox',
-      'production'
-    );
-  end if;
+  create type public.payment_provider as enum (
+    'mercadopago',
+    'pagarme',
+    'stripe',
+    'asaas',
+    'manual'
+  );
+exception
+  when duplicate_object then null;
 end;
 $$;
 
 do $$
 begin
-  if not exists (
-    select 1 from pg_type
-    where typnamespace = 'public'::regnamespace
-      and typname = 'transaction_type'
-  ) then
-    create type public.transaction_type as enum (
-      'payment',
-      'authorization',
-      'capture',
-      'refund',
-      'chargeback',
-      'cancellation'
-    );
-  end if;
+  create type public.payment_status as enum (
+    'pending',
+    'processing',
+    'paid',
+    'authorized',
+    'failed',
+    'refunded',
+    'chargeback',
+    'canceled',
+    'cancelled'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
+
+do $$
+begin
+  create type public.payment_event_status as enum (
+    'received',
+    'processed',
+    'failed'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
+
+do $$
+begin
+  create type public.payment_environment as enum (
+    'development',
+    'sandbox',
+    'production'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
+
+do $$
+begin
+  create type public.transaction_type as enum (
+    'payment',
+    'authorization',
+    'capture',
+    'refund',
+    'chargeback',
+    'cancellation'
+  );
+exception
+  when duplicate_object then null;
+end;
+$$;
+
+alter type public.payment_provider add value if not exists 'asaas';
+alter type public.payment_status add value if not exists 'authorized';
+alter type public.payment_status add value if not exists 'cancelled';
+
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  new.updated_at = now();
+  return new;
 end;
 $$;
 
