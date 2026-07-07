@@ -21,6 +21,10 @@ alter table public.checkouts
   add column if not exists banner_url text,
   add column if not exists secure_purchase_enabled boolean;
 
+update public.checkouts
+set secure_purchase_enabled = true
+where secure_purchase_enabled is null;
+
 alter table public.checkouts
   alter column secure_purchase_enabled set default true,
   alter column secure_purchase_enabled set not null;
@@ -48,6 +52,8 @@ create table if not exists public.product_offer_contents (
     urgency_text is null or char_length(urgency_text) <= 160
   )
 );
+
+drop trigger if exists product_offer_contents_set_updated_at on public.product_offer_contents;
 
 create trigger product_offer_contents_set_updated_at
 before update on public.product_offer_contents
