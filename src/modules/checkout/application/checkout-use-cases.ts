@@ -1,6 +1,8 @@
 import "server-only";
 
 import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
+import { normalizeCheckoutBadges } from "@/modules/checkout/domain/badges";
+import type { CheckoutPersonalizationInput } from "@/modules/checkout/domain/schemas";
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import type {
   CheckoutLink,
@@ -15,6 +17,7 @@ import {
   getCheckoutSuccessContextByProviderReference,
   listCheckoutsByProducerId,
   recordCheckoutVisit,
+  updateCheckoutPersonalization,
 } from "@/modules/checkout/infrastructure/checkout.repository";
 import {
   findProducerByUserId,
@@ -128,15 +131,48 @@ export async function createCheckoutForProductUseCase(
   const checkout = await ensureCheckoutForProduct(supabase, product);
 
   return {
+    checkoutBadges: normalizeCheckoutBadges(checkout.badges),
     checkoutCreatedAt: checkout.created_at,
+    checkoutDescription: checkout.description,
+    checkoutHeadline: checkout.headline,
     checkoutId: checkout.id,
     checkoutName: checkout.headline ?? product.name,
+    checkoutPrimaryColor: checkout.primary_color,
     checkoutSlug: checkout.slug,
     checkoutStatus: checkout.status,
+    checkoutTheme: checkout.theme === "light" ? "light" : "dark",
     checkoutUpdatedAt: checkout.updated_at,
     link: createCheckoutUrl(checkout.slug),
     product,
   };
+}
+
+export async function updateCheckoutPersonalizationUseCase(
+  checkoutId: string,
+  input: CheckoutPersonalizationInput,
+): Promise<{ checkoutSlug: string }> {
+  const user = await requireAuthenticatedUser("/dashboard/checkout");
+  const supabase = await createSupabaseServerClient();
+  const producer = await findProducerByUserId(supabase, user.id);
+
+  if (!producer) {
+    throw new CheckoutUseCaseError(
+      "Não foi possível encontrar seu perfil de produtor.",
+    );
+  }
+
+  const updated = await updateCheckoutPersonalization(
+    supabase,
+    checkoutId,
+    producer.id,
+    input,
+  );
+
+  if (!updated) {
+    throw new CheckoutUseCaseError("Checkout não encontrado.");
+  }
+
+  return { checkoutSlug: updated.slug };
 }
 
 export async function deleteCheckoutUseCase(checkoutId: string): Promise<void> {

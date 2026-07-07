@@ -6,7 +6,9 @@ import {
   CheckoutUseCaseError,
   createCheckoutForProductUseCase,
   deleteCheckoutUseCase,
+  updateCheckoutPersonalizationUseCase,
 } from "@/modules/checkout/application/checkout-use-cases";
+import { checkoutPersonalizationSchema } from "@/modules/checkout/domain/schemas";
 
 export type CheckoutActionResult = {
   message: string;
@@ -39,6 +41,46 @@ export async function createCheckoutForProductAction(
 
     return {
       message: "Checkout criado com sucesso.",
+      status: "success",
+    };
+  } catch (error) {
+    return actionError(error);
+  }
+}
+
+export async function updateCheckoutPersonalizationAction(
+  checkoutId: string,
+  productId: string,
+  values: {
+    badges: { enabled: boolean; id: string; label: string }[];
+    description?: string | null;
+    headline: string;
+    primaryColor?: string | null;
+    theme: "dark" | "light";
+  },
+): Promise<CheckoutActionResult> {
+  const parsed = checkoutPersonalizationSchema.safeParse(values);
+
+  if (!parsed.success) {
+    return {
+      message:
+        parsed.error.issues[0]?.message ?? "Dados de personalização inválidos.",
+      status: "error",
+    };
+  }
+
+  try {
+    const { checkoutSlug } = await updateCheckoutPersonalizationUseCase(
+      checkoutId,
+      parsed.data,
+    );
+
+    revalidatePath(`/checkout-editor/${productId}`);
+    revalidatePath(`/dashboard/produtos/${productId}/configuracoes`);
+    revalidatePath(`/pay/${checkoutSlug}`);
+
+    return {
+      message: "Personalização salva com sucesso.",
       status: "success",
     };
   } catch (error) {

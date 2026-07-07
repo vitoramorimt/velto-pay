@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { CHECKOUT_BADGE_ORDER } from "@/modules/checkout/domain/badges";
+
 export const publicCheckoutOrderSchema = z.object({
   couponCode: z
     .string()
@@ -31,4 +33,42 @@ export const publicCheckoutOrderSchema = z.object({
 
 export type PublicCheckoutOrderInput = z.infer<
   typeof publicCheckoutOrderSchema
+>;
+
+const checkoutBadgeInputSchema = z.object({
+  enabled: z.boolean(),
+  id: z.enum(CHECKOUT_BADGE_ORDER as [string, ...string[]]),
+  label: z
+    .string()
+    .trim()
+    .min(1, "Informe o texto do selo.")
+    .max(60, "O selo deve ter no máximo 60 caracteres."),
+});
+
+export const checkoutPersonalizationSchema = z.object({
+  badges: z.array(checkoutBadgeInputSchema).min(1).max(CHECKOUT_BADGE_ORDER.length),
+  description: z
+    .string()
+    .trim()
+    .max(280, "A descrição deve ter no máximo 280 caracteres.")
+    .optional()
+    .transform((value) => value || null),
+  headline: z
+    .string()
+    .trim()
+    .min(2, "Informe um título.")
+    .max(120, "O título deve ter no máximo 120 caracteres."),
+  primaryColor: z
+    .union([
+      z.literal(""),
+      z.string().regex(/^#[0-9a-fA-F]{6}$/, "Informe uma cor válida."),
+    ])
+    .optional()
+    .nullable()
+    .transform((value) => value || null),
+  theme: z.enum(["dark", "light"]),
+});
+
+export type CheckoutPersonalizationInput = z.infer<
+  typeof checkoutPersonalizationSchema
 >;

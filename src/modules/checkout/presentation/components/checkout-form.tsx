@@ -19,6 +19,7 @@ import { PaymentMethodTabs } from "./checkout-payment-method-tabs";
 
 type CheckoutFormProps = {
   checkoutSlug?: string;
+  description?: string | null;
   errorReason?: string;
   formAction?: (formData: FormData) => void | Promise<void>;
   isPreview?: boolean;
@@ -30,6 +31,7 @@ type CheckoutFormProps = {
 
 export function CheckoutForm({
   checkoutSlug,
+  description,
   errorReason,
   formAction,
   isPreview = false,
@@ -65,6 +67,11 @@ export function CheckoutForm({
           </span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">{items[0]?.name}</p>
+            {description ? (
+              <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                {description}
+              </p>
+            ) : null}
             <p className="text-sm font-semibold text-accent">
               {formatCentsToCurrency(totalAmountCents)}{" "}
               <span className="text-xs font-normal text-muted-foreground">

@@ -129,6 +129,7 @@ export type Database = {
       };
       checkouts: {
         Row: {
+          badges: Json;
           created_at: string;
           description: string | null;
           headline: string | null;
@@ -140,10 +141,12 @@ export type Database = {
           published_at: string | null;
           slug: string;
           status: Database["public"]["Enums"]["checkout_status"];
+          theme: string;
           updated_at: string;
           upsell_enabled: boolean;
         };
         Insert: {
+          badges?: Json;
           created_at?: string;
           description?: string | null;
           headline?: string | null;
@@ -155,10 +158,12 @@ export type Database = {
           published_at?: string | null;
           slug: string;
           status?: Database["public"]["Enums"]["checkout_status"];
+          theme?: string;
           updated_at?: string;
           upsell_enabled?: boolean;
         };
         Update: {
+          badges?: Json;
           created_at?: string;
           description?: string | null;
           headline?: string | null;
@@ -170,6 +175,7 @@ export type Database = {
           published_at?: string | null;
           slug?: string;
           status?: Database["public"]["Enums"]["checkout_status"];
+          theme?: string;
           updated_at?: string;
           upsell_enabled?: boolean;
         };
