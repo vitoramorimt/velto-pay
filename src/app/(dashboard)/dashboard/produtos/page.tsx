@@ -48,11 +48,11 @@ export default async function ProductsPage() {
               Catálogo
             </Badge>
             <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-4xl">
-              Produtos
+              Ofertas
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Cadastre produtos digitais, organize suas ofertas e compartilhe
-              links de pagamento com seus clientes.
+              Crie produtos digitais, configure checkout, argumentos de
+              conversão e links públicos em uma experiência única.
             </p>
           </div>
 
@@ -60,7 +60,7 @@ export default async function ProductsPage() {
             <ProductCreateDialog>
               <Button className="h-10 shadow-[0_18px_52px_hsl(var(--accent)/0.14)] sm:h-11">
                 <Plus />
-                Novo produto
+                Nova oferta
               </Button>
             </ProductCreateDialog>
           ) : null}
@@ -103,13 +103,13 @@ export default async function ProductsPage() {
                 <EmptyState
                   description="Comece cadastrando um produto digital com nome, preço, descrição e status inicial."
                   icon={Layers3}
-                  title="Nenhum produto cadastrado"
+                  title="Nenhuma oferta cadastrada"
                 />
                 <div className="mt-5 flex justify-center">
                   <ProductCreateDialog>
                     <Button>
                       <Plus />
-                      Criar produto
+                      Criar oferta
                     </Button>
                   </ProductCreateDialog>
                 </div>

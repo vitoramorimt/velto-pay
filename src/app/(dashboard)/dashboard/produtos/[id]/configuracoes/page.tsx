@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getProductSettingsPageData } from "@/modules/products/application/product-use-cases";
-import { ProductSettingsTabs } from "@/modules/products/presentation/components/product-settings-tabs";
+import { getOfferCenterPageData } from "@/modules/offers/application/offer-center-use-cases";
+import { OfferCreationCenter } from "@/modules/offers/presentation/components/offer-creation-center";
 
 type ProductSettingsPageProps = {
   params: Promise<{
@@ -25,39 +25,48 @@ export default async function ProductSettingsPage({
     notFound();
   }
 
-  const data = await getProductSettingsPageData(id);
+  const data = await getOfferCenterPageData(id);
 
   if (!data) {
     notFound();
   }
 
-  const { checkoutLink, product } = data;
-
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <Badge variant="secondary">Configurações do produto</Badge>
-          <h1 className="mt-3 text-2xl font-semibold tracking-normal">
-            {product.name}
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Gerencie o link de checkout, a entrega do conteúdo e os dados do
-            produto.
-          </p>
+    <div className="velto-page-shell">
+      <section className="velto-page-hero">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <Badge
+              className="border-accent/25 bg-accent/10 text-accent"
+              variant="outline"
+            >
+              <Sparkles className="mr-1 size-3" />
+              Centro de criação de oferta
+            </Badge>
+            <h1 className="mt-4 break-words text-3xl font-semibold tracking-normal sm:text-4xl">
+              {data.product.name}
+            </h1>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+              Configure produto, checkout, conversão, pagamento e publicação no
+              mesmo fluxo com autosave e preview ao vivo.
+            </p>
+          </div>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/produtos">
+              <ArrowLeft />
+              Voltar
+            </Link>
+          </Button>
         </div>
-        <Button asChild size="sm" variant="outline">
-          <Link href="/dashboard/produtos">
-            <ArrowLeft />
-            Voltar
-          </Link>
-        </Button>
-      </div>
+      </section>
 
-      <ProductSettingsTabs
-        checkoutLink={checkoutLink}
-        product={product}
+      <OfferCreationCenter
+        checkout={data.checkout}
+        conversion={data.conversion}
+        paymentSimulation={data.paymentSimulation}
+        product={data.product}
         productId={id}
+        publicLink={data.publicLink}
       />
     </div>
   );

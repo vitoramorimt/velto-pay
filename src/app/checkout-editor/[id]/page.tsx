@@ -61,9 +61,14 @@ export default async function CheckoutEditorPage({
       <CheckoutEditorClient
         checkoutId={checkoutLink.checkoutId}
         initialBadges={checkoutLink.checkoutBadges}
+        initialBannerUrl={checkoutLink.checkoutBannerUrl}
         initialDescription={checkoutLink.checkoutDescription}
         initialHeadline={checkoutLink.checkoutHeadline}
+        initialLogoUrl={checkoutLink.checkoutLogoUrl}
         initialPrimaryColor={checkoutLink.checkoutPrimaryColor}
+        initialSecurePurchaseEnabled={
+          checkoutLink.checkoutSecurePurchaseEnabled
+        }
         initialTheme={checkoutLink.checkoutTheme}
         product={checkoutLink.product}
         productId={id}

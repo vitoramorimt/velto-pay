@@ -53,9 +53,12 @@ export async function updateCheckoutPersonalizationAction(
   productId: string,
   values: {
     badges: { enabled: boolean; id: string; label: string }[];
+    bannerUrl?: string | null;
     description?: string | null;
     headline: string;
+    logoUrl?: string | null;
     primaryColor?: string | null;
+    securePurchaseEnabled?: boolean;
     theme: "dark" | "light";
   },
 ): Promise<CheckoutActionResult> {

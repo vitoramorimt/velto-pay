@@ -85,7 +85,7 @@ export function ProductsTable({
           <div>
             <p className="text-sm font-medium">Catálogo de produtos</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Busque, filtre e gerencie seus produtos digitais.
+              Busque, filtre e gerencie suas ofertas digitais.
             </p>
           </div>
 
@@ -194,7 +194,7 @@ export function ProductsTable({
                           onClick={stopRowNavigation}
                         >
                           <Settings />
-                          Configurações
+                          Criar oferta
                         </Link>
                       </Button>
                       <ProductStatusToggle
@@ -266,7 +266,7 @@ export function ProductsTable({
                       onClick={stopRowNavigation}
                     >
                       <Settings />
-                      Configurações
+                      Criar oferta
                     </Link>
                   </Button>
                   <ProductStatusToggle

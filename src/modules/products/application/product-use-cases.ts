@@ -89,6 +89,7 @@ async function requireProductProducer(nextPath: string) {
 
 function toProductFormValues(product: Product): ProductFormValues {
   return {
+    category: product.category ?? "",
     deliveryUrl: product.delivery_url ?? "",
     description: product.description ?? "",
     id: product.id,
@@ -198,6 +199,7 @@ export async function createProductUseCase(
   const slug = await resolveUniqueRandomProductSlug(supabase);
 
   const product = await insertProduct(supabase, {
+    category: optionalStringToNull(input.category),
     currency: "BRL",
     delivery_url: optionalStringToNull(input.deliveryUrl),
     description: optionalStringToNull(input.description),
@@ -239,6 +241,7 @@ export async function updateProductUseCase(
   );
 
   const product = await updateProductByProducerId(supabase, input.id, producer.id, {
+    category: optionalStringToNull(input.category),
     delivery_url: optionalStringToNull(input.deliveryUrl),
     description: optionalStringToNull(input.description),
     image_url: optionalStringToNull(input.salesPageUrl),

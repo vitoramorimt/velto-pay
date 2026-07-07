@@ -40,6 +40,10 @@ const priceSchema = z
   );
 
 const productBaseSchema = z.object({
+  category: z
+    .string()
+    .trim()
+    .max(80, "A categoria deve ter no máximo 80 caracteres."),
   name: z
     .string()
     .trim()
@@ -57,9 +61,7 @@ const productBaseSchema = z.object({
     .trim()
     .max(500, "A descrição deve ter no máximo 500 caracteres."),
   price: priceSchema,
-  salesPageUrl: optionalUrlSchema(
-    "Informe uma URL de página de vendas válida.",
-  ),
+  salesPageUrl: optionalUrlSchema("Informe uma URL de imagem válida."),
   deliveryUrl: optionalUrlSchema("Informe uma URL de entrega válida."),
   status: editableProductStatusSchema,
 });

@@ -9,6 +9,12 @@ type ProductUpdate = Database["public"]["Tables"]["products"]["Update"];
 type CheckoutRow = Database["public"]["Tables"]["checkouts"]["Row"];
 type CheckoutInsert = Database["public"]["Tables"]["checkouts"]["Insert"];
 type CheckoutUpdate = Database["public"]["Tables"]["checkouts"]["Update"];
+type OfferContentRow =
+  Database["public"]["Tables"]["product_offer_contents"]["Row"];
+type OfferContentInsert =
+  Database["public"]["Tables"]["product_offer_contents"]["Insert"];
+type OfferContentUpdate =
+  Database["public"]["Tables"]["product_offer_contents"]["Update"];
 
 export const DEV_BYPASS_PRODUCER_ID = "dev-bypass-producer";
 
@@ -33,15 +39,20 @@ export const devBypassProducer: ProducerRow = {
 const globalForDevStore = globalThis as unknown as {
   __veltoDevProducts?: Map<string, ProductRow>;
   __veltoDevCheckouts?: Map<string, CheckoutRow>;
+  __veltoDevOfferContents?: Map<string, OfferContentRow>;
 };
 
 const products =
   globalForDevStore.__veltoDevProducts ?? new Map<string, ProductRow>();
 const checkouts =
   globalForDevStore.__veltoDevCheckouts ?? new Map<string, CheckoutRow>();
+const offerContents =
+  globalForDevStore.__veltoDevOfferContents ??
+  new Map<string, OfferContentRow>();
 
 globalForDevStore.__veltoDevProducts = products;
 globalForDevStore.__veltoDevCheckouts = checkouts;
+globalForDevStore.__veltoDevOfferContents = offerContents;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -66,6 +77,7 @@ export const mockProductsStore = {
     const id = product.id ?? randomId();
     const timestamp = nowIso();
     const row: ProductRow = {
+      category: product.category ?? null,
       created_at: product.created_at ?? timestamp,
       currency: product.currency ?? "BRL",
       delivery_url: product.delivery_url ?? null,
@@ -149,16 +161,22 @@ export const mockCheckoutsStore = {
     const timestamp = nowIso();
     const row: CheckoutRow = {
       badges: payload.badges ?? existing?.badges ?? [],
+      banner_url: payload.banner_url ?? existing?.banner_url ?? null,
       created_at: existing?.created_at ?? timestamp,
       description: payload.description ?? null,
       headline: payload.headline ?? null,
       id,
+      logo_url: payload.logo_url ?? existing?.logo_url ?? null,
       order_bump_enabled:
         payload.order_bump_enabled ?? existing?.order_bump_enabled ?? false,
       primary_color: payload.primary_color ?? existing?.primary_color ?? null,
       producer_id: payload.producer_id ?? existing?.producer_id ?? "",
       product_id: payload.product_id ?? existing?.product_id ?? "",
       published_at: payload.published_at ?? null,
+      secure_purchase_enabled:
+        payload.secure_purchase_enabled ??
+        existing?.secure_purchase_enabled ??
+        true,
       slug: payload.slug ?? existing?.slug ?? "",
       status: payload.status ?? existing?.status ?? "draft",
       theme: payload.theme ?? existing?.theme ?? "dark",
@@ -167,6 +185,47 @@ export const mockCheckoutsStore = {
     };
 
     checkouts.set(id, row);
+
+    return row;
+  },
+};
+
+export const mockOfferContentsStore = {
+  findByProductId(productId: string): OfferContentRow | null {
+    return (
+      Array.from(offerContents.values()).find(
+        (content) => content.product_id === productId,
+      ) ?? null
+    );
+  },
+
+  upsert(
+    payload: OfferContentInsert | OfferContentUpdate,
+    existingId?: string,
+  ): OfferContentRow {
+    const existing = existingId ? offerContents.get(existingId) : undefined;
+    const id = existing?.id ?? existingId ?? randomId();
+    const timestamp = nowIso();
+    const row: OfferContentRow = {
+      benefits: payload.benefits ?? existing?.benefits ?? [],
+      bonuses: payload.bonuses ?? existing?.bonuses ?? [],
+      countdown_enabled:
+        payload.countdown_enabled ?? existing?.countdown_enabled ?? false,
+      countdown_ends_at:
+        payload.countdown_ends_at ?? existing?.countdown_ends_at ?? null,
+      created_at: existing?.created_at ?? timestamp,
+      faqs: payload.faqs ?? existing?.faqs ?? [],
+      guarantee: payload.guarantee ?? existing?.guarantee ?? null,
+      id,
+      producer_id: payload.producer_id ?? existing?.producer_id ?? "",
+      product_id: payload.product_id ?? existing?.product_id ?? "",
+      testimonials: payload.testimonials ?? existing?.testimonials ?? [],
+      trust_seals: payload.trust_seals ?? existing?.trust_seals ?? [],
+      updated_at: timestamp,
+      urgency_text: payload.urgency_text ?? existing?.urgency_text ?? null,
+    };
+
+    offerContents.set(id, row);
 
     return row;
   },
