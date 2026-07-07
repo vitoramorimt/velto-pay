@@ -4,6 +4,7 @@ import { useState, type CSSProperties } from "react";
 import { BadgeCheck, LifeBuoy, Moon, ShieldCheck, Sun } from "lucide-react";
 
 import { VeltoLogo } from "@/components/brand/velto-logo";
+import { Button } from "@/components/ui/button";
 import type { CheckoutBadge, CheckoutBadgeId } from "@/modules/checkout/domain/badges";
 import { hexToHslTriplet, isValidHexColor } from "@/modules/checkout/domain/color";
 import type { CheckoutProduct, CheckoutTheme } from "@/modules/checkout/domain/types";
@@ -69,24 +70,34 @@ export function CheckoutTemplate({
   return (
     <main
       className={cn(
-        "velto-checkout-shell relative min-h-dvh overflow-hidden bg-background px-4 text-foreground",
+        "velto-checkout-shell relative min-h-dvh overflow-x-clip bg-background text-foreground",
         activeTheme,
       )}
-      style={accentStyle}
+      style={{
+        ...accentStyle,
+        paddingLeft: "max(1rem, env(safe-area-inset-left))",
+        paddingRight: "max(1rem, env(safe-area-inset-right))",
+      }}
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(25,205,139,0.16),transparent)]"
       />
 
-      <button
+      <Button
         aria-label={
           activeTheme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"
         }
-        className="absolute right-4 top-4 z-20 flex size-9 items-center justify-center rounded-full border border-border bg-card/80 text-muted-foreground shadow-sm transition-colors hover:text-foreground"
+        className="absolute z-20 size-10 rounded-full border border-border bg-card/85 text-muted-foreground shadow-sm transition-colors hover:text-foreground focus-visible:ring-offset-0"
         onClick={() =>
           setActiveTheme((current) => (current === "dark" ? "light" : "dark"))
         }
+        style={{
+          right: "max(1rem, env(safe-area-inset-right))",
+          top: "max(1rem, env(safe-area-inset-top))",
+        }}
+        variant="ghost"
+        size="icon"
         type="button"
       >
         {activeTheme === "dark" ? (
@@ -94,9 +105,9 @@ export function CheckoutTemplate({
         ) : (
           <Moon className="size-4" />
         )}
-      </button>
+      </Button>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-md flex-col items-center gap-2 pb-8">
+      <div className="relative z-10 mx-auto flex w-full max-w-md flex-col items-center gap-2 pb-8 pt-1 text-center">
         <VeltoLogo showLabel size={44} />
         {isPreview ? (
           <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
@@ -105,12 +116,13 @@ export function CheckoutTemplate({
         ) : null}
       </div>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
+      <div className="relative z-10 mx-auto grid w-full max-w-5xl min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <CheckoutForm
           checkoutSlug={checkoutSlug}
           description={displayDescription}
           errorReason={errorReason}
           formAction={formAction}
+          product={product}
           isPreview={isPreview}
           items={items}
           showError={showError}
@@ -118,24 +130,24 @@ export function CheckoutTemplate({
           totalAmountCents={product.price_cents}
         />
 
-        <div className="flex flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6">
           <OrderSummarySidebar
             items={items}
             totalAmountCents={product.price_cents}
           />
 
           {enabledBadges.length > 0 ? (
-            <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex min-w-0 flex-wrap items-center justify-center gap-2">
               {enabledBadges.map((badge) => {
                 const Icon = BADGE_ICONS[badge.id];
 
                 return (
                   <span
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground"
+                    className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground"
                     key={badge.id}
                   >
                     <Icon className="size-3.5 text-accent" />
-                    {badge.label}
+                    <span className="min-w-0 truncate">{badge.label}</span>
                   </span>
                 );
               })}

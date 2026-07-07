@@ -97,8 +97,8 @@ export function CheckoutEditorClient({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-      <div className="min-w-0 flex-1 overflow-y-auto bg-muted/20">
+    <div className="flex min-h-0 flex-1 flex-col overflow-x-clip lg:flex-row">
+      <div className="min-w-0 flex-1 overflow-x-clip overflow-y-auto bg-muted/20">
         <CheckoutTemplate
           badges={badges}
           description={description}
@@ -111,19 +111,20 @@ export function CheckoutEditorClient({
         />
       </div>
 
-      <aside className="w-full shrink-0 overflow-y-auto border-t border-border bg-card lg:w-96 lg:border-l lg:border-t-0">
+      <aside className="min-w-0 w-full shrink-0 overflow-y-auto border-t border-border bg-card lg:w-96 lg:border-l lg:border-t-0">
         <Card className="rounded-none border-0 shadow-none">
           <CardHeader>
             <CardTitle className="text-base">Personalização</CardTitle>
-            <CardDescription>
+            <CardDescription className="max-w-full break-words">
               Ajuste os detalhes que os compradores veem nesta página.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-5">
+          <CardContent className="flex min-w-0 flex-col gap-5">
             <div className="space-y-2">
               <Label htmlFor="checkout-headline">Título</Label>
               <Input
                 id="checkout-headline"
+                className="max-w-full"
                 maxLength={120}
                 onChange={(event) => setHeadline(event.target.value)}
                 placeholder={product.name}
@@ -139,7 +140,7 @@ export function CheckoutEditorClient({
                 </span>
               </div>
               <textarea
-                className="min-h-24 w-full rounded-md border border-input bg-background/80 px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="min-h-24 w-full max-w-full rounded-md border border-input bg-background/80 px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 id="checkout-description"
                 maxLength={280}
                 onChange={(event) => setDescription(event.target.value)}
@@ -163,7 +164,7 @@ export function CheckoutEditorClient({
                   }
                 />
                 <Input
-                  className="uppercase"
+                  className="min-w-0 flex-1 uppercase"
                   onChange={(event) => setPrimaryColor(event.target.value)}
                   placeholder={DEFAULT_PRIMARY_COLOR}
                   value={primaryColor}
@@ -176,7 +177,7 @@ export function CheckoutEditorClient({
               <div className="grid grid-cols-2 gap-2">
                 <button
                   className={cn(
-                    "flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors",
+                    "flex min-w-0 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors",
                     theme === "dark"
                       ? "border-accent/40 bg-accent/10 text-accent"
                       : "border-border text-muted-foreground hover:text-foreground",
@@ -189,7 +190,7 @@ export function CheckoutEditorClient({
                 </button>
                 <button
                   className={cn(
-                    "flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors",
+                    "flex min-w-0 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors",
                     theme === "light"
                       ? "border-accent/40 bg-accent/10 text-accent"
                       : "border-border text-muted-foreground hover:text-foreground",
@@ -210,7 +211,7 @@ export function CheckoutEditorClient({
               <Label>Selos de confiança</Label>
               {badges.map((badge) => (
                 <div
-                  className="flex items-center gap-2 rounded-md border border-border p-2"
+                  className="flex min-w-0 items-center gap-2 rounded-md border border-border p-2"
                   key={badge.id}
                 >
                   <button
@@ -229,7 +230,7 @@ export function CheckoutEditorClient({
                     {badge.enabled ? "On" : "Off"}
                   </button>
                   <Input
-                    className="h-8"
+                    className="h-8 min-w-0 flex-1"
                     disabled={!badge.enabled}
                     maxLength={60}
                     onChange={(event) =>

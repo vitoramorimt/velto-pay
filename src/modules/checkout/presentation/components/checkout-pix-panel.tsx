@@ -20,7 +20,7 @@ export function PixPanel({
 }: PixPanelProps) {
   return (
     <div className="space-y-4 text-center">
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm leading-6 text-muted-foreground">
         Gere um QR Code PIX e pague instantaneamente pelo app do seu banco.
       </p>
       <OrderSummaryInline items={items} totalAmountCents={totalAmountCents} />

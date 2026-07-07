@@ -64,17 +64,21 @@ export function PaymentMethodTabs({
           return (
             <button
               className={cn(
-                "flex h-auto flex-col items-center gap-1.5 rounded-lg border py-3 text-muted-foreground transition-colors",
+                "flex min-h-16 min-w-0 flex-col items-center gap-1.5 rounded-lg border px-2 py-3 text-center text-muted-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 isActive
                   ? "border-accent/40 bg-accent/10 text-accent"
                   : "border-border hover:border-accent/25 hover:text-foreground",
               )}
+              aria-pressed={isActive}
+              disabled={disabled}
               key={method.value}
               onClick={() => setActiveMethod(method.value)}
               type="button"
             >
               <Icon className="size-5" />
-              <span className="text-xs font-medium">{method.label}</span>
+              <span className="text-[11px] font-medium leading-tight sm:text-xs">
+                {method.label}
+              </span>
             </button>
           );
         })}

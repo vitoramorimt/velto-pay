@@ -100,6 +100,13 @@
 
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
   html {
@@ -244,8 +251,11 @@
   }
 
   .velto-checkout-shell {
+    overflow-x: clip;
     padding-top: calc(2.5rem + var(--safe-area-top));
     padding-bottom: calc(2.5rem + var(--safe-area-bottom));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 
   .velto-public-hero {

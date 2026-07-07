@@ -34,23 +34,26 @@ export default async function CheckoutEditorPage({
   const { checkoutLink } = data;
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 sm:px-6">
-        <div className="flex items-center gap-3">
+    <div className="flex min-h-dvh flex-col overflow-x-clip">
+      <header className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
           <Button asChild size="sm" variant="outline">
             <Link href={`/dashboard/produtos/${id}/configuracoes`}>
               <ArrowLeft className="h-4 w-4" />
               Voltar
             </Link>
           </Button>
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-medium">Editar checkout</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="truncate text-xs text-muted-foreground">
               {checkoutLink.checkoutName}
             </p>
           </div>
         </div>
-        <Badge className="border-accent/30 bg-accent/10 text-accent" variant="outline">
+        <Badge
+          className="max-w-full border-accent/30 bg-accent/10 text-accent"
+          variant="outline"
+        >
           Pré-visualização ao vivo
         </Badge>
       </header>

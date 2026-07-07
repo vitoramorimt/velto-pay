@@ -28,10 +28,12 @@ export function CustomerDataForm({
       <div className="space-y-2">
         <Label htmlFor="customerName">Nome completo</Label>
         <Input
+          autoComplete="name"
           disabled={disabled}
           id="customerName"
           placeholder="Preencha seu nome"
           required={!disabled}
+          aria-invalid={Boolean(errors.customerName) || undefined}
           {...register("customerName")}
         />
         {errors.customerName ? (
@@ -44,11 +46,13 @@ export function CustomerDataForm({
       <div className="space-y-2">
         <Label htmlFor="customerEmail">Email</Label>
         <Input
+          autoComplete="email"
           disabled={disabled}
           id="customerEmail"
           placeholder="Preencha seu email"
           required={!disabled}
           type="email"
+          aria-invalid={Boolean(errors.customerEmail) || undefined}
           {...register("customerEmail")}
         />
         {errors.customerEmail ? (
@@ -58,16 +62,18 @@ export function CustomerDataForm({
         ) : null}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="document">CPF/CNPJ</Label>
           <Input
             disabled={disabled}
             id="document"
             inputMode="numeric"
+            autoComplete="off"
             name="document"
             placeholder="Preencha seu CPF/CNPJ"
             value={watch("document") ?? ""}
+            aria-invalid={Boolean(errors.document) || undefined}
             onChange={(event) =>
               setValue("document", maskCpfCnpj(event.target.value), {
                 shouldValidate: true,
@@ -85,10 +91,12 @@ export function CustomerDataForm({
           <Input
             disabled={disabled}
             id="phone"
+            autoComplete="tel"
             inputMode="numeric"
             name="phone"
             placeholder="(00) 00000-0000"
             value={watch("phone") ?? ""}
+            aria-invalid={Boolean(errors.phone) || undefined}
             onChange={(event) =>
               setValue("phone", maskPhone(event.target.value), {
                 shouldValidate: true,

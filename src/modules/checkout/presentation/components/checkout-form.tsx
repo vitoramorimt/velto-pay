@@ -11,6 +11,7 @@ import {
   type CustomerFormValues,
 } from "@/modules/checkout/domain/checkout-form-schemas";
 import { formatCentsToCurrency } from "@/modules/products/domain/money";
+import type { CheckoutProduct } from "@/modules/checkout/domain/types";
 
 import { CustomerDataForm } from "./checkout-customer-data-form";
 import { ErrorView, SuccessView } from "./checkout-flow-views";
@@ -24,6 +25,7 @@ type CheckoutFormProps = {
   formAction?: (formData: FormData) => void | Promise<void>;
   isPreview?: boolean;
   items: CheckoutOrderItem[];
+  product: CheckoutProduct;
   showError?: boolean;
   showSuccess?: boolean;
   totalAmountCents: number;
@@ -36,6 +38,7 @@ export function CheckoutForm({
   formAction,
   isPreview = false,
   items,
+  product,
   showError = false,
   showSuccess = false,
   totalAmountCents,
@@ -50,7 +53,7 @@ export function CheckoutForm({
 
   if (showSuccess) {
     return (
-      <Card className="w-full border-border/60 shadow-xl shadow-black/30">
+      <Card className="min-w-0 w-full max-w-full overflow-hidden border-border/60 shadow-xl shadow-black/30">
         <CardContent className="pt-6">
           <SuccessView message="Enviamos os próximos passos para o e-mail informado." />
         </CardContent>
@@ -59,21 +62,39 @@ export function CheckoutForm({
   }
 
   return (
-    <Card className="w-full border-border/60 shadow-xl shadow-black/30">
-      <CardContent className="space-y-5 pt-6">
-        <div className="flex items-center gap-3">
-          <span className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-secondary">
-            <Package className="size-7 text-muted-foreground" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{items[0]?.name}</p>
+    <Card className="min-w-0 w-full max-w-full overflow-hidden border-border/60 shadow-xl shadow-black/30">
+      <CardContent className="min-w-0 space-y-5 pt-6">
+        <div className="grid min-w-0 gap-4 sm:grid-cols-[96px_minmax(0,1fr)] sm:items-center">
+          <div className="relative overflow-hidden rounded-xl border border-border/60 bg-secondary/50">
+            {product.image_url ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                alt={items[0]?.name ?? product.name}
+                className="aspect-square h-full w-full object-cover"
+                decoding="async"
+                loading="eager"
+                src={product.image_url}
+              />
+            ) : (
+              <div className="flex aspect-square items-center justify-center">
+                <Package className="size-8 text-muted-foreground" />
+              </div>
+            )}
+          </div>
+
+          <div className="min-w-0 space-y-1">
+            <p className="line-clamp-2 text-base font-semibold leading-tight">
+              {items[0]?.name}
+            </p>
             {description ? (
-              <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+              <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
                 {description}
               </p>
             ) : null}
-            <p className="text-sm font-semibold text-accent">
-              {formatCentsToCurrency(totalAmountCents)}{" "}
+            <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm font-semibold text-accent">
+              <span className="text-lg leading-none">
+                {formatCentsToCurrency(totalAmountCents)}
+              </span>
               <span className="text-xs font-normal text-muted-foreground">
                 à vista
               </span>
@@ -85,7 +106,7 @@ export function CheckoutForm({
 
         <form
           action={formAction}
-          className="space-y-5"
+          className="min-w-0 space-y-5"
           onSubmit={isPreview ? (event) => event.preventDefault() : undefined}
         >
           {checkoutSlug ? (
@@ -102,9 +123,9 @@ export function CheckoutForm({
 
           <Separator />
 
-          <div>
+          <div className="space-y-1">
             <p className="text-sm font-semibold">Forma de pagamento</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs leading-5 text-muted-foreground">
               Escolha como deseja pagar e preencha os dados abaixo.
             </p>
           </div>

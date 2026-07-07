@@ -47,6 +47,8 @@ export function BoletoPanel({
           disabled={disabled}
           id="payerName"
           placeholder="Nome do pagador"
+          autoComplete="name"
+          aria-invalid={Boolean(errors.payerName) || undefined}
           {...register("payerName")}
         />
         {errors.payerName ? (
@@ -61,9 +63,11 @@ export function BoletoPanel({
         <Input
           disabled={disabled}
           id="payerDocument"
+          autoComplete="off"
           inputMode="numeric"
           placeholder="000.000.000-00"
           value={watch("payerDocument") ?? ""}
+          aria-invalid={Boolean(errors.payerDocument) || undefined}
           onChange={(event) =>
             setValue("payerDocument", maskCpfCnpj(event.target.value), {
               shouldValidate: true,

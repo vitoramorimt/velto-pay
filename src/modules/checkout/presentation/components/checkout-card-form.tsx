@@ -56,6 +56,7 @@ export function CardForm({
           disabled={disabled}
           id="holderName"
           placeholder="Como está impresso no cartão"
+          aria-invalid={Boolean(errors.holderName) || undefined}
           {...register("holderName")}
         />
         {errors.holderName ? (
@@ -74,6 +75,7 @@ export function CardForm({
           inputMode="numeric"
           placeholder="0000 0000 0000 0000"
           value={watch("number") ?? ""}
+          aria-invalid={Boolean(errors.number) || undefined}
           onChange={(event) =>
             setValue("number", maskCardNumber(event.target.value), {
               shouldValidate: true,
@@ -85,7 +87,7 @@ export function CardForm({
         ) : null}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid min-w-0 grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="expiry">Validade</Label>
           <Input
@@ -95,6 +97,7 @@ export function CardForm({
             inputMode="numeric"
             placeholder="MM/AA"
             value={watch("expiry") ?? ""}
+            aria-invalid={Boolean(errors.expiry) || undefined}
             onChange={(event) =>
               setValue("expiry", maskExpiry(event.target.value), {
                 shouldValidate: true,
@@ -116,6 +119,7 @@ export function CardForm({
             inputMode="numeric"
             placeholder="000"
             value={watch("cvv") ?? ""}
+            aria-invalid={Boolean(errors.cvv) || undefined}
             onChange={(event) =>
               setValue("cvv", maskCvv(event.target.value), {
                 shouldValidate: true,
@@ -132,7 +136,7 @@ export function CardForm({
         <div className="space-y-2">
           <Label htmlFor="installments">Parcelas</Label>
           <select
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="flex h-10 w-full max-w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none transition-colors hover:border-accent/25 focus-visible:ring-[3px] focus-visible:ring-ring/50"
             disabled={disabled}
             id="installments"
             {...register("installments", { valueAsNumber: true })}
