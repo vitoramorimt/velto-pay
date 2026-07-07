@@ -12,9 +12,11 @@ import type {
   CheckoutQuote,
   CheckoutStatus,
   CheckoutSuccessContext,
+  CheckoutTheme,
   CheckoutUtm,
   PublicCheckout,
 } from "@/modules/checkout/domain/types";
+import { normalizeCheckoutBadges } from "@/modules/checkout/domain/badges";
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import { calculateCheckoutTotal } from "@/modules/checkout/domain/pricing";
 import type { Product } from "@/modules/products/domain/types";
@@ -23,21 +25,29 @@ import {
   createProductSlug,
 } from "@/modules/products/domain/slug";
 import type { Database } from "@/shared/database.types";
+import {
+  isDevBypassEnabled,
+  mockCheckoutsStore,
+  mockProductsStore,
+} from "@/shared/dev/mock-data-store";
 
 type DatabaseClient = SupabaseClient<Database>;
 type CheckoutInsert = Database["public"]["Tables"]["checkouts"]["Insert"];
 type CheckoutUpdate = Database["public"]["Tables"]["checkouts"]["Update"];
 type CheckoutRow = Pick<
   Database["public"]["Tables"]["checkouts"]["Row"],
+  | "badges"
   | "created_at"
   | "description"
   | "headline"
   | "id"
+  | "primary_color"
   | "producer_id"
   | "product_id"
   | "published_at"
   | "slug"
   | "status"
+  | "theme"
   | "updated_at"
 >;
 type CheckoutWithProductRow = CheckoutRow & {
@@ -45,7 +55,14 @@ type CheckoutWithProductRow = CheckoutRow & {
 };
 type PublicCheckoutRow = Pick<
   CheckoutRow,
-  "description" | "id" | "producer_id" | "slug"
+  | "badges"
+  | "description"
+  | "headline"
+  | "id"
+  | "primary_color"
+  | "producer_id"
+  | "slug"
+  | "theme"
 > & {
   product: CheckoutProduct | null;
 };
@@ -82,11 +99,16 @@ function toCheckoutLink(checkout: CheckoutWithProductRow): CheckoutLink | null {
   }
 
   return {
+    checkoutBadges: normalizeCheckoutBadges(checkout.badges),
     checkoutCreatedAt: checkout.created_at,
+    checkoutDescription: checkout.description,
+    checkoutHeadline: checkout.headline,
     checkoutId: checkout.id,
     checkoutName: checkout.headline ?? checkout.product.name,
+    checkoutPrimaryColor: checkout.primary_color,
     checkoutSlug: checkout.slug,
     checkoutStatus: checkout.status,
+    checkoutTheme: checkout.theme === "light" ? "light" : "dark",
     checkoutUpdatedAt: checkout.updated_at,
     link: createCheckoutUrl(checkout.slug),
     product: checkout.product,
@@ -112,6 +134,10 @@ async function checkoutSlugExists(
   slug: string,
   checkoutIdToIgnore?: string,
 ): Promise<boolean> {
+  if (isDevBypassEnabled()) {
+    return mockCheckoutsStore.slugExists(slug, checkoutIdToIgnore);
+  }
+
   let query = supabase.from("checkouts").select("id").eq("slug", slug).limit(1);
 
   if (checkoutIdToIgnore) {
@@ -152,14 +178,27 @@ async function resolveUniqueCheckoutSlug(
   throw repositoryError("Não foi possível gerar um slug único de checkout.");
 }
 
+function toCheckoutWithProductRow(
+  checkout: CheckoutRow,
+): CheckoutWithProductRow {
+  return {
+    ...checkout,
+    product: mockProductsStore.findById(checkout.product_id),
+  };
+}
+
 async function findCheckoutByProductId(
   supabase: DatabaseClient,
   productId: string,
 ): Promise<CheckoutRow | null> {
+  if (isDevBypassEnabled()) {
+    return mockCheckoutsStore.findByProductId(productId);
+  }
+
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, published_at, created_at, updated_at",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
     )
     .eq("product_id", productId)
     .maybeSingle();
@@ -175,10 +214,16 @@ export async function findCheckoutLinkByProductId(
   supabase: DatabaseClient,
   productId: string,
 ): Promise<CheckoutLink | null> {
+  if (isDevBypassEnabled()) {
+    const checkout = mockCheckoutsStore.findByProductId(productId);
+
+    return checkout ? toCheckoutLink(toCheckoutWithProductRow(checkout)) : null;
+  }
+
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
     )
     .eq("product_id", productId)
     .maybeSingle();
@@ -211,6 +256,10 @@ export async function ensureCheckoutForProduct(
     status,
   };
 
+  if (isDevBypassEnabled()) {
+    return mockCheckoutsStore.upsert(checkoutPayload, existingCheckout?.id);
+  }
+
   if (existingCheckout) {
     const { data, error } = await supabase
       .from("checkouts")
@@ -218,7 +267,7 @@ export async function ensureCheckoutForProduct(
       .eq("id", existingCheckout.id)
       .eq("producer_id", product.producer_id)
       .select(
-        "id, producer_id, product_id, slug, status, headline, description, published_at, created_at, updated_at",
+        "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
       )
       .single();
 
@@ -233,7 +282,7 @@ export async function ensureCheckoutForProduct(
     .from("checkouts")
     .insert(checkoutPayload as CheckoutInsert)
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, published_at, created_at, updated_at",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
     )
     .single();
 
@@ -248,10 +297,18 @@ export async function listCheckoutsByProducerId(
   supabase: DatabaseClient,
   producerId: string,
 ): Promise<CheckoutLink[]> {
+  if (isDevBypassEnabled()) {
+    return mockCheckoutsStore
+      .list()
+      .filter((checkout) => checkout.producer_id === producerId)
+      .map((checkout) => toCheckoutLink(toCheckoutWithProductRow(checkout)))
+      .filter((checkout): checkout is CheckoutLink => Boolean(checkout));
+  }
+
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
     )
     .eq("producer_id", producerId)
     .order("created_at", { ascending: false });
@@ -272,7 +329,7 @@ export async function findPublicCheckoutBySlug(
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, slug, description, product:products!inner(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+      "id, producer_id, slug, description, headline, primary_color, theme, badges, product:products!inner(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
     )
     .eq("slug", slug)
     .eq("status", "published")
@@ -317,13 +374,81 @@ export async function findPublicCheckoutBySlug(
   }
 
   return {
+    badges: normalizeCheckoutBadges(checkout.badges),
     checkoutId: checkout.id,
     checkoutSlug: checkout.slug,
     description: checkout.description,
+    headline: checkout.headline,
     offers: toOfferGroups((offersResult.data ?? []) as CheckoutOffer[]),
     pixels: (pixelsResult.data ?? []) as CheckoutPixel[],
+    primaryColor: checkout.primary_color,
     product: checkout.product,
+    theme: checkout.theme === "light" ? "light" : "dark",
   };
+}
+
+export async function updateCheckoutPersonalization(
+  supabase: DatabaseClient,
+  checkoutId: string,
+  producerId: string,
+  input: {
+    badges: { enabled: boolean; id: string; label: string }[];
+    description: string | null;
+    headline: string;
+    primaryColor: string | null;
+    theme: CheckoutTheme;
+  },
+): Promise<CheckoutRow | null> {
+  if (isDevBypassEnabled()) {
+    const existing = mockCheckoutsStore
+      .list()
+      .find(
+        (checkout) =>
+          checkout.id === checkoutId && checkout.producer_id === producerId,
+      );
+
+    if (!existing) {
+      return null;
+    }
+
+    return mockCheckoutsStore.upsert(
+      {
+        badges: input.badges,
+        description: input.description,
+        headline: input.headline,
+        primary_color: input.primaryColor,
+        producer_id: existing.producer_id,
+        product_id: existing.product_id,
+        slug: existing.slug,
+        theme: input.theme,
+      },
+      existing.id,
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("checkouts")
+    .update({
+      badges: input.badges,
+      description: input.description,
+      headline: input.headline,
+      primary_color: input.primaryColor,
+      theme: input.theme,
+    })
+    .eq("id", checkoutId)
+    .eq("producer_id", producerId)
+    .select(
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
+    )
+    .maybeSingle();
+
+  if (error) {
+    throw repositoryError(
+      "Não foi possível salvar a personalização do checkout.",
+    );
+  }
+
+  return data;
 }
 
 export async function findCheckoutCouponByCode(
@@ -474,6 +599,11 @@ export async function deleteCheckoutByProducerId(
   checkoutId: string,
   producerId: string,
 ): Promise<void> {
+  if (isDevBypassEnabled()) {
+    mockCheckoutsStore.delete(checkoutId);
+    return;
+  }
+
   const { error } = await supabase
     .from("checkouts")
     .delete()

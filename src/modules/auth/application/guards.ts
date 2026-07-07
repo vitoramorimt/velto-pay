@@ -13,10 +13,25 @@ import {
   type AuthenticatedUser,
   mapSupabaseUser,
 } from "@/modules/auth/domain/types";
+import {
+  devBypassProducer,
+  isDevBypassEnabled,
+} from "@/shared/dev/mock-data-store";
 import { createSupabaseServerClient } from "@/shared/supabase";
+
+const devBypassUser: AuthenticatedUser = {
+  id: devBypassProducer.user_id,
+  email: "dev@local",
+  fullName: "Conta de Testes (Dev)",
+  role: "producer",
+};
 
 export const getCurrentUser = cache(
   async (): Promise<AuthenticatedUser | null> => {
+    if (isDevBypassEnabled()) {
+      return devBypassUser;
+    }
+
     const supabase = await createSupabaseServerClient();
     const {
       data: { user },

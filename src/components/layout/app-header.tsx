@@ -26,7 +26,7 @@ export function AppHeader({
   const userEmail = user?.email ?? "Usuário autenticado";
 
   return (
-    <header className="velto-app-header bg-background/88 sticky top-0 z-[70] border-b border-border/70 backdrop-blur-2xl">
+    <header className="velto-app-header bg-background/90 sticky top-0 z-[70] border-b border-border/70 backdrop-blur-2xl">
       <div className="flex h-16 min-w-0 items-center gap-2 px-3 sm:gap-3 sm:px-6">
         <Button
           aria-controls="velto-mobile-navigation"

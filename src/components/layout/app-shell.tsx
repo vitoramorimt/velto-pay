@@ -127,7 +127,7 @@ export function AppShell({
         <button
           aria-label="Fechar navegação"
           className={cn(
-            "fixed inset-y-0 right-0 left-[var(--velto-mobile-nav-width)] z-[85] bg-background/72 backdrop-blur-[2px] transition-opacity duration-300",
+            "fixed inset-y-0 right-0 left-[var(--velto-mobile-nav-width)] z-[85] bg-background/70 backdrop-blur-[2px] transition-opacity duration-300",
             isMobileNavigationOpen ? "opacity-100" : "opacity-0",
           )}
           onClick={() => setIsMobileNavigationOpen(false)}
@@ -175,8 +175,8 @@ export function AppShell({
               const itemClassName = cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",
                 item.href
-                  ? "text-sidebar-foreground/72 hover:translate-x-0.5 hover:bg-white/5 hover:text-sidebar-foreground"
-                  : "cursor-default text-sidebar-foreground/38",
+                  ? "text-sidebar-foreground/70 hover:translate-x-0.5 hover:bg-white/5 hover:text-sidebar-foreground"
+                  : "cursor-default text-sidebar-foreground/40",
                 isActive &&
                   "bg-sidebar-active text-sidebar-active-foreground shadow-inner-line",
               );

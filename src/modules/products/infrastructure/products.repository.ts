@@ -9,6 +9,11 @@ import {
 } from "@/modules/products/domain/slug";
 import type { Product, Producer } from "@/modules/products/domain/types";
 import type { Database } from "@/shared/database.types";
+import {
+  devBypassProducer,
+  isDevBypassEnabled,
+  mockProductsStore,
+} from "@/shared/dev/mock-data-store";
 
 type DatabaseClient = SupabaseClient<Database>;
 type ProductInsert = Database["public"]["Tables"]["products"]["Insert"];
@@ -22,6 +27,10 @@ export async function findProducerByUserId(
   supabase: DatabaseClient,
   userId: string,
 ): Promise<Producer | null> {
+  if (isDevBypassEnabled()) {
+    return devBypassProducer;
+  }
+
   const { data, error } = await supabase
     .from("producers")
     .select("*")
@@ -39,6 +48,12 @@ export async function listProductsByProducerId(
   supabase: DatabaseClient,
   producerId: string,
 ): Promise<Product[]> {
+  if (isDevBypassEnabled()) {
+    return mockProductsStore
+      .list()
+      .filter((product) => product.producer_id === producerId);
+  }
+
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -57,6 +72,12 @@ export async function findProductByProducerId(
   productId: string,
   producerId: string,
 ): Promise<Product | null> {
+  if (isDevBypassEnabled()) {
+    const product = mockProductsStore.findById(productId);
+
+    return product && product.producer_id === producerId ? product : null;
+  }
+
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -76,6 +97,10 @@ async function productSlugExists(
   slug: string,
   productIdToIgnore?: string,
 ): Promise<boolean> {
+  if (isDevBypassEnabled()) {
+    return mockProductsStore.slugExists(slug, productIdToIgnore);
+  }
+
   let query = supabase.from("products").select("id").eq("slug", slug).limit(1);
 
   if (productIdToIgnore) {
@@ -136,6 +161,10 @@ export async function insertProduct(
   supabase: DatabaseClient,
   product: ProductInsert,
 ): Promise<Product> {
+  if (isDevBypassEnabled()) {
+    return mockProductsStore.insert(product);
+  }
+
   const { data, error } = await supabase
     .from("products")
     .insert(product)
@@ -155,6 +184,16 @@ export async function updateProductByProducerId(
   producerId: string,
   product: ProductUpdate,
 ): Promise<Product> {
+  if (isDevBypassEnabled()) {
+    const existing = mockProductsStore.findById(productId);
+
+    if (!existing || existing.producer_id !== producerId) {
+      throw repositoryError("Não foi possível atualizar o produto.");
+    }
+
+    return mockProductsStore.update(productId, product) ?? existing;
+  }
+
   const { data, error } = await supabase
     .from("products")
     .update(product)

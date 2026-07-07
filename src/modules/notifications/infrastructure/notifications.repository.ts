@@ -17,6 +17,7 @@ import type {
   Tables,
   TablesInsert,
 } from "@/shared/database.types";
+import { isDevBypassEnabled } from "@/shared/dev/mock-data-store";
 
 type DatabaseClient = SupabaseClient<Database>;
 type NotificationInsert = TablesInsert<"notifications">;
@@ -84,6 +85,24 @@ export async function ensureNotificationPreferences(
     userId: string;
   },
 ): Promise<NotificationPreference> {
+  if (isDevBypassEnabled()) {
+    const timestamp = new Date().toISOString();
+
+    return {
+      chargebacks_enabled: true,
+      created_at: timestamp,
+      failed_payments_enabled: true,
+      financial_enabled: true,
+      id: "dev-bypass-preferences",
+      pix_enabled: true,
+      producer_id: input.producerId,
+      refunds_enabled: true,
+      sales_enabled: true,
+      updated_at: timestamp,
+      user_id: input.userId,
+    };
+  }
+
   const { data, error } = await supabase.rpc("ensure_notification_preferences", {
     p_producer_id: input.producerId,
     p_user_id: input.userId,
@@ -226,6 +245,10 @@ export async function listNotificationsByUser(
     userId: string;
   },
 ): Promise<NotificationListItem[]> {
+  if (isDevBypassEnabled()) {
+    return [];
+  }
+
   let query = supabase
     .from("notifications")
     .select("*")
@@ -254,6 +277,10 @@ export async function countUnreadNotificationsByUser(
     userId: string;
   },
 ): Promise<number> {
+  if (isDevBypassEnabled()) {
+    return 0;
+  }
+
   const { count, error } = await supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })

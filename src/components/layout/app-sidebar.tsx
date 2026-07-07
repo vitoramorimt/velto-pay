@@ -13,7 +13,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden min-h-dvh w-72 shrink-0 border-r border-sidebar-border bg-sidebar/98 px-4 py-5 text-sidebar-foreground lg:flex lg:flex-col">
+    <aside className="hidden min-h-dvh w-72 shrink-0 border-r border-sidebar-border bg-sidebar/95 px-4 py-5 text-sidebar-foreground lg:flex lg:flex-col">
       <div className="rounded-lg border border-white/10 bg-white/[0.035] p-3 shadow-[0_18px_70px_rgba(0,0,0,0.20)]">
         <VeltoLogo
           imageClassName="h-10 w-10 rounded-md"
@@ -35,8 +35,8 @@ export function AppSidebar() {
           const itemClassName = cn(
             "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",
             item.href
-              ? "text-sidebar-foreground/72 hover:translate-x-0.5 hover:bg-white/5 hover:text-sidebar-foreground"
-              : "cursor-default text-sidebar-foreground/38",
+              ? "text-sidebar-foreground/70 hover:translate-x-0.5 hover:bg-white/5 hover:text-sidebar-foreground"
+              : "cursor-default text-sidebar-foreground/40",
             isActive &&
               "bg-sidebar-active text-sidebar-active-foreground shadow-inner-line",
           );

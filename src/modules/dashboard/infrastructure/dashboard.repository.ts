@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database, Tables } from "@/shared/database.types";
+import { isDevBypassEnabled, mockProductsStore } from "@/shared/dev/mock-data-store";
 
 type DatabaseClient = SupabaseClient<Database>;
 export type DashboardOrder = Pick<
@@ -72,6 +73,10 @@ export async function listDashboardOrdersByProducerId(
   producerId: string,
   filters: DashboardOrderFilters = {},
 ): Promise<DashboardOrder[]> {
+  if (isDevBypassEnabled()) {
+    return [];
+  }
+
   const orders: DashboardOrder[] = [];
   let from = 0;
 
@@ -104,6 +109,17 @@ export async function countActiveProductsByProducerId(
   producerId: string,
   productId?: string,
 ): Promise<number> {
+  if (isDevBypassEnabled()) {
+    return mockProductsStore
+      .list()
+      .filter(
+        (product) =>
+          product.producer_id === producerId &&
+          product.status === "active" &&
+          (!productId || product.id === productId),
+      ).length;
+  }
+
   let query = supabase
     .from("products")
     .select("id", { count: "exact", head: true })
@@ -132,6 +148,16 @@ export async function listProductSummariesByIds(
     return [];
   }
 
+  if (isDevBypassEnabled()) {
+    return mockProductsStore
+      .list()
+      .filter(
+        (product) =>
+          product.producer_id === producerId && productIds.includes(product.id),
+      )
+      .map(({ id, name, status }) => ({ id, name, status }));
+  }
+
   const { data, error } = await supabase
     .from("products")
     .select("id, name, status")
@@ -149,6 +175,14 @@ export async function listDashboardProductOptionsByProducerId(
   supabase: DatabaseClient,
   producerId: string,
 ): Promise<DashboardProductSummary[]> {
+  if (isDevBypassEnabled()) {
+    return mockProductsStore
+      .list()
+      .filter((product) => product.producer_id === producerId)
+      .map(({ id, name, status }) => ({ id, name, status }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   const { data, error } = await supabase
     .from("products")
     .select("id, name, status")

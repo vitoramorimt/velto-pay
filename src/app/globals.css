@@ -71,6 +71,33 @@
     --shadow-color: 0 0% 0%;
   }
 
+  .velto-checkout-shell.light {
+    --background: 214 40% 96%;
+    --foreground: 222 47% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 7%;
+    --primary: 160 84% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 216 32% 90%;
+    --secondary-foreground: 222 47% 9%;
+    --muted: 216 34% 91%;
+    --muted-foreground: 222 24% 32%;
+    --accent: 164 78% 34%;
+    --accent-foreground: 180 100% 98%;
+    --destructive: 0 77% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 150 67% 40%;
+    --success-foreground: 150 100% 98%;
+    --warning: 37 92% 53%;
+    --warning-foreground: 36 100% 8%;
+    --border: 215 24% 78%;
+    --input: 215 24% 78%;
+    --ring: 160 84% 36%;
+    --shadow-color: 222 47% 7%;
+  }
+
   * {
     @apply border-border;
   }

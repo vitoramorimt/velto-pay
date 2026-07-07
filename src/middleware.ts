@@ -12,6 +12,7 @@ import {
 import { publicEnv } from "@/shared/config/env";
 import type { Database } from "@/shared/database.types";
 import { supabaseCookieOptions } from "@/shared/supabase/cookie-options";
+import { isDevBypassEnabled } from "@/shared/dev/mock-data-store";
 
 function appendAuthCookies(
   targetResponse: NextResponse,
@@ -55,6 +56,10 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next({
     request,
   });
+
+  if (isDevBypassEnabled()) {
+    return response;
+  }
 
   const supabase = createServerClient<Database>(
     publicEnv.NEXT_PUBLIC_SUPABASE_URL,

@@ -7,6 +7,7 @@ import type {
   ProducerOrderFilters,
 } from "@/modules/orders/domain/types";
 import type { Database } from "@/shared/database.types";
+import { isDevBypassEnabled } from "@/shared/dev/mock-data-store";
 
 type DatabaseClient = SupabaseClient<Database>;
 type SupabaseReadError = {
@@ -120,6 +121,10 @@ export async function listOrdersByProducerId(
   producerId: string,
   filters: ProducerOrderFilters = {},
 ): Promise<ProducerOrder[]> {
+  if (isDevBypassEnabled()) {
+    return [];
+  }
+
   const orders: ProducerOrder[] = [];
   let from = 0;
 
