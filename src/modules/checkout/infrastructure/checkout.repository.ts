@@ -28,6 +28,7 @@ import type { Database } from "@/shared/database.types";
 import {
   isDevBypassEnabled,
   mockCheckoutsStore,
+  mockOffersStore,
   mockProductsStore,
 } from "@/shared/dev/mock-data-store";
 
@@ -326,6 +327,34 @@ export async function findPublicCheckoutBySlug(
   supabase: DatabaseClient,
   slug: string,
 ): Promise<PublicCheckout | null> {
+  if (isDevBypassEnabled()) {
+    const checkout = mockCheckoutsStore.findBySlug(slug);
+    const product = checkout
+      ? mockProductsStore.findById(checkout.product_id)
+      : null;
+
+    if (!checkout || !product || checkout.status !== "published") {
+      return null;
+    }
+
+    const offers = mockOffersStore
+      .listByCheckoutId(checkout.id)
+      .filter((offer) => offer.status === "active") as CheckoutOffer[];
+
+    return {
+      badges: normalizeCheckoutBadges(checkout.badges),
+      checkoutId: checkout.id,
+      checkoutSlug: checkout.slug,
+      description: checkout.description,
+      headline: checkout.headline,
+      offers: toOfferGroups(offers),
+      pixels: [],
+      primaryColor: checkout.primary_color,
+      product,
+      theme: checkout.theme === "light" ? "light" : "dark",
+    };
+  }
+
   const { data, error } = await supabase
     .from("checkouts")
     .select(
@@ -351,7 +380,7 @@ export async function findPublicCheckoutBySlug(
     supabase
       .from("checkout_offers")
       .select(
-        "id, offer_type, title, description, amount_cents, currency, badge_text, position",
+        "id, offer_type, title, description, amount_cents, currency, badge_text, position, product_id",
       )
       .eq("checkout_id", checkout.id)
       .eq("status", "active")
@@ -612,5 +641,191 @@ export async function deleteCheckoutByProducerId(
 
   if (error) {
     throw repositoryError("Não foi possível excluir o checkout.");
+  }
+}
+
+const MAX_ORDER_BUMPS_PER_CHECKOUT = 5;
+const ORDER_BUMP_OFFER_TYPE: Database["public"]["Enums"]["checkout_offer_type"] =
+  "order_bump";
+
+export async function listCheckoutOffersByCheckoutId(
+  supabase: DatabaseClient,
+  checkoutId: string,
+  producerId: string,
+): Promise<CheckoutOffer[]> {
+  if (isDevBypassEnabled()) {
+    return mockOffersStore
+      .listByCheckoutId(checkoutId)
+      .filter((offer) => offer.producer_id === producerId);
+  }
+
+  const { data, error } = await supabase
+    .from("checkout_offers")
+    .select(
+      "id, offer_type, title, description, amount_cents, currency, badge_text, position, product_id",
+    )
+    .eq("checkout_id", checkoutId)
+    .eq("producer_id", producerId)
+    .order("position", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw repositoryError("Não foi possível carregar os order bumps.");
+  }
+
+  return (data ?? []) as CheckoutOffer[];
+}
+
+export async function createCheckoutOffer(
+  supabase: DatabaseClient,
+  input: {
+    amountCents: number;
+    badgeText: string | null;
+    checkoutId: string;
+    description: string | null;
+    producerId: string;
+    productId: string;
+    title: string;
+  },
+): Promise<CheckoutOffer> {
+  if (isDevBypassEnabled()) {
+    const currentCount = mockOffersStore.countByCheckoutIdAndType(
+      input.checkoutId,
+      ORDER_BUMP_OFFER_TYPE,
+    );
+
+    if (currentCount >= MAX_ORDER_BUMPS_PER_CHECKOUT) {
+      throw repositoryError(
+        `Este checkout já tem o máximo de ${MAX_ORDER_BUMPS_PER_CHECKOUT} order bumps.`,
+      );
+    }
+
+    return mockOffersStore.insert({
+      amount_cents: input.amountCents,
+      badge_text: input.badgeText,
+      checkout_id: input.checkoutId,
+      description: input.description,
+      offer_type: ORDER_BUMP_OFFER_TYPE,
+      position: currentCount,
+      producer_id: input.producerId,
+      product_id: input.productId,
+      title: input.title,
+    }) as CheckoutOffer;
+  }
+
+  const { count, error: countError } = await supabase
+    .from("checkout_offers")
+    .select("id", { count: "exact", head: true })
+    .eq("checkout_id", input.checkoutId)
+    .eq("offer_type", ORDER_BUMP_OFFER_TYPE);
+
+  if (countError) {
+    throw repositoryError("Não foi possível validar os order bumps existentes.");
+  }
+
+  if ((count ?? 0) >= MAX_ORDER_BUMPS_PER_CHECKOUT) {
+    throw repositoryError(
+      `Este checkout já tem o máximo de ${MAX_ORDER_BUMPS_PER_CHECKOUT} order bumps.`,
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("checkout_offers")
+    .insert({
+      amount_cents: input.amountCents,
+      badge_text: input.badgeText,
+      checkout_id: input.checkoutId,
+      description: input.description,
+      offer_type: ORDER_BUMP_OFFER_TYPE,
+      position: count ?? 0,
+      producer_id: input.producerId,
+      product_id: input.productId,
+      title: input.title,
+    })
+    .select(
+      "id, offer_type, title, description, amount_cents, currency, badge_text, position, product_id",
+    )
+    .single();
+
+  if (error) {
+    throw repositoryError("Não foi possível criar o order bump.");
+  }
+
+  return data as CheckoutOffer;
+}
+
+export async function updateCheckoutOffer(
+  supabase: DatabaseClient,
+  offerId: string,
+  producerId: string,
+  patch: {
+    amountCents: number;
+    badgeText: string | null;
+    description: string | null;
+    title: string;
+  },
+): Promise<CheckoutOffer | null> {
+  if (isDevBypassEnabled()) {
+    const existing = mockOffersStore.findById(offerId);
+
+    if (!existing || existing.producer_id !== producerId) {
+      return null;
+    }
+
+    const updated = mockOffersStore.update(offerId, {
+      amount_cents: patch.amountCents,
+      badge_text: patch.badgeText,
+      description: patch.description,
+      title: patch.title,
+    });
+
+    return updated as CheckoutOffer | null;
+  }
+
+  const { data, error } = await supabase
+    .from("checkout_offers")
+    .update({
+      amount_cents: patch.amountCents,
+      badge_text: patch.badgeText,
+      description: patch.description,
+      title: patch.title,
+    })
+    .eq("id", offerId)
+    .eq("producer_id", producerId)
+    .select(
+      "id, offer_type, title, description, amount_cents, currency, badge_text, position, product_id",
+    )
+    .maybeSingle();
+
+  if (error) {
+    throw repositoryError("Não foi possível atualizar o order bump.");
+  }
+
+  return data as CheckoutOffer | null;
+}
+
+export async function deleteCheckoutOffer(
+  supabase: DatabaseClient,
+  offerId: string,
+  producerId: string,
+): Promise<void> {
+  if (isDevBypassEnabled()) {
+    const existing = mockOffersStore.findById(offerId);
+
+    if (existing && existing.producer_id === producerId) {
+      mockOffersStore.delete(offerId);
+    }
+
+    return;
+  }
+
+  const { error } = await supabase
+    .from("checkout_offers")
+    .delete()
+    .eq("id", offerId)
+    .eq("producer_id", producerId);
+
+  if (error) {
+    throw repositoryError("Não foi possível remover o order bump.");
   }
 }

@@ -9,6 +9,11 @@ type ProductUpdate = Database["public"]["Tables"]["products"]["Update"];
 type CheckoutRow = Database["public"]["Tables"]["checkouts"]["Row"];
 type CheckoutInsert = Database["public"]["Tables"]["checkouts"]["Insert"];
 type CheckoutUpdate = Database["public"]["Tables"]["checkouts"]["Update"];
+type CheckoutOfferRow = Database["public"]["Tables"]["checkout_offers"]["Row"];
+type CheckoutOfferInsert =
+  Database["public"]["Tables"]["checkout_offers"]["Insert"];
+type CheckoutOfferUpdate =
+  Database["public"]["Tables"]["checkout_offers"]["Update"];
 
 export const DEV_BYPASS_PRODUCER_ID = "dev-bypass-producer";
 
@@ -33,15 +38,20 @@ export const devBypassProducer: ProducerRow = {
 const globalForDevStore = globalThis as unknown as {
   __veltoDevProducts?: Map<string, ProductRow>;
   __veltoDevCheckouts?: Map<string, CheckoutRow>;
+  __veltoDevCheckoutOffers?: Map<string, CheckoutOfferRow>;
 };
 
 const products =
   globalForDevStore.__veltoDevProducts ?? new Map<string, ProductRow>();
 const checkouts =
   globalForDevStore.__veltoDevCheckouts ?? new Map<string, CheckoutRow>();
+const checkoutOffers =
+  globalForDevStore.__veltoDevCheckoutOffers ??
+  new Map<string, CheckoutOfferRow>();
 
 globalForDevStore.__veltoDevProducts = products;
 globalForDevStore.__veltoDevCheckouts = checkouts;
+globalForDevStore.__veltoDevCheckoutOffers = checkoutOffers;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -130,6 +140,14 @@ export const mockCheckoutsStore = {
     );
   },
 
+  findBySlug(slug: string): CheckoutRow | null {
+    return (
+      Array.from(checkouts.values()).find(
+        (checkout) => checkout.slug === slug,
+      ) ?? null
+    );
+  },
+
   list(): CheckoutRow[] {
     return sortByCreatedAtDesc(Array.from(checkouts.values()));
   },
@@ -169,5 +187,80 @@ export const mockCheckoutsStore = {
     checkouts.set(id, row);
 
     return row;
+  },
+};
+
+export const mockOffersStore = {
+  countByCheckoutIdAndType(
+    checkoutId: string,
+    offerType: CheckoutOfferRow["offer_type"],
+  ): number {
+    return Array.from(checkoutOffers.values()).filter(
+      (offer) =>
+        offer.checkout_id === checkoutId && offer.offer_type === offerType,
+    ).length;
+  },
+
+  delete(id: string): void {
+    checkoutOffers.delete(id);
+  },
+
+  findById(id: string): CheckoutOfferRow | null {
+    return checkoutOffers.get(id) ?? null;
+  },
+
+  insert(payload: CheckoutOfferInsert): CheckoutOfferRow {
+    const id = payload.id ?? randomId();
+    const timestamp = nowIso();
+    const row: CheckoutOfferRow = {
+      amount_cents: payload.amount_cents,
+      badge_text: payload.badge_text ?? null,
+      checkout_id: payload.checkout_id,
+      created_at: payload.created_at ?? timestamp,
+      currency: payload.currency ?? "BRL",
+      description: payload.description ?? null,
+      id,
+      metadata: payload.metadata ?? {},
+      offer_type: payload.offer_type,
+      position: payload.position ?? 0,
+      producer_id: payload.producer_id,
+      product_id: payload.product_id ?? null,
+      status: payload.status ?? "active",
+      title: payload.title,
+      updated_at: payload.updated_at ?? timestamp,
+    };
+
+    checkoutOffers.set(id, row);
+
+    return row;
+  },
+
+  listByCheckoutId(checkoutId: string): CheckoutOfferRow[] {
+    return sortByCreatedAtDesc(
+      Array.from(checkoutOffers.values()).filter(
+        (offer) => offer.checkout_id === checkoutId,
+      ),
+    ).sort((a, b) => a.position - b.position);
+  },
+
+  update(id: string, patch: CheckoutOfferUpdate): CheckoutOfferRow | null {
+    const existing = checkoutOffers.get(id);
+
+    if (!existing) {
+      return null;
+    }
+
+    const updated: CheckoutOfferRow = {
+      ...existing,
+      ...patch,
+      checkout_id: existing.checkout_id,
+      id: existing.id,
+      producer_id: existing.producer_id,
+      updated_at: nowIso(),
+    };
+
+    checkoutOffers.set(id, updated);
+
+    return updated;
   },
 };

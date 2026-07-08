@@ -209,6 +209,7 @@ export type Database = {
           offer_type: Database["public"]["Enums"]["checkout_offer_type"];
           position: number;
           producer_id: string;
+          product_id: string | null;
           status: Database["public"]["Enums"]["checkout_offer_status"];
           title: string;
           updated_at: string;
@@ -225,6 +226,7 @@ export type Database = {
           offer_type: Database["public"]["Enums"]["checkout_offer_type"];
           position?: number;
           producer_id: string;
+          product_id?: string | null;
           status?: Database["public"]["Enums"]["checkout_offer_status"];
           title: string;
           updated_at?: string;
@@ -241,6 +243,7 @@ export type Database = {
           offer_type?: Database["public"]["Enums"]["checkout_offer_type"];
           position?: number;
           producer_id?: string;
+          product_id?: string | null;
           status?: Database["public"]["Enums"]["checkout_offer_status"];
           title?: string;
           updated_at?: string;
@@ -258,6 +261,13 @@ export type Database = {
             columns: ["producer_id"];
             isOneToOne: false;
             referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "checkout_offers_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
             referencedColumns: ["id"];
           },
         ];

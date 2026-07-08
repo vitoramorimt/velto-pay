@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getCheckoutOfferEditorDataUseCase } from "@/modules/checkout/application/checkout-use-cases";
 import { CheckoutEditorClient } from "@/modules/checkout/presentation/components/checkout-editor-client";
 import { getProductSettingsPageData } from "@/modules/products/application/product-use-cases";
 
@@ -32,6 +33,10 @@ export default async function CheckoutEditorPage({
   }
 
   const { checkoutLink } = data;
+  const { offers, producerProducts } = await getCheckoutOfferEditorDataUseCase(
+    checkoutLink.checkoutId,
+    id,
+  );
 
   return (
     <div className="flex min-h-dvh flex-col overflow-x-clip">
@@ -60,11 +65,14 @@ export default async function CheckoutEditorPage({
 
       <CheckoutEditorClient
         checkoutId={checkoutLink.checkoutId}
+        checkoutSlug={checkoutLink.checkoutSlug}
         initialBadges={checkoutLink.checkoutBadges}
         initialDescription={checkoutLink.checkoutDescription}
         initialHeadline={checkoutLink.checkoutHeadline}
+        initialOffers={offers}
         initialPrimaryColor={checkoutLink.checkoutPrimaryColor}
         initialTheme={checkoutLink.checkoutTheme}
+        producerProducts={producerProducts}
         product={checkoutLink.product}
         productId={id}
       />

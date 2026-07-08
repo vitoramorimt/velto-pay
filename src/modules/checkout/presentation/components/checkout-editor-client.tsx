@@ -20,6 +20,7 @@ import {
 } from "@/modules/checkout/domain/badges";
 import { isValidHexColor } from "@/modules/checkout/domain/color";
 import type {
+  CheckoutOffer,
   CheckoutProduct,
   CheckoutTheme,
 } from "@/modules/checkout/domain/types";
@@ -27,33 +28,49 @@ import {
   updateCheckoutPersonalizationAction,
   type CheckoutActionResult,
 } from "@/modules/checkout/presentation/actions";
+import type { Product } from "@/modules/products/domain/types";
 import { cn } from "@/shared/utils/cn";
 
+import { CheckoutOrderBumpPanel } from "./checkout-order-bump-panel";
 import { CheckoutTemplate } from "./checkout-template";
 
 const DEFAULT_PRIMARY_COLOR = "#19cd8b";
 
+type EditorTab = "orderBumps" | "personalization";
+
+const EDITOR_TABS: Array<{ label: string; value: EditorTab }> = [
+  { label: "Personalização", value: "personalization" },
+  { label: "Order bump", value: "orderBumps" },
+];
+
 type CheckoutEditorClientProps = {
   checkoutId: string;
+  checkoutSlug: string;
   initialBadges: CheckoutBadge[];
   initialDescription: string | null;
   initialHeadline: string | null;
+  initialOffers: CheckoutOffer[];
   initialPrimaryColor: string | null;
   initialTheme: CheckoutTheme;
+  producerProducts: Product[];
   product: CheckoutProduct;
   productId: string;
 };
 
 export function CheckoutEditorClient({
   checkoutId,
+  checkoutSlug,
   initialBadges,
   initialDescription,
   initialHeadline,
+  initialOffers,
   initialPrimaryColor,
   initialTheme,
+  producerProducts,
   product,
   productId,
 }: CheckoutEditorClientProps) {
+  const [activeTab, setActiveTab] = useState<EditorTab>("personalization");
   const [headline, setHeadline] = useState(initialHeadline ?? product.name);
   const [description, setDescription] = useState(initialDescription ?? "");
   const [primaryColor, setPrimaryColor] = useState(
@@ -65,6 +82,7 @@ export function CheckoutEditorClient({
   const [badges, setBadges] = useState<CheckoutBadge[]>(
     normalizeCheckoutBadges(initialBadges),
   );
+  const [offers, setOffers] = useState<CheckoutOffer[]>(initialOffers);
   const [isSaving, setIsSaving] = useState(false);
   const [result, setResult] = useState<CheckoutActionResult | null>(null);
 
@@ -104,6 +122,7 @@ export function CheckoutEditorClient({
           description={description}
           headline={headline}
           key={theme}
+          orderBumps={offers}
           primaryColor={primaryColor}
           product={product}
           theme={theme}
@@ -113,13 +132,55 @@ export function CheckoutEditorClient({
 
       <aside className="min-w-0 w-full shrink-0 overflow-y-auto border-t border-border bg-card lg:w-96 lg:border-l lg:border-t-0">
         <Card className="rounded-none border-0 shadow-none">
-          <CardHeader>
-            <CardTitle className="text-base">Personalização</CardTitle>
-            <CardDescription className="max-w-full break-words">
-              Ajuste os detalhes que os compradores veem nesta página.
-            </CardDescription>
+          <CardHeader className="gap-3">
+            <div>
+              <CardTitle className="text-base">
+                {activeTab === "personalization"
+                  ? "Personalização"
+                  : "Order bump"}
+              </CardTitle>
+              <CardDescription className="max-w-full break-words">
+                {activeTab === "personalization"
+                  ? "Ajuste os detalhes que os compradores veem nesta página."
+                  : "Ofereça produtos adicionais no momento da compra."}
+              </CardDescription>
+            </div>
+            <div className="flex gap-1 border-b border-border" role="tablist">
+              {EDITOR_TABS.map((tab) => {
+                const isActive = activeTab === tab.value;
+
+                return (
+                  <button
+                    aria-selected={isActive}
+                    className={cn(
+                      "border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                      isActive
+                        ? "border-accent text-foreground"
+                        : "border-transparent text-muted-foreground hover:text-foreground",
+                    )}
+                    key={tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                    role="tab"
+                    type="button"
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </CardHeader>
           <CardContent className="flex min-w-0 flex-col gap-5">
+            {activeTab === "orderBumps" ? (
+              <CheckoutOrderBumpPanel
+                checkoutId={checkoutId}
+                checkoutSlug={checkoutSlug}
+                initialOffers={offers}
+                onOffersChange={setOffers}
+                producerProducts={producerProducts}
+                productId={productId}
+              />
+            ) : (
+              <>
             <div className="space-y-2">
               <Label htmlFor="checkout-headline">Título</Label>
               <Input
@@ -265,6 +326,8 @@ export function CheckoutEditorClient({
               )}
               Salvar alterações
             </Button>
+              </>
+            )}
           </CardContent>
         </Card>
       </aside>

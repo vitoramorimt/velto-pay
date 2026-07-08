@@ -72,3 +72,27 @@ export const checkoutPersonalizationSchema = z.object({
 export type CheckoutPersonalizationInput = z.infer<
   typeof checkoutPersonalizationSchema
 >;
+
+export const checkoutOfferInputSchema = z.object({
+  amountCents: z.number().int().min(0, "O preço não pode ser negativo."),
+  badgeText: z
+    .string()
+    .trim()
+    .max(60, "O selo deve ter no máximo 60 caracteres.")
+    .nullish()
+    .transform((value) => value || null),
+  description: z
+    .string()
+    .trim()
+    .max(280, "A descrição deve ter no máximo 280 caracteres.")
+    .nullish()
+    .transform((value) => value || null),
+  productId: z.uuid("Selecione um produto."),
+  title: z
+    .string()
+    .trim()
+    .min(3, "O título deve ter no mínimo 3 caracteres.")
+    .max(140, "O título deve ter no máximo 140 caracteres."),
+});
+
+export type CheckoutOfferInput = z.infer<typeof checkoutOfferInputSchema>;

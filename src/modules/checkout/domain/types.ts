@@ -43,6 +43,7 @@ export type CheckoutOffer = Pick<
   | "id"
   | "offer_type"
   | "position"
+  | "product_id"
   | "title"
 >;
 

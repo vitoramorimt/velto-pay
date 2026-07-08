@@ -11,11 +11,15 @@ import {
   type CustomerFormValues,
 } from "@/modules/checkout/domain/checkout-form-schemas";
 import { formatCentsToCurrency } from "@/modules/products/domain/money";
-import type { CheckoutProduct } from "@/modules/checkout/domain/types";
+import type {
+  CheckoutOffer,
+  CheckoutProduct,
+} from "@/modules/checkout/domain/types";
 
 import { CustomerDataForm } from "./checkout-customer-data-form";
 import { ErrorView, SuccessView } from "./checkout-flow-views";
 import type { CheckoutOrderItem } from "./checkout-order-summary";
+import { OrderBumpList } from "./checkout-order-bump-list";
 import { PaymentMethodTabs } from "./checkout-payment-method-tabs";
 
 type CheckoutFormProps = {
@@ -25,7 +29,10 @@ type CheckoutFormProps = {
   formAction?: (formData: FormData) => void | Promise<void>;
   isPreview?: boolean;
   items: CheckoutOrderItem[];
+  onToggleOrderBump?: (offerId: string) => void;
+  orderBumps?: CheckoutOffer[];
   product: CheckoutProduct;
+  selectedBumpIds?: Set<string>;
   showError?: boolean;
   showSuccess?: boolean;
   totalAmountCents: number;
@@ -38,7 +45,10 @@ export function CheckoutForm({
   formAction,
   isPreview = false,
   items,
+  onToggleOrderBump,
+  orderBumps = [],
   product,
+  selectedBumpIds = new Set(),
   showError = false,
   showSuccess = false,
   totalAmountCents,
@@ -120,6 +130,18 @@ export function CheckoutForm({
             </p>
             <CustomerDataForm disabled={isPreview} form={customerForm} />
           </div>
+
+          {orderBumps.length > 0 ? (
+            <>
+              <Separator />
+              <OrderBumpList
+                disabled={isPreview}
+                offers={orderBumps}
+                onToggle={onToggleOrderBump}
+                selectedIds={selectedBumpIds}
+              />
+            </>
+          ) : null}
 
           <Separator />
 

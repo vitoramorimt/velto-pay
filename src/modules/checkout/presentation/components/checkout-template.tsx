@@ -7,7 +7,11 @@ import { VeltoLogo } from "@/components/brand/velto-logo";
 import { Button } from "@/components/ui/button";
 import type { CheckoutBadge, CheckoutBadgeId } from "@/modules/checkout/domain/badges";
 import { hexToHslTriplet, isValidHexColor } from "@/modules/checkout/domain/color";
-import type { CheckoutProduct, CheckoutTheme } from "@/modules/checkout/domain/types";
+import type {
+  CheckoutOffer,
+  CheckoutProduct,
+  CheckoutTheme,
+} from "@/modules/checkout/domain/types";
 import { cn } from "@/shared/utils/cn";
 
 import { CheckoutForm } from "./checkout-form";
@@ -27,6 +31,7 @@ type CheckoutTemplateProps = {
   errorReason?: string;
   formAction?: (formData: FormData) => void | Promise<void>;
   headline?: string | null;
+  orderBumps?: CheckoutOffer[];
   primaryColor?: string | null;
   product: CheckoutProduct;
   showError?: boolean;
@@ -42,6 +47,7 @@ export function CheckoutTemplate({
   errorReason,
   formAction,
   headline,
+  orderBumps = [],
   primaryColor,
   product,
   showError = false,
@@ -50,6 +56,9 @@ export function CheckoutTemplate({
   variant = "public",
 }: CheckoutTemplateProps) {
   const [activeTheme, setActiveTheme] = useState<CheckoutTheme>(theme);
+  const [selectedBumpIds, setSelectedBumpIds] = useState<Set<string>>(
+    new Set(),
+  );
   const isPreview = variant === "preview";
   const displayName = headline?.trim() || product.name;
   const displayDescription = description?.trim() || null;
@@ -58,6 +67,24 @@ export function CheckoutTemplate({
     primaryColor && isValidHexColor(primaryColor)
       ? ({ "--accent": hexToHslTriplet(primaryColor) } as CSSProperties)
       : undefined;
+
+  function toggleOrderBump(offerId: string) {
+    setSelectedBumpIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(offerId)) {
+        next.delete(offerId);
+      } else {
+        next.add(offerId);
+      }
+
+      return next;
+    });
+  }
+
+  const selectedBumps = orderBumps.filter((offer) =>
+    selectedBumpIds.has(offer.id),
+  );
   const items: CheckoutOrderItem[] = [
     {
       description: "Acesso ao produto digital",
@@ -65,7 +92,17 @@ export function CheckoutTemplate({
       quantity: 1,
       unitAmountCents: product.price_cents,
     },
+    ...selectedBumps.map((offer) => ({
+      description: offer.description,
+      name: offer.title,
+      quantity: 1,
+      unitAmountCents: offer.amount_cents,
+    })),
   ];
+  const totalAmountCents = items.reduce(
+    (total, item) => total + item.unitAmountCents * item.quantity,
+    0,
+  );
 
   return (
     <main
@@ -125,16 +162,16 @@ export function CheckoutTemplate({
           product={product}
           isPreview={isPreview}
           items={items}
+          onToggleOrderBump={toggleOrderBump}
+          orderBumps={orderBumps}
+          selectedBumpIds={selectedBumpIds}
           showError={showError}
           showSuccess={showSuccess}
-          totalAmountCents={product.price_cents}
+          totalAmountCents={totalAmountCents}
         />
 
         <div className="flex min-w-0 flex-col gap-6">
-          <OrderSummarySidebar
-            items={items}
-            totalAmountCents={product.price_cents}
-          />
+          <OrderSummarySidebar items={items} totalAmountCents={totalAmountCents} />
 
           {enabledBadges.length > 0 ? (
             <div className="flex min-w-0 flex-wrap items-center justify-center gap-2">

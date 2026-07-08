@@ -2,26 +2,36 @@ import "server-only";
 
 import { requireAuthenticatedUser } from "@/modules/auth/application/guards";
 import { normalizeCheckoutBadges } from "@/modules/checkout/domain/badges";
-import type { CheckoutPersonalizationInput } from "@/modules/checkout/domain/schemas";
+import type {
+  CheckoutOfferInput,
+  CheckoutPersonalizationInput,
+} from "@/modules/checkout/domain/schemas";
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import type {
   CheckoutLink,
+  CheckoutOffer,
   CheckoutSuccessContext,
   CheckoutUtm,
   PublicCheckout,
 } from "@/modules/checkout/domain/types";
 import {
+  createCheckoutOffer,
   deleteCheckoutByProducerId,
+  deleteCheckoutOffer,
   ensureCheckoutForProduct,
   findPublicCheckoutBySlug,
   getCheckoutSuccessContextByProviderReference,
+  listCheckoutOffersByCheckoutId,
   listCheckoutsByProducerId,
   recordCheckoutVisit,
+  updateCheckoutOffer,
   updateCheckoutPersonalization,
 } from "@/modules/checkout/infrastructure/checkout.repository";
+import type { Product } from "@/modules/products/domain/types";
 import {
   findProducerByUserId,
   findProductByProducerId,
+  listProductsByProducerId,
 } from "@/modules/products/infrastructure/products.repository";
 import { createSupabaseServerClient } from "@/shared/supabase";
 
@@ -187,4 +197,104 @@ export async function deleteCheckoutUseCase(checkoutId: string): Promise<void> {
   }
 
   await deleteCheckoutByProducerId(supabase, checkoutId, producer.id);
+}
+
+export type CheckoutOfferEditorData = {
+  offers: CheckoutOffer[];
+  producerProducts: Product[];
+};
+
+async function requireCheckoutProducer(redirectPath: string) {
+  const user = await requireAuthenticatedUser(redirectPath);
+  const supabase = await createSupabaseServerClient();
+  const producer = await findProducerByUserId(supabase, user.id);
+
+  if (!producer) {
+    throw new CheckoutUseCaseError(
+      "Não foi possível encontrar seu perfil de produtor.",
+    );
+  }
+
+  return { producer, supabase };
+}
+
+export async function getCheckoutOfferEditorDataUseCase(
+  checkoutId: string,
+  ownProductId: string,
+): Promise<CheckoutOfferEditorData> {
+  const { producer, supabase } = await requireCheckoutProducer(
+    "/dashboard/checkout",
+  );
+
+  const [offers, products] = await Promise.all([
+    listCheckoutOffersByCheckoutId(supabase, checkoutId, producer.id),
+    listProductsByProducerId(supabase, producer.id),
+  ]);
+
+  const producerProducts = products.filter(
+    (product) => product.id !== ownProductId,
+  );
+
+  return { offers, producerProducts };
+}
+
+export async function createCheckoutOfferUseCase(
+  checkoutId: string,
+  input: CheckoutOfferInput,
+): Promise<CheckoutOffer> {
+  const { producer, supabase } = await requireCheckoutProducer(
+    "/dashboard/checkout",
+  );
+
+  const product = await findProductByProducerId(
+    supabase,
+    input.productId,
+    producer.id,
+  );
+
+  if (!product) {
+    throw new CheckoutUseCaseError("Produto não encontrado.");
+  }
+
+  return createCheckoutOffer(supabase, {
+    amountCents: input.amountCents,
+    badgeText: input.badgeText,
+    checkoutId,
+    description: input.description,
+    producerId: producer.id,
+    productId: product.id,
+    title: input.title,
+  });
+}
+
+export async function updateCheckoutOfferUseCase(
+  offerId: string,
+  input: Omit<CheckoutOfferInput, "productId">,
+): Promise<CheckoutOffer> {
+  const { producer, supabase } = await requireCheckoutProducer(
+    "/dashboard/checkout",
+  );
+
+  const updated = await updateCheckoutOffer(supabase, offerId, producer.id, {
+    amountCents: input.amountCents,
+    badgeText: input.badgeText,
+    description: input.description,
+    title: input.title,
+  });
+
+  if (!updated) {
+    throw new CheckoutUseCaseError("Order bump não encontrado.");
+  }
+
+  return updated;
+}
+
+export async function deleteCheckoutOfferUseCase(
+  offerId: string,
+): Promise<void> {
+  const { producer, supabase } = await requireCheckoutProducer(
+    "/dashboard/checkout",
+  );
+
+  await deleteCheckoutOffer(supabase, offerId, producer.id);
 }

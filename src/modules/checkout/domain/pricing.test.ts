@@ -36,6 +36,7 @@ const bump: CheckoutOffer = {
   id: "bump-1",
   offer_type: "order_bump",
   position: 0,
+  product_id: "product-1",
   title: "Mentoria bônus",
 };
 

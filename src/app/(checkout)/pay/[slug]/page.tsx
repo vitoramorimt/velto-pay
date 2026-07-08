@@ -61,6 +61,7 @@ export default async function PublicCheckoutPage({
         errorReason={query?.erro}
         formAction={createPendingCheckoutOrderAction}
         headline={checkout.headline}
+        orderBumps={checkout.offers.orderBumps}
         primaryColor={checkout.primaryColor}
         product={checkout.product}
         showError={Boolean(query?.erro)}
