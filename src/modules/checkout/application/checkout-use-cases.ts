@@ -132,15 +132,12 @@ export async function createCheckoutForProductUseCase(
 
   return {
     checkoutBadges: normalizeCheckoutBadges(checkout.badges),
-    checkoutBannerUrl: checkout.banner_url,
     checkoutCreatedAt: checkout.created_at,
     checkoutDescription: checkout.description,
     checkoutHeadline: checkout.headline,
     checkoutId: checkout.id,
-    checkoutLogoUrl: checkout.logo_url,
     checkoutName: checkout.headline ?? product.name,
     checkoutPrimaryColor: checkout.primary_color,
-    checkoutSecurePurchaseEnabled: checkout.secure_purchase_enabled,
     checkoutSlug: checkout.slug,
     checkoutStatus: checkout.status,
     checkoutTheme: checkout.theme === "light" ? "light" : "dark",

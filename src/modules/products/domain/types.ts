@@ -9,7 +9,6 @@ export type EditableProductStatus = Extract<
 >;
 
 export type ProductFormValues = {
-  category: string;
   id?: string;
   name: string;
   slug: string;

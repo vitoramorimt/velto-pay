@@ -19,7 +19,6 @@ import {
 } from "@/modules/products/domain/schemas";
 
 export type ProductActionResult = {
-  productId?: string;
   status: "success" | "error";
   message: string;
 };
@@ -58,20 +57,18 @@ export async function createProductAction(
     const product = await createProductUseCase(parsedInput.data);
 
     revalidatePath(`/pay/${product.slug}`);
-    revalidatePath(`/dashboard/produtos/${product.id}/configuracoes`);
-
-    revalidatePath("/dashboard/produtos");
-    revalidatePath("/dashboard/checkout");
-    revalidatePath("/dashboard");
-
-    return {
-      message: "Produto criado com sucesso.",
-      productId: product.id,
-      status: "success",
-    };
   } catch (error) {
     return actionError(error);
   }
+
+  revalidatePath("/dashboard/produtos");
+  revalidatePath("/dashboard/checkout");
+  revalidatePath("/dashboard");
+
+  return {
+    message: "Produto criado com sucesso.",
+    status: "success",
+  };
 }
 
 export async function updateProductAction(

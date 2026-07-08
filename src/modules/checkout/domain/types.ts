@@ -1,6 +1,5 @@
 import type { Enums, Tables } from "@/shared/database.types";
 import type { CheckoutBadge } from "@/modules/checkout/domain/badges";
-import type { OfferConversionContent } from "@/modules/offers/domain/types";
 
 export type CheckoutStatus = Enums<"checkout_status">;
 export type CheckoutTheme = "dark" | "light";
@@ -8,7 +7,6 @@ export type CheckoutProduct = Pick<
   Tables<"products">,
   | "created_at"
   | "currency"
-  | "category"
   | "description"
   | "id"
   | "image_url"
@@ -22,15 +20,12 @@ export type CheckoutProduct = Pick<
 
 export type CheckoutLink = {
   checkoutBadges: CheckoutBadge[];
-  checkoutBannerUrl: string | null;
   checkoutCreatedAt: string;
   checkoutDescription: string | null;
   checkoutHeadline: string | null;
   checkoutId: string;
-  checkoutLogoUrl: string | null;
   checkoutName: string;
   checkoutPrimaryColor: string | null;
-  checkoutSecurePurchaseEnabled: boolean;
   checkoutSlug: string;
   checkoutStatus: CheckoutStatus;
   checkoutTheme: CheckoutTheme;
@@ -87,13 +82,9 @@ export type PublicCheckout = {
   description: string | null;
   headline: string | null;
   offers: CheckoutOfferGroups;
-  offerContent: OfferConversionContent;
   pixels: CheckoutPixel[];
-  bannerUrl: string | null;
-  logoUrl: string | null;
   primaryColor: string | null;
   product: CheckoutProduct;
-  securePurchaseEnabled: boolean;
   theme: CheckoutTheme;
 };
 

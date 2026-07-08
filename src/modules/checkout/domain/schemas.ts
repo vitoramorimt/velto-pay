@@ -45,24 +45,8 @@ const checkoutBadgeInputSchema = z.object({
     .max(60, "O selo deve ter no máximo 60 caracteres."),
 });
 
-const optionalUrlSchema = (message: string) =>
-  z
-    .string()
-    .trim()
-    .max(500, "Informe uma URL menor.")
-    .refine((value) => {
-      if (!value) {
-        return true;
-      }
-
-      return z.url().safeParse(value).success;
-    }, message)
-    .optional()
-    .transform((value) => value || null);
-
 export const checkoutPersonalizationSchema = z.object({
   badges: z.array(checkoutBadgeInputSchema).min(1).max(CHECKOUT_BADGE_ORDER.length),
-  bannerUrl: optionalUrlSchema("Informe uma URL de banner válida."),
   description: z
     .string()
     .trim()
@@ -74,7 +58,6 @@ export const checkoutPersonalizationSchema = z.object({
     .trim()
     .min(2, "Informe um título.")
     .max(120, "O título deve ter no máximo 120 caracteres."),
-  logoUrl: optionalUrlSchema("Informe uma URL de logo válida."),
   primaryColor: z
     .union([
       z.literal(""),
@@ -83,7 +66,6 @@ export const checkoutPersonalizationSchema = z.object({
     .optional()
     .nullable()
     .transform((value) => value || null),
-  securePurchaseEnabled: z.boolean().default(true),
   theme: z.enum(["dark", "light"]),
 });
 

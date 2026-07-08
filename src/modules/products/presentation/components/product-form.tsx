@@ -50,7 +50,7 @@ type ProductFormProps = {
   defaultValues: ProductFormValues;
   mode: "create" | "edit";
   onCancel?: () => void;
-  onSuccess?: (result: ProductActionResult) => void;
+  onSuccess?: () => void;
 };
 
 type DeliveryMethod = "members_area" | "external_link" | "none";
@@ -161,7 +161,7 @@ export function ProductForm({
       if (actionResult.status === "success") {
         form.reset(defaultValues);
         setCurrentStep(1);
-        onSuccess?.(actionResult);
+        onSuccess?.();
 
         if (!onSuccess) {
           setResult(actionResult);
@@ -199,11 +199,11 @@ export function ProductForm({
               className="border-accent/30 bg-accent/10 text-accent"
               variant="outline"
             >
-              {mode === "create" ? "Nova oferta" : "Editar produto"}
+              {mode === "create" ? "Novo produto" : "Editar produto"}
             </Badge>
             <h2 className="mt-3 text-xl font-semibold sm:text-2xl">
               {mode === "create"
-                ? "Crie a base da oferta"
+                ? "Configure o produto em poucos passos"
                 : "Atualize as informações do produto"}
             </h2>
           </div>
@@ -363,29 +363,15 @@ export function ProductForm({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Categoria</Label>
-                <Input
-                  id="category"
-                  placeholder="Educação, consultoria, templates..."
-                  {...form.register("category")}
-                />
-                {form.formState.errors.category ? (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors.category.message}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="salesPageUrl">Imagem</Label>
+                <Label htmlFor="salesPageUrl">Página de vendas</Label>
                 <Input
                   id="salesPageUrl"
-                  placeholder="https://cdn.sua-marca.com/produto.jpg"
+                  placeholder="https://sua-pagina.com/oferta"
                   type="url"
                   {...form.register("salesPageUrl")}
                 />
                 <p className="text-xs leading-5 text-muted-foreground">
-                  Opcional. Use uma imagem quadrada ou horizontal da oferta.
+                  Opcional. Use a página pública onde a oferta será apresentada.
                 </p>
                 {form.formState.errors.salesPageUrl ? (
                   <p className="text-sm text-destructive">
@@ -445,7 +431,7 @@ export function ProductForm({
                 ) : mode === "create" ? null : (
                   <Save />
                 )}
-                {mode === "create" ? "Criar oferta" : "Salvar alterações"}
+                {mode === "create" ? "Criar produto" : "Salvar alterações"}
               </Button>
             </div>
           </div>

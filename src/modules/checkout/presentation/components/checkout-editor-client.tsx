@@ -36,12 +36,9 @@ const DEFAULT_PRIMARY_COLOR = "#19cd8b";
 type CheckoutEditorClientProps = {
   checkoutId: string;
   initialBadges: CheckoutBadge[];
-  initialBannerUrl: string | null;
   initialDescription: string | null;
   initialHeadline: string | null;
-  initialLogoUrl: string | null;
   initialPrimaryColor: string | null;
-  initialSecurePurchaseEnabled: boolean;
   initialTheme: CheckoutTheme;
   product: CheckoutProduct;
   productId: string;
@@ -50,12 +47,9 @@ type CheckoutEditorClientProps = {
 export function CheckoutEditorClient({
   checkoutId,
   initialBadges,
-  initialBannerUrl,
   initialDescription,
   initialHeadline,
-  initialLogoUrl,
   initialPrimaryColor,
-  initialSecurePurchaseEnabled,
   initialTheme,
   product,
   productId,
@@ -91,12 +85,9 @@ export function CheckoutEditorClient({
       productId,
       {
         badges,
-        bannerUrl: initialBannerUrl,
         description,
         headline,
-        logoUrl: initialLogoUrl,
         primaryColor,
-        securePurchaseEnabled: initialSecurePurchaseEnabled,
         theme,
       },
     );
@@ -112,12 +103,9 @@ export function CheckoutEditorClient({
           badges={badges}
           description={description}
           headline={headline}
-          bannerUrl={initialBannerUrl}
-          logoUrl={initialLogoUrl}
           key={theme}
           primaryColor={primaryColor}
           product={product}
-          securePurchaseEnabled={initialSecurePurchaseEnabled}
           theme={theme}
           variant="preview"
         />
