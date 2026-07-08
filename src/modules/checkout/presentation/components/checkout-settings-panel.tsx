@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Pencil, Settings } from "lucide-react";
+import { Eye, Pencil, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -72,16 +72,24 @@ export function CheckoutSettingsPanel({
               </p>
             </div>
           </div>
-          <Button asChild size="sm" variant="outline">
-            <Link
-              href={`/checkout-editor/${productId}`}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <Pencil className="h-4 w-4" />
-              Editar
-            </Link>
-          </Button>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button asChild size="sm" variant="outline">
+              <a href={checkoutLink.link} rel="noreferrer" target="_blank">
+                <Eye className="h-4 w-4" />
+                Visualizar checkout
+              </a>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link
+                href={`/checkout-editor/${productId}`}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <Pencil className="h-4 w-4" />
+                Editar
+              </Link>
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

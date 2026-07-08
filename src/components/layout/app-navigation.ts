@@ -4,7 +4,6 @@ import {
   Bell,
   Boxes,
   BrainCircuit,
-  CreditCard,
   Home,
   Landmark,
   ShieldCheck,
@@ -34,11 +33,6 @@ export const appNavigationItems: AppNavigationItem[] = [
     href: "/dashboard/ia-de-vendas",
     icon: BrainCircuit,
     label: "Assistente Comercial",
-  },
-  {
-    href: "/dashboard/checkout",
-    icon: CreditCard,
-    label: "Checkout",
   },
   {
     href: "/dashboard/financeiro",
