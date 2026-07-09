@@ -1,11 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { getProductSettingsPageData } from "@/modules/products/application/product-use-cases";
-import { ProductSettingsTabs } from "@/modules/products/presentation/components/product-settings-tabs";
+import { getOfferCenterPageData } from "@/modules/offers/application/offer-center-use-cases";
+import { OfferCreationCenter } from "@/modules/offers/presentation/components/offer-creation-center";
 
 type ProductSettingsPageProps = {
   params: Promise<{
@@ -25,39 +20,21 @@ export default async function ProductSettingsPage({
     notFound();
   }
 
-  const data = await getProductSettingsPageData(id);
+  const data = await getOfferCenterPageData(id);
 
   if (!data) {
     notFound();
   }
 
-  const { checkoutLink, product } = data;
-
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <Badge variant="secondary">Configurações do produto</Badge>
-          <h1 className="mt-3 text-2xl font-semibold tracking-normal">
-            {product.name}
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Gerencie o link de checkout, a entrega do conteúdo e os dados do
-            produto.
-          </p>
-        </div>
-        <Button asChild size="sm" variant="outline">
-          <Link href="/dashboard/produtos">
-            <ArrowLeft />
-            Voltar
-          </Link>
-        </Button>
-      </div>
-
-      <ProductSettingsTabs
-        checkoutLink={checkoutLink}
-        product={product}
+    <div className="velto-page-shell py-0 sm:py-0">
+      <OfferCreationCenter
+        checkout={data.checkout}
+        conversion={data.conversion}
+        paymentSimulation={data.paymentSimulation}
+        product={data.product}
         productId={id}
+        publicLink={data.publicLink}
       />
     </div>
   );

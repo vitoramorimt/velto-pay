@@ -14,6 +14,19 @@ type CheckoutOfferInsert =
   Database["public"]["Tables"]["checkout_offers"]["Insert"];
 type CheckoutOfferUpdate =
   Database["public"]["Tables"]["checkout_offers"]["Update"];
+type OfferContentRow =
+  Database["public"]["Tables"]["product_offer_contents"]["Row"];
+type OfferContentInsert =
+  Database["public"]["Tables"]["product_offer_contents"]["Insert"];
+type OfferContentUpdate =
+  Database["public"]["Tables"]["product_offer_contents"]["Update"];
+type WalletRow = Database["public"]["Tables"]["wallets"]["Row"];
+type WalletTransactionRow =
+  Database["public"]["Tables"]["wallet_transactions"]["Row"];
+type WithdrawalRequestRow =
+  Database["public"]["Tables"]["withdrawal_requests"]["Row"];
+type WithdrawalSettingsRow =
+  Database["public"]["Tables"]["withdrawal_settings"]["Row"];
 
 export const DEV_BYPASS_PRODUCER_ID = "dev-bypass-producer";
 
@@ -39,6 +52,11 @@ const globalForDevStore = globalThis as unknown as {
   __veltoDevProducts?: Map<string, ProductRow>;
   __veltoDevCheckouts?: Map<string, CheckoutRow>;
   __veltoDevCheckoutOffers?: Map<string, CheckoutOfferRow>;
+  __veltoDevOfferContents?: Map<string, OfferContentRow>;
+  __veltoDevWalletTransactions?: Map<string, WalletTransactionRow>;
+  __veltoDevWallets?: Map<string, WalletRow>;
+  __veltoDevWithdrawalRequests?: Map<string, WithdrawalRequestRow>;
+  __veltoDevWithdrawalSettings?: Map<string, WithdrawalSettingsRow>;
 };
 
 const products =
@@ -48,10 +66,29 @@ const checkouts =
 const checkoutOffers =
   globalForDevStore.__veltoDevCheckoutOffers ??
   new Map<string, CheckoutOfferRow>();
+const offerContents =
+  globalForDevStore.__veltoDevOfferContents ??
+  new Map<string, OfferContentRow>();
+const wallets =
+  globalForDevStore.__veltoDevWallets ?? new Map<string, WalletRow>();
+const walletTransactions =
+  globalForDevStore.__veltoDevWalletTransactions ??
+  new Map<string, WalletTransactionRow>();
+const withdrawalRequests =
+  globalForDevStore.__veltoDevWithdrawalRequests ??
+  new Map<string, WithdrawalRequestRow>();
+const withdrawalSettings =
+  globalForDevStore.__veltoDevWithdrawalSettings ??
+  new Map<string, WithdrawalSettingsRow>();
 
 globalForDevStore.__veltoDevProducts = products;
 globalForDevStore.__veltoDevCheckouts = checkouts;
 globalForDevStore.__veltoDevCheckoutOffers = checkoutOffers;
+globalForDevStore.__veltoDevOfferContents = offerContents;
+globalForDevStore.__veltoDevWallets = wallets;
+globalForDevStore.__veltoDevWalletTransactions = walletTransactions;
+globalForDevStore.__veltoDevWithdrawalRequests = withdrawalRequests;
+globalForDevStore.__veltoDevWithdrawalSettings = withdrawalSettings;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -63,7 +100,8 @@ function randomId(): string {
 
 function sortByCreatedAtDesc<T extends { created_at: string }>(rows: T[]): T[] {
   return rows.sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 }
 
@@ -76,6 +114,7 @@ export const mockProductsStore = {
     const id = product.id ?? randomId();
     const timestamp = nowIso();
     const row: ProductRow = {
+      category: product.category ?? null,
       created_at: product.created_at ?? timestamp,
       currency: product.currency ?? "BRL",
       delivery_url: product.delivery_url ?? null,
@@ -140,14 +179,6 @@ export const mockCheckoutsStore = {
     );
   },
 
-  findBySlug(slug: string): CheckoutRow | null {
-    return (
-      Array.from(checkouts.values()).find(
-        (checkout) => checkout.slug === slug,
-      ) ?? null
-    );
-  },
-
   list(): CheckoutRow[] {
     return sortByCreatedAtDesc(Array.from(checkouts.values()));
   },
@@ -167,21 +198,28 @@ export const mockCheckoutsStore = {
     const timestamp = nowIso();
     const row: CheckoutRow = {
       badges: payload.badges ?? existing?.badges ?? [],
+      banner_url: payload.banner_url ?? existing?.banner_url ?? null,
       created_at: existing?.created_at ?? timestamp,
       description: payload.description ?? null,
       headline: payload.headline ?? null,
       id,
+      logo_url: payload.logo_url ?? existing?.logo_url ?? null,
       order_bump_enabled:
         payload.order_bump_enabled ?? existing?.order_bump_enabled ?? false,
       primary_color: payload.primary_color ?? existing?.primary_color ?? null,
       producer_id: payload.producer_id ?? existing?.producer_id ?? "",
       product_id: payload.product_id ?? existing?.product_id ?? "",
       published_at: payload.published_at ?? null,
+      secure_purchase_enabled:
+        payload.secure_purchase_enabled ??
+        existing?.secure_purchase_enabled ??
+        true,
       slug: payload.slug ?? existing?.slug ?? "",
       status: payload.status ?? existing?.status ?? "draft",
       theme: payload.theme ?? existing?.theme ?? "dark",
       updated_at: timestamp,
-      upsell_enabled: payload.upsell_enabled ?? existing?.upsell_enabled ?? false,
+      upsell_enabled:
+        payload.upsell_enabled ?? existing?.upsell_enabled ?? false,
     };
 
     checkouts.set(id, row);
@@ -262,5 +300,277 @@ export const mockOffersStore = {
     checkoutOffers.set(id, updated);
 
     return updated;
+  },
+};
+
+export const mockOfferContentsStore = {
+  findByProductId(productId: string): OfferContentRow | null {
+    return (
+      Array.from(offerContents.values()).find(
+        (content) => content.product_id === productId,
+      ) ?? null
+    );
+  },
+
+  upsert(
+    payload: OfferContentInsert | OfferContentUpdate,
+    existingId?: string,
+  ): OfferContentRow {
+    const existing = existingId ? offerContents.get(existingId) : undefined;
+    const id = existing?.id ?? existingId ?? randomId();
+    const timestamp = nowIso();
+    const row: OfferContentRow = {
+      benefits: payload.benefits ?? existing?.benefits ?? [],
+      bonuses: payload.bonuses ?? existing?.bonuses ?? [],
+      countdown_enabled:
+        payload.countdown_enabled ?? existing?.countdown_enabled ?? false,
+      countdown_ends_at:
+        payload.countdown_ends_at ?? existing?.countdown_ends_at ?? null,
+      created_at: existing?.created_at ?? timestamp,
+      faqs: payload.faqs ?? existing?.faqs ?? [],
+      guarantee: payload.guarantee ?? existing?.guarantee ?? null,
+      id,
+      producer_id: payload.producer_id ?? existing?.producer_id ?? "",
+      product_id: payload.product_id ?? existing?.product_id ?? "",
+      testimonials: payload.testimonials ?? existing?.testimonials ?? [],
+      trust_seals: payload.trust_seals ?? existing?.trust_seals ?? [],
+      updated_at: timestamp,
+      urgency_text: payload.urgency_text ?? existing?.urgency_text ?? null,
+    };
+
+    offerContents.set(id, row);
+
+    return row;
+  },
+};
+
+function seedWalletTransactions(wallet: WalletRow): void {
+  const existing = Array.from(walletTransactions.values()).some(
+    (transaction) => transaction.wallet_id === wallet.id,
+  );
+
+  if (existing) {
+    return;
+  }
+
+  const timestamp = nowIso();
+  const rows: WalletTransactionRow[] = [
+    {
+      available_at: timestamp,
+      created_at: timestamp,
+      description: "Venda aprovada em ambiente de testes",
+      gateway_fee_amount_cents: 390,
+      gross_amount_cents: 19990,
+      id: randomId(),
+      metadata: {},
+      net_amount_cents: 18400,
+      order_id: null,
+      payment_id: null,
+      platform_fee_amount_cents: 1200,
+      producer_id: wallet.producer_id,
+      status: "available",
+      type: "sale",
+      updated_at: timestamp,
+      wallet_id: wallet.id,
+      withdrawal_request_id: null,
+    },
+    {
+      available_at: null,
+      created_at: timestamp,
+      description: "Venda em prazo de liquidação",
+      gateway_fee_amount_cents: 290,
+      gross_amount_cents: 12990,
+      id: randomId(),
+      metadata: {},
+      net_amount_cents: 11900,
+      order_id: null,
+      payment_id: null,
+      platform_fee_amount_cents: 800,
+      producer_id: wallet.producer_id,
+      status: "pending",
+      type: "sale",
+      updated_at: timestamp,
+      wallet_id: wallet.id,
+      withdrawal_request_id: null,
+    },
+  ];
+
+  rows.forEach((row) => walletTransactions.set(row.id, row));
+}
+
+export const mockWalletStore = {
+  ensure(producerId: string): WalletRow {
+    const existing = Array.from(wallets.values()).find(
+      (wallet) => wallet.producer_id === producerId,
+    );
+
+    if (existing) {
+      seedWalletTransactions(existing);
+      return existing;
+    }
+
+    const timestamp = nowIso();
+    const wallet: WalletRow = {
+      available_balance_cents: 18400,
+      created_at: timestamp,
+      id: randomId(),
+      pending_balance_cents: 11900,
+      producer_id: producerId,
+      total_fees_paid_cents: 2690,
+      total_received_cents: 30300,
+      total_withdrawn_cents: 0,
+      updated_at: timestamp,
+    };
+
+    wallets.set(wallet.id, wallet);
+    seedWalletTransactions(wallet);
+
+    return wallet;
+  },
+
+  findByProducerId(producerId: string): WalletRow | null {
+    return (
+      Array.from(wallets.values()).find(
+        (wallet) => wallet.producer_id === producerId,
+      ) ?? null
+    );
+  },
+
+  listTransactions(producerId: string, limit: number): WalletTransactionRow[] {
+    return sortByCreatedAtDesc(
+      Array.from(walletTransactions.values()).filter(
+        (transaction) => transaction.producer_id === producerId,
+      ),
+    ).slice(0, limit);
+  },
+
+  listWithdrawalRequests(
+    producerId: string,
+    limit: number,
+  ): WithdrawalRequestRow[] {
+    return sortByCreatedAtDesc(
+      Array.from(withdrawalRequests.values()).filter(
+        (request) => request.producer_id === producerId,
+      ),
+    ).slice(0, limit);
+  },
+
+  requestWithdrawal(input: {
+    amountCents: number;
+    bankName?: string | null;
+    holderDocument: string;
+    holderName: string;
+    pixKey: string;
+    pixKeyType: Database["public"]["Enums"]["pix_key_type"];
+    producerId: string;
+  }): {
+    amount_cents: number;
+    producer_id: string;
+    status: string;
+    user_id: string;
+    wallet_transaction_id: string;
+    withdrawal_request_id: string;
+  } {
+    const wallet = this.ensure(input.producerId);
+    const timestamp = nowIso();
+    const requestId = randomId();
+    const transactionId = randomId();
+
+    const nextWallet: WalletRow = {
+      ...wallet,
+      available_balance_cents: Math.max(
+        wallet.available_balance_cents - input.amountCents,
+        0,
+      ),
+      total_withdrawn_cents: wallet.total_withdrawn_cents + input.amountCents,
+      updated_at: timestamp,
+    };
+    wallets.set(wallet.id, nextWallet);
+
+    const request: WithdrawalRequestRow = {
+      amount_cents: input.amountCents,
+      bank_name: input.bankName ?? null,
+      created_at: timestamp,
+      failed_reason: null,
+      holder_document: input.holderDocument,
+      holder_name: input.holderName,
+      id: requestId,
+      metadata: {},
+      pix_key: input.pixKey,
+      pix_key_type: input.pixKeyType,
+      processed_at: null,
+      producer_id: input.producerId,
+      requested_at: timestamp,
+      status: "requested",
+      updated_at: timestamp,
+      wallet_id: wallet.id,
+    };
+    withdrawalRequests.set(requestId, request);
+
+    walletTransactions.set(transactionId, {
+      available_at: null,
+      created_at: timestamp,
+      description: "Saque solicitado em ambiente de testes",
+      gateway_fee_amount_cents: 0,
+      gross_amount_cents: input.amountCents,
+      id: transactionId,
+      metadata: {},
+      net_amount_cents: -input.amountCents,
+      order_id: null,
+      payment_id: null,
+      platform_fee_amount_cents: 0,
+      producer_id: input.producerId,
+      status: "processing",
+      type: "withdrawal",
+      updated_at: timestamp,
+      wallet_id: wallet.id,
+      withdrawal_request_id: requestId,
+    });
+
+    return {
+      amount_cents: input.amountCents,
+      producer_id: input.producerId,
+      status: request.status,
+      user_id: devBypassProducer.user_id,
+      wallet_transaction_id: transactionId,
+      withdrawal_request_id: requestId,
+    };
+  },
+};
+
+export const mockWithdrawalSettingsStore = {
+  findByProducerId(producerId: string): WithdrawalSettingsRow | null {
+    return (
+      Array.from(withdrawalSettings.values()).find(
+        (settings) => settings.producer_id === producerId,
+      ) ?? null
+    );
+  },
+
+  upsert(input: {
+    bankName?: string | null;
+    holderDocument: string;
+    holderName: string;
+    pixKey: string;
+    pixKeyType: Database["public"]["Enums"]["pix_key_type"];
+    producerId: string;
+  }): WithdrawalSettingsRow {
+    const existing = this.findByProducerId(input.producerId);
+    const timestamp = nowIso();
+    const row: WithdrawalSettingsRow = {
+      created_at: existing?.created_at ?? timestamp,
+      default_bank_name: input.bankName ?? null,
+      default_holder_document: input.holderDocument,
+      default_holder_name: input.holderName,
+      default_pix_key: input.pixKey,
+      default_pix_key_type: input.pixKeyType,
+      id: existing?.id ?? randomId(),
+      producer_id: input.producerId,
+      updated_at: timestamp,
+    };
+
+    withdrawalSettings.set(row.id, row);
+
+    return row;
   },
 };

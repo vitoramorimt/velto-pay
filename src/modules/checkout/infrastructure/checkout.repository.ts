@@ -19,6 +19,7 @@ import type {
 import { normalizeCheckoutBadges } from "@/modules/checkout/domain/badges";
 import { createCheckoutUrl } from "@/modules/checkout/domain/links";
 import { calculateCheckoutTotal } from "@/modules/checkout/domain/pricing";
+import { normalizeOfferConversionContent } from "@/modules/offers/domain/content";
 import type { Product } from "@/modules/products/domain/types";
 import {
   appendSlugSuffix,
@@ -28,6 +29,7 @@ import type { Database } from "@/shared/database.types";
 import {
   isDevBypassEnabled,
   mockCheckoutsStore,
+  mockOfferContentsStore,
   mockOffersStore,
   mockProductsStore,
 } from "@/shared/dev/mock-data-store";
@@ -38,14 +40,17 @@ type CheckoutUpdate = Database["public"]["Tables"]["checkouts"]["Update"];
 type CheckoutRow = Pick<
   Database["public"]["Tables"]["checkouts"]["Row"],
   | "badges"
+  | "banner_url"
   | "created_at"
   | "description"
   | "headline"
   | "id"
+  | "logo_url"
   | "primary_color"
   | "producer_id"
   | "product_id"
   | "published_at"
+  | "secure_purchase_enabled"
   | "slug"
   | "status"
   | "theme"
@@ -57,15 +62,30 @@ type CheckoutWithProductRow = CheckoutRow & {
 type PublicCheckoutRow = Pick<
   CheckoutRow,
   | "badges"
+  | "banner_url"
   | "description"
   | "headline"
   | "id"
+  | "logo_url"
   | "primary_color"
   | "producer_id"
+  | "secure_purchase_enabled"
   | "slug"
   | "theme"
 > & {
   product: CheckoutProduct | null;
+};
+
+type OfferContentRow = {
+  benefits: unknown;
+  bonuses: unknown;
+  countdown_enabled: boolean;
+  countdown_ends_at: string | null;
+  faqs: unknown;
+  guarantee: string | null;
+  testimonials: unknown;
+  trust_seals: unknown;
+  urgency_text: string | null;
 };
 
 type SuccessContextPayload = CheckoutSuccessContext | null;
@@ -101,12 +121,15 @@ function toCheckoutLink(checkout: CheckoutWithProductRow): CheckoutLink | null {
 
   return {
     checkoutBadges: normalizeCheckoutBadges(checkout.badges),
+    checkoutBannerUrl: checkout.banner_url,
     checkoutCreatedAt: checkout.created_at,
     checkoutDescription: checkout.description,
     checkoutHeadline: checkout.headline,
     checkoutId: checkout.id,
+    checkoutLogoUrl: checkout.logo_url,
     checkoutName: checkout.headline ?? checkout.product.name,
     checkoutPrimaryColor: checkout.primary_color,
+    checkoutSecurePurchaseEnabled: checkout.secure_purchase_enabled,
     checkoutSlug: checkout.slug,
     checkoutStatus: checkout.status,
     checkoutTheme: checkout.theme === "light" ? "light" : "dark",
@@ -199,7 +222,7 @@ async function findCheckoutByProductId(
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, logo_url, banner_url, secure_purchase_enabled, published_at, created_at, updated_at",
     )
     .eq("product_id", productId)
     .maybeSingle();
@@ -224,7 +247,7 @@ export async function findCheckoutLinkByProductId(
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, logo_url, banner_url, secure_purchase_enabled, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, category, description, image_url, price_cents, currency, status, created_at, updated_at)",
     )
     .eq("product_id", productId)
     .maybeSingle();
@@ -268,7 +291,7 @@ export async function ensureCheckoutForProduct(
       .eq("id", existingCheckout.id)
       .eq("producer_id", product.producer_id)
       .select(
-        "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
+        "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, logo_url, banner_url, secure_purchase_enabled, published_at, created_at, updated_at",
       )
       .single();
 
@@ -283,7 +306,7 @@ export async function ensureCheckoutForProduct(
     .from("checkouts")
     .insert(checkoutPayload as CheckoutInsert)
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, logo_url, banner_url, secure_purchase_enabled, published_at, created_at, updated_at",
     )
     .single();
 
@@ -309,7 +332,7 @@ export async function listCheckoutsByProducerId(
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, logo_url, banner_url, secure_purchase_enabled, published_at, created_at, updated_at, product:products(id, producer_id, name, slug, category, description, image_url, price_cents, currency, status, created_at, updated_at)",
     )
     .eq("producer_id", producerId)
     .order("created_at", { ascending: false });
@@ -328,12 +351,14 @@ export async function findPublicCheckoutBySlug(
   slug: string,
 ): Promise<PublicCheckout | null> {
   if (isDevBypassEnabled()) {
-    const checkout = mockCheckoutsStore.findBySlug(slug);
+    const checkout = mockCheckoutsStore
+      .list()
+      .find((item) => item.slug === slug && item.status === "published");
     const product = checkout
       ? mockProductsStore.findById(checkout.product_id)
       : null;
 
-    if (!checkout || !product || checkout.status !== "published") {
+    if (!checkout || !product || product.status !== "active") {
       return null;
     }
 
@@ -343,14 +368,20 @@ export async function findPublicCheckoutBySlug(
 
     return {
       badges: normalizeCheckoutBadges(checkout.badges),
+      bannerUrl: checkout.banner_url,
       checkoutId: checkout.id,
       checkoutSlug: checkout.slug,
       description: checkout.description,
       headline: checkout.headline,
+      logoUrl: checkout.logo_url,
+      offerContent: normalizeOfferConversionContent(
+        mockOfferContentsStore.findByProductId(product.id),
+      ),
       offers: toOfferGroups(offers),
       pixels: [],
       primaryColor: checkout.primary_color,
       product,
+      securePurchaseEnabled: checkout.secure_purchase_enabled,
       theme: checkout.theme === "light" ? "light" : "dark",
     };
   }
@@ -358,7 +389,7 @@ export async function findPublicCheckoutBySlug(
   const { data, error } = await supabase
     .from("checkouts")
     .select(
-      "id, producer_id, slug, description, headline, primary_color, theme, badges, product:products!inner(id, producer_id, name, slug, description, image_url, price_cents, currency, status, created_at, updated_at)",
+      "id, producer_id, slug, description, headline, primary_color, theme, badges, logo_url, banner_url, secure_purchase_enabled, product:products!inner(id, producer_id, name, slug, category, description, image_url, price_cents, currency, status, created_at, updated_at)",
     )
     .eq("slug", slug)
     .eq("status", "published")
@@ -376,7 +407,7 @@ export async function findPublicCheckoutBySlug(
     return null;
   }
 
-  const [offersResult, pixelsResult] = await Promise.all([
+  const [offersResult, pixelsResult, offerContentResult] = await Promise.all([
     supabase
       .from("checkout_offers")
       .select(
@@ -392,10 +423,18 @@ export async function findPublicCheckoutBySlug(
       .eq("checkout_id", checkout.id)
       .eq("status", "active")
       .order("created_at", { ascending: true }),
+    supabase
+      .from("product_offer_contents")
+      .select(
+        "benefits, guarantee, faqs, testimonials, bonuses, countdown_enabled, countdown_ends_at, urgency_text, trust_seals",
+      )
+      .eq("product_id", checkout.product.id)
+      .maybeSingle(),
   ]);
 
-  if (offersResult.error || pixelsResult.error) {
+  if (offersResult.error || pixelsResult.error || offerContentResult.error) {
     console.error("[checkout] premium checkout data failed", {
+      offerContentError: offerContentResult.error,
       offersError: offersResult.error,
       pixelsError: pixelsResult.error,
     });
@@ -404,14 +443,20 @@ export async function findPublicCheckoutBySlug(
 
   return {
     badges: normalizeCheckoutBadges(checkout.badges),
+    bannerUrl: checkout.banner_url,
     checkoutId: checkout.id,
     checkoutSlug: checkout.slug,
     description: checkout.description,
     headline: checkout.headline,
+    logoUrl: checkout.logo_url,
+    offerContent: normalizeOfferConversionContent(
+      offerContentResult.data as OfferContentRow | null,
+    ),
     offers: toOfferGroups((offersResult.data ?? []) as CheckoutOffer[]),
     pixels: (pixelsResult.data ?? []) as CheckoutPixel[],
     primaryColor: checkout.primary_color,
     product: checkout.product,
+    securePurchaseEnabled: checkout.secure_purchase_enabled,
     theme: checkout.theme === "light" ? "light" : "dark",
   };
 }
@@ -422,9 +467,12 @@ export async function updateCheckoutPersonalization(
   producerId: string,
   input: {
     badges: { enabled: boolean; id: string; label: string }[];
+    bannerUrl?: string | null;
     description: string | null;
     headline: string;
+    logoUrl?: string | null;
     primaryColor: string | null;
+    securePurchaseEnabled?: boolean;
     theme: CheckoutTheme;
   },
 ): Promise<CheckoutRow | null> {
@@ -443,11 +491,15 @@ export async function updateCheckoutPersonalization(
     return mockCheckoutsStore.upsert(
       {
         badges: input.badges,
+        banner_url: input.bannerUrl ?? existing.banner_url,
         description: input.description,
         headline: input.headline,
+        logo_url: input.logoUrl ?? existing.logo_url,
         primary_color: input.primaryColor,
         producer_id: existing.producer_id,
         product_id: existing.product_id,
+        secure_purchase_enabled:
+          input.securePurchaseEnabled ?? existing.secure_purchase_enabled,
         slug: existing.slug,
         theme: input.theme,
       },
@@ -459,15 +511,18 @@ export async function updateCheckoutPersonalization(
     .from("checkouts")
     .update({
       badges: input.badges,
+      banner_url: input.bannerUrl,
       description: input.description,
       headline: input.headline,
+      logo_url: input.logoUrl,
       primary_color: input.primaryColor,
+      secure_purchase_enabled: input.securePurchaseEnabled,
       theme: input.theme,
     })
     .eq("id", checkoutId)
     .eq("producer_id", producerId)
     .select(
-      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, published_at, created_at, updated_at",
+      "id, producer_id, product_id, slug, status, headline, description, primary_color, theme, badges, logo_url, banner_url, secure_purchase_enabled, published_at, created_at, updated_at",
     )
     .maybeSingle();
 

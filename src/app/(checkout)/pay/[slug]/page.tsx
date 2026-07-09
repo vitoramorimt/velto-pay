@@ -56,14 +56,18 @@ export default async function PublicCheckoutPage({
       <CheckoutPixels pixels={checkout.pixels} />
       <CheckoutTemplate
         badges={checkout.badges}
+        bannerUrl={checkout.bannerUrl}
         checkoutSlug={checkout.checkoutSlug}
         description={checkout.description}
         errorReason={query?.erro}
         formAction={createPendingCheckoutOrderAction}
         headline={checkout.headline}
+        logoUrl={checkout.logoUrl}
+        offerContent={checkout.offerContent}
         orderBumps={checkout.offers.orderBumps}
         primaryColor={checkout.primaryColor}
         product={checkout.product}
+        securePurchaseEnabled={checkout.securePurchaseEnabled}
         showError={Boolean(query?.erro)}
         showSuccess={query?.pedido === "criado"}
         theme={checkout.theme}

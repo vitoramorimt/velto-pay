@@ -130,15 +130,18 @@ export type Database = {
       checkouts: {
         Row: {
           badges: Json;
+          banner_url: string | null;
           created_at: string;
           description: string | null;
           headline: string | null;
           id: string;
+          logo_url: string | null;
           order_bump_enabled: boolean;
           primary_color: string | null;
           producer_id: string;
           product_id: string;
           published_at: string | null;
+          secure_purchase_enabled: boolean;
           slug: string;
           status: Database["public"]["Enums"]["checkout_status"];
           theme: string;
@@ -147,15 +150,18 @@ export type Database = {
         };
         Insert: {
           badges?: Json;
+          banner_url?: string | null;
           created_at?: string;
           description?: string | null;
           headline?: string | null;
           id?: string;
+          logo_url?: string | null;
           order_bump_enabled?: boolean;
           primary_color?: string | null;
           producer_id: string;
           product_id: string;
           published_at?: string | null;
+          secure_purchase_enabled?: boolean;
           slug: string;
           status?: Database["public"]["Enums"]["checkout_status"];
           theme?: string;
@@ -164,15 +170,18 @@ export type Database = {
         };
         Update: {
           badges?: Json;
+          banner_url?: string | null;
           created_at?: string;
           description?: string | null;
           headline?: string | null;
           id?: string;
+          logo_url?: string | null;
           order_bump_enabled?: boolean;
           primary_color?: string | null;
           producer_id?: string;
           product_id?: string;
           published_at?: string | null;
+          secure_purchase_enabled?: boolean;
           slug?: string;
           status?: Database["public"]["Enums"]["checkout_status"];
           theme?: string;
@@ -1241,8 +1250,75 @@ export type Database = {
           },
         ];
       };
+      product_offer_contents: {
+        Row: {
+          benefits: Json;
+          bonuses: Json;
+          countdown_enabled: boolean;
+          countdown_ends_at: string | null;
+          created_at: string;
+          faqs: Json;
+          guarantee: string | null;
+          id: string;
+          producer_id: string;
+          product_id: string;
+          testimonials: Json;
+          trust_seals: Json;
+          updated_at: string;
+          urgency_text: string | null;
+        };
+        Insert: {
+          benefits?: Json;
+          bonuses?: Json;
+          countdown_enabled?: boolean;
+          countdown_ends_at?: string | null;
+          created_at?: string;
+          faqs?: Json;
+          guarantee?: string | null;
+          id?: string;
+          producer_id: string;
+          product_id: string;
+          testimonials?: Json;
+          trust_seals?: Json;
+          updated_at?: string;
+          urgency_text?: string | null;
+        };
+        Update: {
+          benefits?: Json;
+          bonuses?: Json;
+          countdown_enabled?: boolean;
+          countdown_ends_at?: string | null;
+          created_at?: string;
+          faqs?: Json;
+          guarantee?: string | null;
+          id?: string;
+          producer_id?: string;
+          product_id?: string;
+          testimonials?: Json;
+          trust_seals?: Json;
+          updated_at?: string;
+          urgency_text?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "product_offer_contents_producer_id_fkey";
+            columns: ["producer_id"];
+            isOneToOne: false;
+            referencedRelation: "producers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "product_offer_contents_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: true;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       products: {
         Row: {
+          category: string | null;
           created_at: string;
           currency: string;
           delivery_url: string | null;
@@ -1258,6 +1334,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          category?: string | null;
           created_at?: string;
           currency?: string;
           delivery_url?: string | null;
@@ -1273,6 +1350,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          category?: string | null;
           created_at?: string;
           currency?: string;
           delivery_url?: string | null;

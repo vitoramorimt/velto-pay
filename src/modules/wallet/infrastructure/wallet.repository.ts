@@ -11,6 +11,11 @@ import type {
   WithdrawalSettings,
 } from "@/modules/wallet/domain/types";
 import type { Database, Enums, TablesUpdate } from "@/shared/database.types";
+import {
+  isDevBypassEnabled,
+  mockWalletStore,
+  mockWithdrawalSettingsStore,
+} from "@/shared/dev/mock-data-store";
 
 type DatabaseClient = SupabaseClient<Database>;
 
@@ -53,6 +58,10 @@ export async function ensureWalletForProducer(
   supabase: DatabaseClient,
   producerId: string,
 ): Promise<Wallet> {
+  if (isDevBypassEnabled()) {
+    return mockWalletStore.ensure(producerId);
+  }
+
   const { data, error } = await supabase.rpc("ensure_wallet_for_producer", {
     p_producer_id: producerId,
   });
@@ -69,6 +78,11 @@ export async function releaseDueWalletTransactions(
   supabase: DatabaseClient,
   producerId: string,
 ): Promise<number> {
+  if (isDevBypassEnabled()) {
+    mockWalletStore.ensure(producerId);
+    return 0;
+  }
+
   const { data, error } = await supabase.rpc(
     "release_due_wallet_transactions",
     {
@@ -88,6 +102,10 @@ export async function getWalletByProducerId(
   supabase: DatabaseClient,
   producerId: string,
 ): Promise<Wallet | null> {
+  if (isDevBypassEnabled()) {
+    return mockWalletStore.findByProducerId(producerId);
+  }
+
   const { data, error } = await supabase
     .from("wallets")
     .select("*")
@@ -107,6 +125,10 @@ export async function listWalletTransactionsByProducerId(
   producerId: string,
   limit = 50,
 ): Promise<WalletTransaction[]> {
+  if (isDevBypassEnabled()) {
+    return mockWalletStore.listTransactions(producerId, limit);
+  }
+
   const { data, error } = await supabase
     .from("wallet_transactions")
     .select("*")
@@ -126,6 +148,10 @@ export async function getWithdrawalSettingsByProducerId(
   supabase: DatabaseClient,
   producerId: string,
 ): Promise<WithdrawalSettings | null> {
+  if (isDevBypassEnabled()) {
+    return mockWithdrawalSettingsStore.findByProducerId(producerId);
+  }
+
   const { data, error } = await supabase
     .from("withdrawal_settings")
     .select("*")
@@ -151,6 +177,10 @@ export async function upsertWithdrawalSettings(
     producerId: string;
   },
 ): Promise<WithdrawalSettings> {
+  if (isDevBypassEnabled()) {
+    return mockWithdrawalSettingsStore.upsert(input);
+  }
+
   const { data, error } = await supabase
     .from("withdrawal_settings")
     .upsert(
@@ -187,6 +217,10 @@ export async function requestWalletWithdrawal(
     producerId: string;
   },
 ): Promise<WalletWithdrawalRequestResult> {
+  if (isDevBypassEnabled()) {
+    return mockWalletStore.requestWithdrawal(input);
+  }
+
   const { data, error } = await supabase.rpc("request_wallet_withdrawal", {
     p_amount_cents: input.amountCents,
     p_bank_name: input.bankName || null,
@@ -219,6 +253,10 @@ export async function listWithdrawalRequestsByProducerId(
   producerId: string,
   limit = 20,
 ): Promise<WithdrawalRequest[]> {
+  if (isDevBypassEnabled()) {
+    return mockWalletStore.listWithdrawalRequests(producerId, limit);
+  }
+
   const { data, error } = await supabase
     .from("withdrawal_requests")
     .select("*")
@@ -245,6 +283,14 @@ export async function processWalletPaymentEvent(
     status: Enums<"payment_status">;
   },
 ): Promise<ProcessWalletPaymentEventResult> {
+  if (isDevBypassEnabled()) {
+    return {
+      processed: false,
+      reason: "dev_bypass",
+      status: input.status,
+    };
+  }
+
   const { data, error } = await supabase.rpc("process_wallet_payment_event", {
     p_gateway_fee_amount_cents: input.gatewayFeeAmountCents ?? 0,
     p_payment_id: input.paymentId,
