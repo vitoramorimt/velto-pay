@@ -1128,8 +1128,12 @@ function PaymentStep({
     >
       <div className="grid gap-4 lg:grid-cols-3">
         <PaymentCapability icon={QrCode} label="PIX" value="Ativo" />
-        <PaymentCapability icon={CreditCard} label="Cartão" value="Ativo" />
-        <PaymentCapability label="Parcelamento" value="Até 12x" />
+        <PaymentCapability
+          icon={CreditCard}
+          label="Cartão"
+          value="Disponível"
+        />
+        <PaymentCapability label="Boleto" value="Disponível" />
       </div>
 
       <div className="grid gap-3 rounded-md border border-border/70 bg-background/60 p-4 sm:p-5">
@@ -1154,9 +1158,9 @@ function PaymentStep({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <PaymentCapability label="Antecipação" value="Padrão da conta" />
-        <PaymentCapability label="Split" value="Conta principal" />
-        <PaymentCapability label="Regras" value="Globais" />
+        <PaymentCapability label="Recebimento" value="Carteira Velto" />
+        <PaymentCapability label="Liquidação" value="Padrão da conta" />
+        <PaymentCapability label="Taxas" value="Aplicadas na venda" />
       </div>
     </EditorSection>
   );
@@ -1243,9 +1247,6 @@ function PublicationStep({
                 Publicar
               </Button>
             )}
-            <Button disabled type="button" variant="outline">
-              Duplicar
-            </Button>
           </div>
         </div>
 

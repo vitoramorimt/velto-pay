@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CreditCard, FileText, QrCode, Wallet } from "lucide-react";
+import { CreditCard, FileText, QrCode } from "lucide-react";
 
 import type { PaymentMethod } from "@/modules/checkout/domain/checkout-form-schemas";
 import { cn } from "@/shared/utils/cn";
@@ -23,12 +23,6 @@ const METHODS: Array<{
     label: "Crédito",
     submitLabel: "Pagar agora",
     value: "credit_card",
-  },
-  {
-    icon: Wallet,
-    label: "Débito",
-    submitLabel: "Pagar agora",
-    value: "debit_card",
   },
   {
     icon: FileText,
@@ -94,7 +88,7 @@ export function PaymentMethodTabs({
         />
       ) : null}
 
-      {activeMethod === "credit_card" || activeMethod === "debit_card" ? (
+      {activeMethod === "credit_card" ? (
         <CardForm
           disabled={disabled}
           items={items}

@@ -63,8 +63,7 @@ const deliveryOptions: Array<{
   value: DeliveryMethod;
 }> = [
   {
-    description:
-      "Prepare a estrutura visual para liberar conteúdo dentro da Velto.",
+    description: "Organize a entrega do conteúdo dentro da experiência Velto.",
     icon: MonitorPlay,
     label: "Área de membros da Velto",
     value: "members_area",
@@ -91,13 +90,12 @@ const membersAreaOptions: Array<{
   value: MembersAreaMode;
 }> = [
   {
-    description: "Estrutura visual inicial para uma futura área de membros.",
+    description: "Crie um espaço dedicado para entregar este produto.",
     label: "Criar nova área de membros",
     value: "new",
   },
   {
-    description:
-      "Preparado para conectar uma área existente em uma sprint futura.",
+    description: "Conecte este produto a uma área que você já usa.",
     label: "Usar área existente",
     value: "existing",
   },
@@ -241,12 +239,12 @@ export function ProductForm({
           <div className="grid gap-5 sm:gap-6">
             <section className="grid gap-3">
               <SectionHeading
-                description="Na versão atual da plataforma, produtos digitais usam pagamento único."
+                description="Produtos digitais começam com uma venda única em BRL."
                 title="Tipo de pagamento"
               />
               <OptionCard
                 active
-                description="Venda única em BRL, sem recorrência ou assinatura real nesta fase."
+                description="Cobrança simples para vender e entregar o produto com clareza."
                 icon={CreditCard}
                 label="Pagamento único"
               />
@@ -254,7 +252,7 @@ export function ProductForm({
 
             <section className="grid gap-3">
               <SectionHeading
-                description="Escolha como a entrega será representada agora. Nenhuma opção cria área de membros real ainda."
+                description="Escolha como o comprador receberá o conteúdo após a compra."
                 title="Entrega do conteúdo"
               />
               <div className="grid gap-3 lg:grid-cols-3">
@@ -274,7 +272,7 @@ export function ProductForm({
             {deliveryMethod === "members_area" ? (
               <section className="grid gap-3">
                 <SectionHeading
-                  description="Seleção visual para preparar o fluxo futuro de área de membros."
+                  description="Defina onde este produto será entregue."
                   title="Área de membros"
                 />
                 <div className="grid gap-3 md:grid-cols-2">

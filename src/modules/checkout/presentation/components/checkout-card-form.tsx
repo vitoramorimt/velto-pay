@@ -19,7 +19,7 @@ import { OrderSummaryInline } from "./checkout-order-summary";
 type CardFormProps = {
   disabled?: boolean;
   items: CheckoutOrderItem[];
-  method: Extract<PaymentMethod, "credit_card" | "debit_card">;
+  method: Extract<PaymentMethod, "credit_card">;
   submitLabel: string;
   submitting: boolean;
   totalAmountCents: number;

@@ -129,8 +129,8 @@ export function WithdrawalRequestDialog({
             Solicitar saque
           </DialogTitle>
           <DialogDescription>
-            Saldo disponível: {formatCentsToCurrency(availableBalanceCents)}. O
-            Pix real ainda será processado manualmente pela operação.
+            Saldo disponível: {formatCentsToCurrency(availableBalanceCents)}. A
+            solicitação entra em processamento pela operação financeira.
           </DialogDescription>
         </DialogHeader>
 

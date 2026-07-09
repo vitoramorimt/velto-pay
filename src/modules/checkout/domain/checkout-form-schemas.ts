@@ -53,7 +53,7 @@ export const boletoFormSchema = z.object({
 
 export type BoletoFormValues = z.infer<typeof boletoFormSchema>;
 
-export type PaymentMethod = "credit_card" | "debit_card" | "pix" | "boleto";
+export type PaymentMethod = "credit_card" | "pix" | "boleto";
 
 export type PixPaymentDetails = {
   qrCodeText: string;
