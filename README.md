@@ -17,11 +17,6 @@
 
 > **Status:** this project is no longer in active development. It remains public as a portfolio piece.
 
-<!-- Add screenshots here:
-![Dashboard](./docs/screenshots/dashboard.png)
-![Checkout](./docs/screenshots/checkout.png)
--->
-
 ## Overview
 
 Velto Pay is a Brazilian SaaS platform for digital creators to sell products through their own checkout. It brings sales operations, payments, orders and finance together in a single premium experience, built on Next.js and Supabase with an architecture ready for multiple payment gateways.
@@ -46,10 +41,25 @@ Velto Pay is a Brazilian SaaS platform for digital creators to sell products thr
 | Database | PostgreSQL with versioned migrations |
 | Forms & data | React Hook Form, Zod, TanStack Query |
 | Payments | Stripe Checkout |
+| AI | OpenAI API |
 | Testing | Vitest |
 | Deploy | Vercel |
 
 ## Architecture
+
+```mermaid
+flowchart LR
+  U[Buyer] --> C[Checkout page]
+  P[Creator] --> D[Dashboard]
+  C --> SA[Server Actions]
+  D --> SA
+  SA --> R[Repositories]
+  R --> DB[(Supabase · PostgreSQL + RLS)]
+  C --> S[Stripe Checkout]
+  S -- webhooks --> W[Route Handlers]
+  W --> R
+  D --> AI[AI sales assistant · OpenAI]
+```
 
 Organized by modules in `src/modules`: `auth`, `products`, `checkout`, `orders`, `payments`, `dashboard`, `finance`.
 
