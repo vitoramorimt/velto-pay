@@ -15,7 +15,7 @@
 
 ---
 
-> **Status:** this project is no longer in active development. It remains public as a portfolio piece.
+> **Status:** no longer in active development. The landing page is still live: [velto-pay.vercel.app](https://velto-pay.vercel.app)
 
 ## Overview
 
