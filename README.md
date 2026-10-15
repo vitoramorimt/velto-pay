@@ -1,46 +1,67 @@
-# Velto Pay
+<h1 align="center">Velto Pay</h1>
 
-Plataforma SaaS brasileira para produtores digitais venderem produtos com checkout próprio, pagamentos, dashboard, financeiro e IA comercial.
+<p align="center">
+  Smart checkout platform for digital product creators.<br>
+  Checkout, payments, orders, finance and AI sales assistant in one SaaS.
+</p>
 
-## Visão
+<p align="center">
+  <img src="https://img.shields.io/badge/status-discontinued-6b716d?style=flat-square&labelColor=000000" alt="Status: discontinued">
+  <img src="https://img.shields.io/badge/Next.js_15-000000?style=flat-square&logo=nextdotjs&logoColor=4cf06a" alt="Next.js 15">
+  <img src="https://img.shields.io/badge/TypeScript-000000?style=flat-square&logo=typescript&logoColor=4cf06a" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Supabase-000000?style=flat-square&logo=supabase&logoColor=4cf06a" alt="Supabase">
+  <img src="https://img.shields.io/badge/Stripe-000000?style=flat-square&logo=stripe&logoColor=4cf06a" alt="Stripe">
+</p>
 
-A Velto Pay centraliza operação comercial, checkout, pagamentos, pedidos e finanças em uma experiência premium para produtores digitais. O produto usa Supabase como backend e Next.js como aplicação full-stack, com uma arquitetura preparada para múltiplos gateways.
+---
 
-## Tecnologias
+> **Status:** this project is no longer in active development. It remains public as a portfolio piece.
 
-- Next.js 15 com App Router
-- TypeScript strict
-- Tailwind CSS + shadcn/ui
-- Supabase Auth, Database e RLS
-- PostgreSQL com migrations versionadas
-- React Hook Form + Zod
-- TanStack Query
-- Stripe Checkout em modo test
-- Vitest
-- Vercel
+<!-- Add screenshots here:
+![Dashboard](./docs/screenshots/dashboard.png)
+![Checkout](./docs/screenshots/checkout.png)
+-->
 
-## Arquitetura
+## Overview
 
-O projeto é organizado por módulos em `src/modules`:
+Velto Pay is a Brazilian SaaS platform for digital creators to sell products through their own checkout. It brings sales operations, payments, orders and finance together in a single premium experience, built on Next.js and Supabase with an architecture ready for multiple payment gateways.
 
-- `auth`
-- `products`
-- `checkout`
-- `orders`
-- `payments`
-- `dashboard`
-- `finance`
+## Features
 
-Cada módulo separa domínio, aplicação, infraestrutura e apresentação quando aplicável. Acesso a dados fica em repositories server-only; mutações internas usam Server Actions; webhooks usam Route Handlers em Node runtime.
+- **Products** — create and manage digital products and offers.
+- **Checkout** — branded checkout pages for each product.
+- **Payments** — Stripe Checkout integration with webhook handling (test mode).
+- **Orders** — order tracking, refunds and disputes.
+- **Dashboard** — sales overview for creators.
+- **Finance** — revenue and financial reports.
+- **AI sales assistant** — OpenAI-powered commercial insights.
 
-Leia mais em:
+## Tech stack
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md)
-- [docs/architecture.md](./docs/architecture.md)
-- [docs/payments.md](./docs/payments.md)
-- [docs/database.md](./docs/database.md)
+| Area | Tools |
+|---|---|
+| Framework | Next.js 15 (App Router), TypeScript strict |
+| UI | Tailwind CSS, shadcn/ui |
+| Backend | Supabase Auth, Database and Row Level Security |
+| Database | PostgreSQL with versioned migrations |
+| Forms & data | React Hook Form, Zod, TanStack Query |
+| Payments | Stripe Checkout |
+| Testing | Vitest |
+| Deploy | Vercel |
 
-## Rodando Localmente
+## Architecture
+
+Organized by modules in `src/modules`: `auth`, `products`, `checkout`, `orders`, `payments`, `dashboard`, `finance`.
+
+- Each module separates **domain, application, infrastructure and presentation**.
+- Data access lives in **server-only repositories**.
+- Internal mutations use **Server Actions**.
+- Payment webhooks use **Route Handlers** on the Node runtime.
+- Payment layer is **gateway-agnostic**, prepared for multiple providers.
+
+More in [ARCHITECTURE.md](./ARCHITECTURE.md), [docs/architecture.md](./docs/architecture.md), [docs/payments.md](./docs/payments.md) and [docs/database.md](./docs/database.md).
+
+## Running locally
 
 ```bash
 corepack enable
@@ -49,62 +70,26 @@ cp .env.example .env.local
 corepack pnpm dev
 ```
 
-A aplicação roda em `http://localhost:3000`.
+Runs at `http://localhost:3000`. Fill `.env.local` using `.env.example` as reference.
 
-## Ambiente
-
-Configure `.env.local` com:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-PAYMENT_PROVIDER=stripe
-PAYMENT_ENVIRONMENT=sandbox
-STRIPE_SECRET_KEY=
-STRIPE_PUBLISHABLE_KEY=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_SUCCESS_URL=http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}
-STRIPE_CANCEL_URL=http://localhost:3000/checkout/cancel
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4.1-mini
-```
-
-## Supabase
+<details>
+<summary><b>Supabase and Stripe setup</b></summary>
 
 ```bash
+# Supabase
 corepack pnpm supabase:start
 corepack pnpm supabase:db:reset
 corepack pnpm supabase:gen-types
-```
 
-Migrations ficam em `supabase/migrations`. Não altere tabelas manualmente sem criar migration.
-
-## Stripe
-
-Use Stripe em modo test:
-
-```bash
+# Stripe webhooks (test mode)
 stripe listen --forward-to localhost:3000/api/payments/webhooks/stripe
 ```
 
-Copie o `whsec_...` para `STRIPE_WEBHOOK_SECRET`.
+Test cards: `4242 4242 4242 4242` (approved), `4000 0000 0000 0002` (declined).
 
-Cartões de teste:
+</details>
 
-- Aprovado: `4242 4242 4242 4242`
-- Recusado: `4000 0000 0000 0002`
-
-Eventos úteis:
-
-```bash
-stripe trigger checkout.session.completed
-stripe trigger payment_intent.payment_failed
-stripe trigger charge.refunded
-stripe trigger charge.dispute.created
-```
-
-## Testes e Validação
+## Quality
 
 ```bash
 corepack pnpm lint
@@ -113,12 +98,6 @@ corepack pnpm typecheck
 corepack pnpm build
 ```
 
-## Contribuição
+---
 
-- Nunca trabalhar direto na `main`.
-- Criar branch por funcionalidade.
-- Fazer commits pequenos e descritivos.
-- Manter RLS, migrations, use cases e repositories coerentes.
-- Não expor service role ou secrets no frontend.
-
-Veja [docs/contributing.md](./docs/contributing.md) e [docs/coding-standards.md](./docs/coding-standards.md).
+<p align="center">Built by <a href="https://github.com/vitoramorimt">Vitor Amorim (vaT)</a></p>
